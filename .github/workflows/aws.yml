@@ -24,8 +24,7 @@
 #    and best practices on handling the access key credentials.
 
 on:
-  release:
-    types: [created]
+  push
 
 name: Deploy to Amazon ECS
 
