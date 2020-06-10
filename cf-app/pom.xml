@@ -105,6 +105,23 @@
             </plugin>
 
             <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>space.crowdforce.CrowdforceApplicationKt</mainClass>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build-info</goal>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>com.github.kongchen</groupId>
                 <artifactId>swagger-maven-plugin</artifactId>
                 <configuration>
