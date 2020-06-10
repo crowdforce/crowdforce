@@ -24,7 +24,8 @@
 #    and best practices on handling the access key credentials.
 
 on:
-  push
+  push:
+    branches: [ master, develop ]
 
 name: Deploy to Amazon ECS
 
