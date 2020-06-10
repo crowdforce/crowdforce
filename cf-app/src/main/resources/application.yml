@@ -1,3 +1,10 @@
 logging:
   level:
     com.zaxxer.hikari.HikariConfig: debug
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
