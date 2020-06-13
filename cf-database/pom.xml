@@ -25,6 +25,10 @@
             <artifactId>flyway-core</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -49,7 +53,11 @@
                                 </network>
                                 <namingStrategy>alias</namingStrategy>
                                 <wait>
-                                    <log>database system is ready to accept connections</log>
+                                    <log>CREATE DATABASE</log>
+                                    <tcp>
+                                        <host>localhost</host>
+                                        <ports>5432</ports>
+                                    </tcp>
                                     <time>20000</time>
                                 </wait>
                                 <ports>
@@ -112,7 +120,7 @@
                         <goals>
                             <goal>migrate</goal>
                         </goals>
-                        <phase>generate-sources</phase>
+                        <phase>initialize</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -152,9 +160,18 @@
                         <goals>
                             <goal>generate</goal>
                         </goals>
-                        <phase>compile</phase>
+                        <phase>generate-sources</phase>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>
