@@ -11,3 +11,8 @@ data class AuthenticationCode(
 data class TelegramUser(
     val userName: String
 )
+
+data class VerificationCode(
+    val userName: String,
+    val code: Int
+)

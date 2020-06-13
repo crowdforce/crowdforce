@@ -5,6 +5,8 @@ import dev.whyoleg.ktd.api.TdApi
 import dev.whyoleg.ktd.api.chat.searchPublicChat
 import dev.whyoleg.ktd.api.message.message
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import space.crowdforce.exceptions.InvalidVerificationException
 import space.crowdforce.repository.UserRepository
 
 @Service
@@ -14,7 +16,8 @@ class UserLoginService(
     private val codesGeneratorService: CodesGeneratorService
 ) {
 
-    suspend fun sendCodesToUser(userName: String) {
+    @Transactional
+    suspend fun sendCodesToUser(userName: String) =
         insertOrGet(userName)
             .let { user ->
                 val code = codesGeneratorService.generateCode(user.id)
@@ -24,7 +27,13 @@ class UserLoginService(
                     inputMessageContent = TdApi.InputMessageText(TdApi.FormattedText("Ваш код: ${code.code}"))
                 ))
             }
-    }
+
+    @Transactional
+    suspend fun verifyCode(userName: String, code: Int) =
+        userRepository.findByUserName(userName)
+            ?.let { codesGeneratorService.verifyCode(it.id, code) }
+            ?.takeIf { it }
+            ?: throw InvalidVerificationException("Unable to verify code")
 
     private fun insertOrGet(userName: String) =
         userRepository.findByUserName(userName)
