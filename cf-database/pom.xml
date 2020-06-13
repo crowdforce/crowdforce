@@ -10,10 +10,153 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>cf-database</artifactId>
 
+    <properties>
+        <testcontainers.version>1.14.3</testcontainers.version>
+        <docker.plugin>0.33.0</docker.plugin>
+        <postgres.user>crowdforce</postgres.user>
+        <postgres.password>crowdforce</postgres.password>
+        <postgres.database>crowdforce</postgres.database>
+        <postgres.version>42.2.14</postgres.version>
+    </properties>
+
     <dependencies>
         <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
         </dependency>
+
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${docker.plugin}</version>
+                <configuration>
+                    <verbose>true</verbose>
+                    <showLogs>true</showLogs>
+                    <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
+                    <images>
+                        <image>
+                            <name>postgres:12.3</name>
+                            <alias>database</alias>
+                            <run>
+                                <network>
+                                    <mode>custom</mode>
+                                    <name>jooq-codegen-network</name>
+                                    <alias>db</alias>
+                                </network>
+                                <namingStrategy>alias</namingStrategy>
+                                <wait>
+                                    <log>database system is ready to accept connections</log>
+                                    <time>20000</time>
+                                </wait>
+                                <ports>
+                                    <port>5432:5432</port>
+                                </ports>
+                                <env>
+                                    <POSTGRES_DB>${postgres.database}</POSTGRES_DB>
+                                    <POSTGRES_USER>${postgres.user}</POSTGRES_USER>
+                                    <POSTGRES_PASSWORD>${postgres.password}</POSTGRES_PASSWORD>
+                                </env>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>start-postgres</id>
+                        <goals>
+                            <!-- There is the potential that a failure allows containers to hang around after Maven exits,
+                             so we should attempt to clean up the containers during the clean phase -->
+                            <goal>stop</goal>
+                            <goal>start</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                    <execution>
+                        <id>stop-postgres</id>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>6.4.4</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgres.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <driver>org.postgresql.Driver</driver>
+                    <url>jdbc:postgresql://localhost:5432/crowdforce</url>
+                    <user>${postgres.user}</user>
+                    <password>${postgres.password}</password>
+                    <schemas>
+                        <schema>public</schema>
+                    </schemas>
+                    <locations>
+                        <location>filesystem:${project.basedir}/src/main/resources/db/migration</location>
+                    </locations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>migrate</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+                <version>${jooq.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgres.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <jdbc>
+                        <driver>org.postgresql.Driver</driver>
+                        <url>jdbc:postgresql://localhost:5432/crowdforce</url>
+                        <user>${postgres.user}</user>
+                        <password>${postgres.password}</password>
+                    </jdbc>
+                    <generator>
+                        <database>
+                            <name>org.jooq.meta.postgres.PostgresDatabase</name>
+                            <inputSchema>public</inputSchema>
+                        </database>
+                        <target>
+                            <packageName>
+                                space.crowdforce
+                            </packageName>
+                            <directory>src/main/java</directory>
+                        </target>
+                    </generator>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>compile</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
