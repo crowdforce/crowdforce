@@ -6,10 +6,16 @@ info:
     name: Apache License, Version 2.0
 servers:
   - url: http://api.crowdforce.space/v1
+
+tags:
+  - name: Projects
+
 paths:
   /projects:
     get:
-      summary: Projects are filtered by space.
+      summary: Projects are filtered by space
+      tags:
+        - Projects
       operationId: projects
       parameters:
         - name: space
@@ -21,7 +27,7 @@ paths:
             format: int32
       responses:
         '200':
-          description:
+          description: Success response
           content:
             application/json:
               schema:
@@ -32,45 +38,118 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
-
-
-
-
 components:
   schemas:
-
-
     Project:
+      description: Project created for activism goals
+      type: object
+      properties:
+        id:
+          description: Identificator of project
+          type: integer
+          format: int32
+        name:
+          description: Project name
+          type: string
+          example: 'Благоустройство сквера'
+        lat:
+          description: Latitude
+          format: float
+          example: 59.959058
+        lng:
+          description: Longitude
+          format: float
+          example: 30.405837
+        isSubscribed:
+          description: Special flag meaning that user is subscribed for the project
+          type: boolean
+        activities:
+          $ref: '#/components/schemas/Activities'
+      required:
+        - id
+        - name
+        - lat
+        - lng
+        - isSubscribed
 
     Projects:
+      description: Array of projects
+      type: array
+      items:
+        $ref: '#/components/schemas/Project'
 
     Activity:
+      description: Activity created for activism goals in project
+      type: object
+      properties:
+        id:
+          description: Identificator of activity
+          type: integer
+          format: int32
+        name:
+          description: Activity name
+          type: string
+          example: 'Сбор средств для закупки садового инвентаря'
+        lat:
+          description: Latitude
+          format: float
+          example: 59.959058
+        lng:
+          description: Longitude
+          format: float
+          example: 30.405837
+        startDate:
+          description: Activity start date and time
+          format: 'date-time'
+          example: '2020-06-13T11:00:00Z'
+        endDate:
+          description: Activity end date and time
+          format: 'date-time'
+          example: '2020-07-13T11:00:00Z'
+        isSubscribed:
+          description: Special flag meaning that user is subscribed for the activity
+          type: boolean
+      required:
+        - id
+        - name
+        - lat
+        - lng
+        - startDate
+        - endDate
+        - isSubscribed
 
     Activities:
+      description: Array of activities
+      type: array
+      items:
+        $ref: '#/components/schemas/Activity'
 
     Space:
 
+    City:
+      description: City with projects and activities
+      type: object
+      properties:
+        id:
+          description: Identificator of city
+          type: integer
+          format: int32
+        name:
+          description: City name
+          type: string
+          example: 'Санкт-Петербург'
+      required:
+        - id
+        - name
+
     Error:
       type: object
-      required:
-        - code
-        - message
       properties:
         code:
           type: integer
           format: int32
         message:
           type: string
-
-    City:
-      type: object
       required:
-        - id
-        - name
-      properties:
-        id:
-          type: integer
-          format: int32
-        name:
-          type: string
+        - code
+        - message
