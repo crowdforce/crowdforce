@@ -86,3 +86,11 @@ jobs:
         service: crowdforce-api
         cluster: crowdforce-dev-cluster
         wait-for-service-stability: true
+      env:
+        TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+        TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+        TELEGRAM_DB_ENCRYPTION_KEY: ${{ secrets.TELEGRAM_DB_ENCRYPTION_KEY }}
+        TELEGRAM_DB_DIR: ${{ secrets.TELEGRAM_DB_DIR }}
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
