@@ -8,3 +8,9 @@ telegram:
   systemLanguageCode: eu
   systemVersion: 1
   databaseEncryptionKey: key
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/crowdforce
+    username: crowdforce
+    password: crowdforce

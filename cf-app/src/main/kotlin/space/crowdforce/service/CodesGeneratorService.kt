@@ -22,6 +22,6 @@ class CodesGeneratorService(
             }
 
     fun verifyCode(userId: Int, code: Int) =
-        userCodesRepository.validateUserCode(userId, code) == 1
-            && userCodesRepository.deleteUserCode(userId, code) == 1
+        userCodesRepository.validateUserCode(userId, code) == 1 &&
+            userCodesRepository.deleteUserCode(userId, code) == 1
 }
