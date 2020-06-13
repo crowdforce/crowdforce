@@ -3,6 +3,7 @@ package space.crowdforce.controllers
 import dev.whyoleg.ktd.TelegramClient
 import dev.whyoleg.ktd.api.authentication.setAuthenticationPhoneNumber
 import dev.whyoleg.ktd.api.check.checkAuthenticationCode
+import dev.whyoleg.ktd.api.check.checkAuthenticationPassword
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 import space.crowdforce.controllers.dto.AuthenticationCode
 import space.crowdforce.controllers.dto.AuthenticationNumber
 
-@Api(value = "/", description = "Telegram Amin Auth API")
+@Api(value = "/api/v1/admin/telegram", description = "Telegram Admin Auth API")
 @RestController
 @RequestMapping("/api/v1/admin/telegram")
 class TelegramAdminAuth(

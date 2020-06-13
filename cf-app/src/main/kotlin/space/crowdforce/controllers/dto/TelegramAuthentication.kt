@@ -7,3 +7,7 @@ data class AuthenticationNumber(
 data class AuthenticationCode(
     val code: String
 )
+
+data class TelegramUser(
+    val userName: String
+)

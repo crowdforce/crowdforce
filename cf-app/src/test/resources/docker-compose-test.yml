@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:12.3
+    environment:
+      POSTGRES_PASSWORD: crowdforce
+      POSTGRES_USER: crowdforce
+      POSTGRES_DB: crowdforce
+    ports:
+      - 5432
