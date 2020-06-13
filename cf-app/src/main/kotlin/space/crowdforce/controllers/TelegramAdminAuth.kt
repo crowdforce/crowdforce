@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 import space.crowdforce.controllers.dto.AuthenticationCode
 import space.crowdforce.controllers.dto.AuthenticationNumber
 
-@Api(value = "/", description = "Telegram Amin Auth API")
+@Api(value = "/api/v1/admin/telegram", description = "Telegram Admin Auth API")
 @RestController
 @RequestMapping("/api/v1/admin/telegram")
 class TelegramAdminAuth(

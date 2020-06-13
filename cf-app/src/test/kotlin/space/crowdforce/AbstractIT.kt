@@ -4,16 +4,32 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.testcontainers.containers.DockerComposeContainer
+import org.testcontainers.containers.wait.strategy.Wait
+import java.io.File
 
-@ExtendWith(SpringExtension::class)
+@ExtendWith(value = [SpringExtension::class])
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc()
 @ActiveProfiles("test")
-@Sql(
-    statements = [
-        "DELETE FROM cf_sample_entities"
-    ]
-)
-class AbstractIT
+class AbstractIT {
+    companion object {
+        private val dockerContainers = KDockerComposeContainer(File("src/test/resources/docker-compose-test.yml"))
+            .withLocalCompose(true)
+            .withExposedService("postgres", 5432, Wait.forListeningPort())
+
+        init {
+            dockerContainers.start()
+            System.setProperty(
+                "spring.datasource.url",
+                "jdbc:postgresql://localhost:${dockerContainers.getServicePort(
+                    "postgres",
+                    5432
+                )}/?loggerLevel=DEBUG"
+            )
+        }
+    }
+}
+
+class KDockerComposeContainer(file: File) : DockerComposeContainer<KDockerComposeContainer>(file)

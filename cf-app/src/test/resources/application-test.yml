@@ -1,3 +1,10 @@
-spring:
-  liquibase:
-    change-log: "classpath:/db.cf-changelog-master.xml"
+telegram:
+  apiId: 2
+  apiHash: hash
+  applicationVersion: 1.0.0
+  databaseDirectory: telegram
+  deviceModel: model
+  filesDirectory: telegram
+  systemLanguageCode: eu
+  systemVersion: 1
+  databaseEncryptionKey: key

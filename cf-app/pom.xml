@@ -47,7 +47,6 @@
         <dependency>
             <groupId>space.crowdforce</groupId>
             <artifactId>cf-database</artifactId>
-            <scope>test</scope>
         </dependency>
         <!-- </editor-fold> -->
 
@@ -164,6 +163,19 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.16.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>1.14.3</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- </editor-fold> -->
     </dependencies>
     <build>
