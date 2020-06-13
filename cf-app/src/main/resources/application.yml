@@ -8,3 +8,20 @@ management:
     web:
       exposure:
         include: "health,info"
+
+telegram:
+  apiId: ${TELEGRAM_API_ID}
+  apiHash: ${TELEGRAM_API_HASH}
+  applicationVersion: 1.0.0
+  databaseDirectory: ${TELEGRAM_DB_DIR}
+  deviceModel: model
+  filesDirectory: ${TELEGRAM_DB_DIR}
+  systemLanguageCode: eu
+  systemVersion: 1
+  databaseEncryptionKey: ${TELEGRAM_DB_ENCRYPTION_KEY}
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/crowdforce
+    username: crowdforce
+    password: crowdforce
