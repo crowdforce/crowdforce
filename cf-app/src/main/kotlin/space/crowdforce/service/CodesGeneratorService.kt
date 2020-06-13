@@ -18,5 +18,4 @@ class CodesGeneratorService(
             .let {
                 userCodesRepository.insertNewUserCode(userId, it)
             }
-
 }

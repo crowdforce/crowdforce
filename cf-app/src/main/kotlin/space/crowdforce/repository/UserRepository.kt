@@ -22,5 +22,4 @@ class UserRepository(
             .from(Tables.USERS)
             .where(Tables.USERS.TG_USERNAME.eq(userName))
             .fetchOneInto(UsersRecord::class.java)
-
 }

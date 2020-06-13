@@ -19,7 +19,8 @@ internal class UserRepositoryTest : AbstractIT() {
 
     @BeforeEach
     fun cleanUp() {
-        dslContext.truncate(Tables.USERS).execute()
+        dslContext.truncate(Tables.USERS).cascade().execute()
+        dslContext.truncate(Tables.USER_CODES).cascade().execute()
     }
 
     @Test
@@ -35,7 +36,6 @@ internal class UserRepositoryTest : AbstractIT() {
         assertThat(user.id).isNotNull()
         assertThat(user.tgUsername).isEqualTo("sdnwue")
 
-
         assertThrows<RuntimeException> {
             userRepository.insert("sdnwue")
         }
@@ -50,5 +50,4 @@ internal class UserRepositoryTest : AbstractIT() {
         val byUserName = userRepository.findByUserName("sfubu")
         assertThat(user).isEqualTo(byUserName)
     }
-
 }

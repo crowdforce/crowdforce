@@ -3,7 +3,6 @@ package space.crowdforce.controllers
 import dev.whyoleg.ktd.TelegramClient
 import dev.whyoleg.ktd.api.authentication.setAuthenticationPhoneNumber
 import dev.whyoleg.ktd.api.check.checkAuthenticationCode
-import dev.whyoleg.ktd.api.check.checkAuthenticationPassword
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
