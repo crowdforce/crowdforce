@@ -2,14 +2,16 @@ package space.crowdforce.repository
 
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 import space.crowdforce.Tables
 import space.crowdforce.tables.records.UsersRecord
 
 @Repository
+@Transactional(propagation = Propagation.MANDATORY)
 class UserRepository(
     private val dslContext: DSLContext
 ) {
-
     fun insert(userName: String): UsersRecord =
         dslContext.insertInto(Tables.USERS)
             .columns(Tables.USERS.TG_USERNAME)

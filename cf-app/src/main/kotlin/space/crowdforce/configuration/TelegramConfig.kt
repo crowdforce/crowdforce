@@ -16,7 +16,6 @@ import javax.validation.constraints.NotBlank
 
 @Configuration
 class TelegramConfiguration {
-
     @Bean
     fun telegram() = Telegram(
         configuration = TelegramClientConfiguration(
