@@ -57,12 +57,12 @@
                                     <log>CREATE DATABASE</log>
                                     <tcp>
                                         <host>localhost</host>
-                                        <ports>5432</ports>
+                                        <ports>${postgres.port}</ports>
                                     </tcp>
                                     <time>20000</time>
                                 </wait>
                                 <ports>
-                                    <port>5432:${postgres.port}</port>
+                                    <port>${postgres.port}:5432</port>
                                 </ports>
                                 <env>
                                     <POSTGRES_DB>${postgres.database}</POSTGRES_DB>
