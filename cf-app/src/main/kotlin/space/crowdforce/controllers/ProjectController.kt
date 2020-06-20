@@ -17,7 +17,6 @@ import java.time.LocalDateTime.now
 class ProjectController {
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiOperation(value = "")
-    @ResponseBody
     suspend fun getProjects(
     ) = listOf(
             ProjectUI(1, "test 1", 59.984945f,30.343947f, false, emptyList()),

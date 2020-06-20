@@ -20,7 +20,6 @@ class AuthController(private val userService: UserService) {
 
     @GetMapping("/user", produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiOperation(value = "Return current user")
-    @ResponseBody
     suspend fun currentUser(principal: Principal?) =
             UserUI(principal?.name)
 }

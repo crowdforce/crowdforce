@@ -8,8 +8,8 @@ CREATE TABLE users (
 
 CREATE TABLE user_codes (
   user_id                   INT REFERENCES users (id) ON DELETE CASCADE NOT NULL,
-  code                      VARCHAR(40) NOT NULL,
-  creation_date             TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  code                      VARCHAR(120) NOT NULL,
+  creation_date             TIMESTAMP NOT NULL,
   UNIQUE (user_id)
 );
 

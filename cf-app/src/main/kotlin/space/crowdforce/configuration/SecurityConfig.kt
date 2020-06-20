@@ -7,6 +7,7 @@ import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.server.SecurityWebFilterChain
+import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository
 
 
 @Configuration
@@ -18,8 +19,12 @@ class SecurityConfig {
                 .pathMatchers("/api/**").permitAll()
                 .anyExchange().authenticated()
 
-        http.csrf().disable()
-                .httpBasic()
+        http.httpBasic()
+                .and()
+                .csrf().csrfTokenRepository(CookieServerCsrfTokenRepository.withHttpOnlyFalse())
+                .and()
+                .
+
 
         return http.build()
     }
