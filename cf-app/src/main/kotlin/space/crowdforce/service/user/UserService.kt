@@ -16,11 +16,11 @@ import kotlin.random.asKotlinRandom
 
 @Service
 class UserService(
-        private val client: TelegramClient,
-        private val userRepository: UserRepository,
-        private val userCodesRepository: UserCodesRepository,
-        private val passwordEncoder: PasswordEncoder,
-        private val transactionTemplate: TransactionTemplate
+    private val client: TelegramClient,
+    private val userRepository: UserRepository,
+    private val userCodesRepository: UserCodesRepository,
+    private val passwordEncoder: PasswordEncoder,
+    private val transactionTemplate: TransactionTemplate
 ) {
     private val secureRandom = SecureRandom().asKotlinRandom()
 
@@ -36,9 +36,8 @@ class UserService(
         }
 
         client.message(TdApi.SendMessage(
-                chatId = chat.id,
-                inputMessageContent = TdApi.InputMessageText(TdApi.FormattedText("Ваш код: $code"))
+            chatId = chat.id,
+            inputMessageContent = TdApi.InputMessageText(TdApi.FormattedText("Ваш код: $code"))
         ))
     }
 }
-

@@ -16,9 +16,9 @@ import space.crowdforce.repository.UserRepository
  */
 @Component
 class UserDetailsService(
-        private val userCodesRepository: UserCodesRepository,
-        private val userRepository: UserRepository,
-        @Value("\${security.auth.expiration-code-time-seconds}") var expirationCodeTimeSeconds: Long
+    private val userCodesRepository: UserCodesRepository,
+    private val userRepository: UserRepository,
+    @Value("\${security.auth.expiration-code-time-seconds}") var expirationCodeTimeSeconds: Long
 ) : ReactiveUserDetailsService {
     /**
      * Find the UserDetails by username.
@@ -29,7 +29,7 @@ class UserDetailsService(
      */
     @Transactional
     override fun findByUsername(userName: String): Mono<UserDetails> =
-            Mono.justOrEmpty(userRepository.findByUserName(userName))
-                    .flatMap { Mono.justOrEmpty(userCodesRepository.getActiveUserCode(it.id, expirationCodeTimeSeconds)) }
-                    .map { User(userName, it, listOf(SimpleGrantedAuthority("default"))) }
+        Mono.justOrEmpty(userRepository.findByUserName(userName))
+            .flatMap { Mono.justOrEmpty(userCodesRepository.getActiveUserCode(it.id, expirationCodeTimeSeconds)) }
+            .map { User(userName, it, listOf(SimpleGrantedAuthority("default"))) }
 }

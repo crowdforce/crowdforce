@@ -11,20 +11,20 @@ import java.time.LocalDateTime
 @Repository
 @Transactional(propagation = Propagation.MANDATORY)
 class UserCodesRepository(
-        private val dslContext: DSLContext
+    private val dslContext: DSLContext
 ) {
 
     fun getActiveUserCode(userId: Int, expirationCodeTimeSeconds: Long): String? =
-            dslContext.select(Tables.USER_CODES.CODE)
-                    .where(Tables.USER_CODES.USER_ID.eq(userId))
-                    .and(Tables.USER_CODES.CREATION_DATE.lessOrEqual(LocalDateTime.now().plusSeconds(expirationCodeTimeSeconds)))
-                    .fetchOne()
-                    .value1()
+        dslContext.select(Tables.USER_CODES.CODE)
+            .where(Tables.USER_CODES.USER_ID.eq(userId))
+            .and(Tables.USER_CODES.CREATION_DATE.lessOrEqual(LocalDateTime.now().plusSeconds(expirationCodeTimeSeconds)))
+            .fetchOne()
+            .value1()
 
     fun upsertUserCode(userId: Int, code: String, currentTime: LocalDateTime): UserCodesRecord =
-            dslContext.insertInto(Tables.USER_CODES)
-                    .columns(Tables.USER_CODES.USER_ID, Tables.USER_CODES.CODE, Tables.USER_CODES.CREATION_DATE)
-                    .values(userId, code, currentTime)
-                    .returning()
-                    .fetchOne()
+        dslContext.insertInto(Tables.USER_CODES)
+            .columns(Tables.USER_CODES.USER_ID, Tables.USER_CODES.CODE, Tables.USER_CODES.CREATION_DATE)
+            .values(userId, code, currentTime)
+            .returning()
+            .fetchOne()
 }

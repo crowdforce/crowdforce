@@ -9,19 +9,18 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository
 
-
 @Configuration
 @EnableWebFluxSecurity
 class SecurityConfig {
     @Bean
     fun securitygWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         http.authorizeExchange()
-                .pathMatchers("/api/**").permitAll()
-                .anyExchange().authenticated()
+            .pathMatchers("/api/**").permitAll()
+            .anyExchange().authenticated()
 
         http.httpBasic()
-                .and()
-                .csrf().csrfTokenRepository(CookieServerCsrfTokenRepository.withHttpOnlyFalse())
+            .and()
+            .csrf().csrfTokenRepository(CookieServerCsrfTokenRepository.withHttpOnlyFalse())
 
         return http.build()
     }
