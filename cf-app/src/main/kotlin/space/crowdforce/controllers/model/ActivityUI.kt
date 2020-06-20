@@ -1,4 +1,4 @@
-package space.crowdforce.controllers.dto
+package space.crowdforce.controllers.model
 
 import java.time.LocalDateTime
 

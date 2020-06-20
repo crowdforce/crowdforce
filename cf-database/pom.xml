@@ -17,6 +17,7 @@
         <postgres.password>crowdforce</postgres.password>
         <postgres.database>crowdforce</postgres.database>
         <postgres.version>42.2.14</postgres.version>
+        <postgres.port>2132</postgres.port>
     </properties>
 
     <dependencies>
@@ -61,7 +62,7 @@
                                     <time>20000</time>
                                 </wait>
                                 <ports>
-                                    <port>5432:5432</port>
+                                    <port>5432:${postgres.port}</port>
                                 </ports>
                                 <env>
                                     <POSTGRES_DB>${postgres.database}</POSTGRES_DB>
@@ -105,7 +106,7 @@
                 </dependencies>
                 <configuration>
                     <driver>org.postgresql.Driver</driver>
-                    <url>jdbc:postgresql://localhost:5432/crowdforce</url>
+                    <url>jdbc:postgresql://localhost:${postgres.port}/${postgres.database}</url>
                     <user>${postgres.user}</user>
                     <password>${postgres.password}</password>
                     <schemas>
@@ -138,7 +139,7 @@
                 <configuration>
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
-                        <url>jdbc:postgresql://localhost:5432/crowdforce</url>
+                        <url>jdbc:postgresql://localhost:${postgres.port}/${postgres.database}</url>
                         <user>${postgres.user}</user>
                         <password>${postgres.password}</password>
                     </jdbc>

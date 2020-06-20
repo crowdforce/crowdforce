@@ -1,4 +1,4 @@
-package space.crowdforce.controllers.dto
+package space.crowdforce.controllers.model
 
 data class ProjectUI(
         val id: Int,

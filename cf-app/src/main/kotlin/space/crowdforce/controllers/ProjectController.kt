@@ -5,9 +5,10 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
-import space.crowdforce.controllers.dto.ActivityUI
-import space.crowdforce.controllers.dto.ProjectUI
+import space.crowdforce.controllers.model.ActivityUI
+import space.crowdforce.controllers.model.ProjectUI
 import java.time.LocalDateTime.now
 
 @Api(value = "/api/v1/projects", description = "")
@@ -16,6 +17,7 @@ import java.time.LocalDateTime.now
 class ProjectController {
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiOperation(value = "")
+    @ResponseBody
     suspend fun getProjects(
     ) = listOf(
             ProjectUI(1, "test 1", 59.984945f,30.343947f, false, emptyList()),
