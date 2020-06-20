@@ -22,9 +22,6 @@ class SecurityConfig {
         http.httpBasic()
                 .and()
                 .csrf().csrfTokenRepository(CookieServerCsrfTokenRepository.withHttpOnlyFalse())
-                .and()
-                .
-
 
         return http.build()
     }
