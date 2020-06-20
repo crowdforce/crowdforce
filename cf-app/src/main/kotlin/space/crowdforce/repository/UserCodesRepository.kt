@@ -21,10 +21,10 @@ class UserCodesRepository(
                     .fetchOne()
                     .value1()
 
-    fun upsertUserCode(userId: Int, code: String): UserCodesRecord =
+    fun upsertUserCode(userId: Int, code: String, currentTime: LocalDateTime): UserCodesRecord =
             dslContext.insertInto(Tables.USER_CODES)
-                    .columns(Tables.USER_CODES.USER_ID, Tables.USER_CODES.CODE)
-                    .values(userId, code)
+                    .columns(Tables.USER_CODES.USER_ID, Tables.USER_CODES.CODE, Tables.USER_CODES.CREATION_DATE)
+                    .values(userId, code, currentTime)
                     .returning()
                     .fetchOne()
 }

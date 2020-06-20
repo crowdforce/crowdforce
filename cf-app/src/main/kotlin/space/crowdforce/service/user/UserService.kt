@@ -11,6 +11,7 @@ import org.springframework.transaction.support.TransactionTemplate
 import space.crowdforce.repository.UserCodesRepository
 import space.crowdforce.repository.UserRepository
 import java.security.SecureRandom
+import java.time.LocalDateTime
 import kotlin.random.asKotlinRandom
 
 @Service
@@ -31,7 +32,7 @@ class UserService(
         transactionTemplate.execute {
             val user = userRepository.findByUserName(userName) ?: userRepository.insert(userName)
 
-            userCodesRepository.upsertUserCode(user.id, passwordEncoder.encode(code))
+            userCodesRepository.upsertUserCode(user.id, passwordEncoder.encode(code), LocalDateTime.now())
         }
 
         client.message(TdApi.SendMessage(
