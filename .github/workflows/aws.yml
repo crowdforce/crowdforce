@@ -75,7 +75,7 @@ jobs:
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg TELEGRAM_API_ID=${TELEGRAM_API_ID} --build-arg TELEGRAM_API_HASH=${TELEGRAM_API_HASH} --build-arg TELEGRAM_DB_ENCRYPTION_KEY=${TELEGRAM_DB_ENCRYPTION_KEY} --build-arg TELEGRAM_DB_DIR=${TELEGRAM_DB_DIR} --build-arg DB_HOST=${DB_HOST} --build-arg DB_USER=${DB_USER} --build-arg DB_PASSWORD=${DB_PASSWORD} .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg TELEGRAM_API_ID=${TELEGRAM_API_ID} --build-arg TELEGRAM_API_HASH=${TELEGRAM_API_HASH} --build-arg TELEGRAM_DB_ENCRYPTION_KEY=${TELEGRAM_DB_ENCRYPTION_KEY} --build-arg TELEGRAM_DB_DIR=${TELEGRAM_DB_DIR} --build-arg DB_HOST=${DB_HOST} --build-arg DB_USER=${DB_USER} --build-arg DB_PASSWORD=${DB_PASSWORD} --build-arg SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE} .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
