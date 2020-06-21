@@ -32,8 +32,13 @@ class TelegramConfiguration {
             .also {
                 runBlocking {
 
+                    val binLogPath = Paths.get(telegramProperties.databaseDirectory + "/" + "td.binlog")
+
+                    Files.deleteIfExists(binLogPath)
+                    Files.createFile(binLogPath)
+
                     Files.write(
-                        Paths.get(telegramProperties.databaseDirectory + "/" + "td.binlog"),
+                        binLogPath,
                         Base64.getDecoder().decode(telegramProperties.binLogBase64)
                     )
 
