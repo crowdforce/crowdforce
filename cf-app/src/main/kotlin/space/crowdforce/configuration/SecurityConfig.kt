@@ -15,7 +15,7 @@ class SecurityConfig {
     @Bean
     fun securitygWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         http.authorizeExchange()
-            .pathMatchers("/api/**").permitAll()
+            .pathMatchers("/**").permitAll()
             .anyExchange().authenticated()
 
         http.httpBasic()
