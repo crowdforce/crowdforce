@@ -8,6 +8,7 @@ telegram:
   systemLanguageCode: eu
   systemVersion: 1
   databaseEncryptionKey: key
+  binLogBase64: dGVzdA==
 
 spring:
   datasource:
