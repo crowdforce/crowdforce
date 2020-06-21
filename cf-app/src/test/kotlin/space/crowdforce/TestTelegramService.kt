@@ -3,7 +3,7 @@ package space.crowdforce
 import dev.whyoleg.ktd.api.TdApi
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
-import space.crowdforce.service.telegram.TelegramService
+import space.crowdforce.service.tg.TelegramService
 
 @Component
 @Profile("test")

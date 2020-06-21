@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import space.crowdforce.repository.UserCodesRepository
 import space.crowdforce.repository.UserRepository
-import space.crowdforce.service.telegram.TelegramService
+import space.crowdforce.service.tg.TelegramService
 import java.security.SecureRandom
 import java.time.LocalDateTime
 import kotlin.random.asKotlinRandom
