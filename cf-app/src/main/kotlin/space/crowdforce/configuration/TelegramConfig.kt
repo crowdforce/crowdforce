@@ -37,6 +37,7 @@ class TelegramConfiguration {
                     val binLogPath = Paths.get(telegramProperties.databaseDirectory + "/" + "td.binlog")
 
                     Files.deleteIfExists(binLogPath)
+                    Files.createDirectories(binLogPath.parent)
                     Files.createFile(binLogPath)
 
                     Files.write(
