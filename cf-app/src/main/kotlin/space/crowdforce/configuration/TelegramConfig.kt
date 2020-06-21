@@ -9,12 +9,17 @@ import kotlinx.coroutines.runBlocking
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import org.springframework.validation.annotation.Validated
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.Base64
 import javax.validation.constraints.Min
 import javax.validation.constraints.NotBlank
 
 @Configuration
+@Profile("prod")
 class TelegramConfiguration {
     @Bean
     fun telegram() = Telegram(
@@ -28,6 +33,17 @@ class TelegramConfiguration {
         telegram.client()
             .also {
                 runBlocking {
+
+                    val binLogPath = Paths.get(telegramProperties.databaseDirectory + "/" + "td.binlog")
+
+                    Files.deleteIfExists(binLogPath)
+                    Files.createFile(binLogPath)
+
+                    Files.write(
+                        binLogPath,
+                        Base64.getDecoder().decode(telegramProperties.binLogBase64)
+                    )
+
                     it.setTdlibParameters(TdApi.TdlibParameters(
                         apiId = telegramProperties.apiId,
                         apiHash = telegramProperties.apiHash,
@@ -74,4 +90,7 @@ class TelegramProperties {
 
     @NotBlank
     lateinit var databaseEncryptionKey: String
+
+    @NotBlank
+    lateinit var binLogBase64: String
 }
