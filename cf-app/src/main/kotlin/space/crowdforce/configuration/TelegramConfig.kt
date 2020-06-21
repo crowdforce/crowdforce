@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 import org.springframework.validation.annotation.Validated
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.*
+import java.util.Base64
 import javax.validation.constraints.Min
 import javax.validation.constraints.NotBlank
 
