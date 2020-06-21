@@ -19,6 +19,7 @@ telegram:
   systemLanguageCode: eu
   systemVersion: 1
   databaseEncryptionKey: ${TELEGRAM_DB_ENCRYPTION_KEY}
+  binLogBase64: ${TG_BIN_LOG}
 
 spring:
   datasource:

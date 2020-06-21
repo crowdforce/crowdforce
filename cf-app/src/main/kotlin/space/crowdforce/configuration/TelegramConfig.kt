@@ -11,6 +11,9 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
 import org.springframework.validation.annotation.Validated
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.*
 import javax.validation.constraints.Min
 import javax.validation.constraints.NotBlank
 
@@ -28,6 +31,12 @@ class TelegramConfiguration {
         telegram.client()
             .also {
                 runBlocking {
+
+                    Files.write(
+                        Paths.get(telegramProperties.databaseDirectory + "/" + "td.binlog"),
+                        Base64.getDecoder().decode(telegramProperties.binLogBase64)
+                    )
+
                     it.setTdlibParameters(TdApi.TdlibParameters(
                         apiId = telegramProperties.apiId,
                         apiHash = telegramProperties.apiHash,
@@ -74,4 +83,7 @@ class TelegramProperties {
 
     @NotBlank
     lateinit var databaseEncryptionKey: String
+
+    @NotBlank
+    lateinit var binLogBase64: String
 }
