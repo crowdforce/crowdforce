@@ -31,7 +31,7 @@ build/
 .vscode/
 
 ### Jooq ###
-cf-database/src/main/java/*
+cf-database/src/main/java/space/crowdforce/model/*
 
 ### Telegram ###
 telegram/
