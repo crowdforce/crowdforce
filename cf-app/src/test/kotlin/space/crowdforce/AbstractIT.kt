@@ -1,6 +1,7 @@
 package space.crowdforce
 
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -11,10 +12,12 @@ import java.io.File
 
 @ExtendWith(value = [SpringExtension::class])
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc()
+@AutoConfigureWebTestClient
 @ActiveProfiles("test")
 class AbstractIT {
     companion object {
+        const val TEST_USER = "test_user"
+
         private val dockerContainers = KDockerComposeContainer(File("src/test/resources/docker-compose-test.yml"))
             .withLocalCompose(true)
             .withExposedService("postgres", 5432, Wait.forListeningPort())

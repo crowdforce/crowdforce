@@ -8,10 +8,10 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import space.crowdforce.AbstractIT
-import space.crowdforce.Tables
+import space.crowdforce.model.Tables
 
 @Transactional
-internal class UserRepositoryTest : AbstractIT() {
+internal class UserRepositoryIT : AbstractIT() {
 
     @Autowired
     lateinit var userRepository: UserRepository

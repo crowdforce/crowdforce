@@ -38,4 +38,8 @@ class UserService(
             inputMessageContent = TdApi.InputMessageText(TdApi.FormattedText("Ваш код: $code"))
         ))
     }
+
+    @Transactional
+    fun getUserIdByName(userName: String): Int? =
+        userRepository.findByUserName(userName)?.id
 }

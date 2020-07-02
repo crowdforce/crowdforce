@@ -9,7 +9,7 @@ CREATE TABLE users (
 CREATE TABLE user_codes (
   user_id                   INT REFERENCES users (id) ON DELETE CASCADE NOT NULL,
   code                      VARCHAR(120) NOT NULL,
-  creation_date             TIMESTAMP NOT NULL,
+  creation_time             TIMESTAMP NOT NULL,
   UNIQUE (user_id)
 );
 
@@ -20,7 +20,7 @@ CREATE TABLE projects (
   name                     VARCHAR(255) NOT NULL,
   location                 point,
   description              TEXT,
-  creation_data            TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  creation_time            TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   owner_id                 INT REFERENCES users (id) ON DELETE CASCADE NOT NULL,
   UNIQUE (name)
 );
@@ -31,13 +31,13 @@ CREATE TABLE project_subscribers (
   UNIQUE (user_id, project_id)
 );
 
-
 CREATE TABLE activities (
   id                       SERIAL PRIMARY KEY,
   name                     VARCHAR(255) NOT NULL,
-  location                 point,
   description              TEXT,
-  creation_data            TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  creation_time            TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  start_time            TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  end_time            TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   project_id                 INT REFERENCES projects (id) ON DELETE CASCADE NOT NULL,
   UNIQUE (name)
 );

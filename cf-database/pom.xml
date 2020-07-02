@@ -30,6 +30,12 @@
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>net.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
+            <version>2.5.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -147,10 +153,23 @@
                         <database>
                             <name>org.jooq.meta.postgres.PostgresDatabase</name>
                             <inputSchema>public</inputSchema>
+                            <customTypes>
+                                <customType>
+                                    <name>Point</name>
+                                    <type>space.crowdforce.jooq.geo.PGPoint</type>
+                                    <binding>space.crowdforce.jooq.PostgisPointBinding</binding>
+                                </customType>
+                            </customTypes>
+                            <forcedTypes>
+                                <forcedType>
+                                    <name>Point</name>
+                                    <types>(point|POINT|pg_catalog.point)</types>
+                                </forcedType>
+                            </forcedTypes>
                         </database>
                         <target>
                             <packageName>
-                                space.crowdforce
+                                space.crowdforce.model
                             </packageName>
                             <directory>src/main/java</directory>
                         </target>
