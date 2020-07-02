@@ -6,8 +6,6 @@ import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import space.crowdforce.domain.Activity
-import space.crowdforce.jooq.geo.PGPoint
-import space.crowdforce.model.Tables
 import space.crowdforce.model.Tables.ACTIVITIES
 import space.crowdforce.model.Tables.ACTIVITY_PARTICIPANTS
 import space.crowdforce.model.tables.records.ActivitiesRecord
@@ -47,16 +45,22 @@ class ActivityRepository(
         }
     }
 
-    fun insert(projectId: Int, name: String, description: String, currentTime: LocalDateTime, startTime: LocalDateTime, endTime: LocalDateTime): Activity = ACTIVITY_MAPPER.invoke(
+    fun insert(
+        projectId: Int,
+        name: String,
+        description: String,
+        currentTime: LocalDateTime,
+        startTime: LocalDateTime,
+        endTime: LocalDateTime
+    ): Activity = ACTIVITY_MAPPER.invoke(
         dslContext.insertInto(ACTIVITIES)
             .columns(ACTIVITIES.PROJECT_ID, ACTIVITIES.NAME, ACTIVITIES.DESCRIPTION, ACTIVITIES.CREATION_TIME, ACTIVITIES.START_TIME, ACTIVITIES.END_TIME)
             .values(projectId, name, description, currentTime, startTime, endTime)
             .returning()
             .fetchOne())
 
-    fun findAll(): List<Activity> =
-        dslContext.selectFrom(ACTIVITIES)
-            .fetch(ACTIVITY_MAPPER)
+    fun findAll(): List<Activity> = dslContext.selectFrom(ACTIVITIES)
+        .fetch(ACTIVITY_MAPPER)
 
 
     fun findAll(userId: Int): List<Activity> = dslContext.select()
@@ -67,10 +71,9 @@ class ActivityRepository(
         .or(ACTIVITY_PARTICIPANTS.USER_ID.isNull)
         .fetch(ACTIVITY_WITH_PARTICIPANTS_MAPPER)
 
-    fun findAllById(activityId: Int): Activity? =
-        dslContext.selectFrom(ACTIVITIES)
-            .where(ACTIVITIES.ID.eq(activityId))
-            .fetchOne(ACTIVITY_MAPPER)
+    fun findAllById(activityId: Int): Activity? = dslContext.selectFrom(ACTIVITIES)
+        .where(ACTIVITIES.ID.eq(activityId))
+        .fetchOne(ACTIVITY_MAPPER)
 
     fun update(activityId: Int, name: String, description: String, endTime: LocalDateTime, startTime: LocalDateTime) {
         dslContext.update(ACTIVITIES)

@@ -2,7 +2,6 @@ package space.crowdforce.service.project
 
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import space.crowdforce.controllers.model.ProjectUI
 import space.crowdforce.domain.Project
 import space.crowdforce.domain.User
 import space.crowdforce.domain.geo.Location

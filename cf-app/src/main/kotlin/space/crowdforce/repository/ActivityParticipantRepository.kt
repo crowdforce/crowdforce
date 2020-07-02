@@ -19,15 +19,14 @@ class ActivityParticipantRepository(
         .values(userId, activityId)
         .execute()
 
-    fun findAllByActivityId(activityId: Int): List<User> {
-       return dslContext.select()
-            .from(ACTIVITY_PARTICIPANTS.join(USERS)
-                .on(ACTIVITY_PARTICIPANTS.USER_ID.eq(USERS.ID))
-            )
-            .where(ACTIVITY_PARTICIPANTS.ACTIVITY_ID.eq(activityId))
-            .or(Tables.PROJECT_SUBSCRIBERS.USER_ID.isNull)
-            .fetch(UserRepository.USER_MAPPER)
-    }
+    fun findAllByActivityId(activityId: Int): List<User> = dslContext.select()
+        .from(ACTIVITY_PARTICIPANTS.join(USERS)
+            .on(ACTIVITY_PARTICIPANTS.USER_ID.eq(USERS.ID))
+        )
+        .where(ACTIVITY_PARTICIPANTS.ACTIVITY_ID.eq(activityId))
+        .or(Tables.PROJECT_SUBSCRIBERS.USER_ID.isNull)
+        .fetch(UserRepository.USER_MAPPER)
+
 
     fun delete(userId: Int, activityId: Int) {
         dslContext.delete(ACTIVITY_PARTICIPANTS)

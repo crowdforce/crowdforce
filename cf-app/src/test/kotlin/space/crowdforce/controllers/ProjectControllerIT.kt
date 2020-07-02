@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.reactive.server.WebTestClient
-import reactor.core.publisher.Mono
 import space.crowdforce.AbstractIT
 import space.crowdforce.controllers.model.ProjectFormUI
 import space.crowdforce.dsl.GiveMe
@@ -22,9 +21,6 @@ class ProjectControllerIT : AbstractIT() {
 
     @Inject
     private lateinit var projectService: ProjectService
-
-    @Inject
-    private lateinit var mapper: com.fasterxml.jackson.databind.ObjectMapper
 
     @BeforeEach
     internal fun setUp() = giveMe.emptyDatabase()
@@ -75,14 +71,12 @@ class ProjectControllerIT : AbstractIT() {
         // given:
         giveMe.user(TEST_USER).please()
 
-        val projectForm = ProjectFormUI("test", "test", 123.123, 321.321)
-
         // act and check:
         webTestClient.post()
             .uri("/api/v1/projects")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
-            .body(Mono.just(projectForm), ProjectFormUI::class.java)
+            .bodyValue(ProjectFormUI("test", "test", 123.123, 321.321))
             .exchange()
             .expectStatus().isCreated
     }
@@ -102,27 +96,86 @@ class ProjectControllerIT : AbstractIT() {
             .accept(MediaType.APPLICATION_JSON)
             .bodyValue(projectForm)
             .exchange()
-            .expectStatus().isCreated
+            .expectStatus().is2xxSuccessful // TODO rest statuses evrywhere
+            .expectBody()
+            .jsonPath("$.id").isNotEmpty
+            .jsonPath("$.name").isEqualTo(projectForm.name)
+            .jsonPath("$.description").isEqualTo(projectForm.description)
+            .jsonPath("$.lat").isEqualTo(projectForm.lat)
+            .jsonPath("$.lng").isEqualTo(projectForm.lng)
     }
 
+    @WithMockUser(username = TEST_USER)
+    @Test
+    fun `Should update project fields`() {
+        // given:
+        giveMe.user(TEST_USER).please()
+        val project = giveMe.authorized(TEST_USER).project(TEST_USER).please()[0]
+
+        val projectForm = ProjectFormUI("updated", "updated", 123.123, 321.321)
+
+        // act and check:
+        webTestClient.put()
+            .uri("/api/v1/projects/{$project.id}")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .bodyValue(projectForm)
+            .exchange()
+            .expectStatus().is2xxSuccessful // TODO rest statuses evrywhere
+
+        assertThat(projectService.getProject(project.id))
+            .satisfies {
+                assertThat(it!!.name).isEqualTo(projectForm.name)
+                assertThat(it.description).isEqualTo(projectForm.description)
+                assertThat(it.location.latitude).isEqualTo(projectForm.lat)
+                assertThat(it.location.longitude).isEqualTo(projectForm.lng)
+            }
+    }
 
     @Test
     fun `Should update project fields unauthorized user`() {
         // given:
+        giveMe.user(TEST_USER).please()
 
-        // act:
+        val projectForm = ProjectFormUI("test", "test", 123.123, 321.321)
 
-        // check:
+        // act and check:
+        webTestClient.post()
+            .uri("/api/v1/projects")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .bodyValue(projectForm)
+            .exchange()
+            .expectStatus().is2xxSuccessful // TODO rest statuses evrywhere
     }
 
     @WithMockUser(username = TEST_USER)
     @Test
     fun `Should update project fields not owner`() {
         // given:
+        val userName = "another_test_user"
+        giveMe.user(userName).please()
+        giveMe.user(TEST_USER).please()
+        val project = giveMe.authorized(TEST_USER).project(userName).please()[0]
 
-        // act:
+        val projectForm = ProjectFormUI("updated", "updated", 123.123, 321.321)
 
-        // check:
+        // act and check:
+        webTestClient.put()
+            .uri("/api/v1/projects/{$project.id}")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .bodyValue(projectForm)
+            .exchange()
+            .expectStatus().is2xxSuccessful // TODO rest statuses evrywhere
+
+        assertThat(projectService.getProject(project.id))
+            .satisfies {
+                assertThat(it!!.name).isEqualTo(projectForm.name)
+                assertThat(it.description).isEqualTo(projectForm.description)
+                assertThat(it.location.latitude).isEqualTo(projectForm.lat)
+                assertThat(it.location.longitude).isEqualTo(projectForm.lng)
+            }
     }
 
     @WithMockUser(username = TEST_USER)
@@ -147,49 +200,31 @@ class ProjectControllerIT : AbstractIT() {
     @Test
     fun `Should delete project unauthorized user`() {
         // given:
+        giveMe.user(TEST_USER).please()
+        val project = giveMe.unauthorized().project(TEST_USER).please()[0]
 
         // act:
-
-        // check:
+        webTestClient.delete()
+            .uri("/api/v1/projects/${project.id}")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isAccepted
     }
 
     @WithMockUser(username = TEST_USER)
     @Test
     fun `Should delete project not owner`() {
         // given:
+        val userName = "another_test_user"
+        giveMe.user(TEST_USER).please()
+        giveMe.user(userName).please()
+        val project = giveMe.authorized(userName).project(userName).please()[0]
 
         // act:
-
-        // check:
+        webTestClient.delete()
+            .uri("/api/v1/projects/${project.id}")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isAccepted
     }
-
-    //TODO unautorized or not owner
-
-/*    fun `Should return list of subscribers`() {
-
-    }
-
-    @Test
-    fun `Should subscibe user to project`() {
-
-    }
-
-    @Test
-    fun `Should unsubscibe user from project`() {
-
-    }
-
-    @Test
-    fun `Should return project activities`() {
-
-    }
-
-    @Test
-    fun `Should update activity`() {
-
-    }*/
-
-    //TODO unautorized or not owner
-
-
 }

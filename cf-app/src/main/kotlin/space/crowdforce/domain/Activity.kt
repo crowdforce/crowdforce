@@ -6,7 +6,7 @@ data class Activity(
     val id: Int,
     val name: String,
     val description: String,
-    val creationData : LocalDateTime,
+    val creationData: LocalDateTime,
     val startDate: LocalDateTime,
     val endDate: LocalDateTime,
     val projectId: Int,

@@ -16,8 +16,8 @@ class GiveMe(
     private val dslContext: DSLContext
 ) {
     fun emptyDatabase() {
-        dslContext.delete(USERS)
-        dslContext.delete(PROJECTS)
+        dslContext.delete(USERS).execute()
+        dslContext.delete(PROJECTS).execute()
     }
     fun user(userName: String): UserBuilder = UserBuilder(userName, userService, objectMapper)
     fun unauthorized() = GiveMeContext(null, userService, projectService, objectMapper)
