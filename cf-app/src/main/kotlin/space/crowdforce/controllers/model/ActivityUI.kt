@@ -8,5 +8,5 @@ data class ActivityUI(
     val description: String,
     val startDate: LocalDateTime,
     val endDate: LocalDateTime,
-    val participant: Boolean
+    val participate: Boolean
 )

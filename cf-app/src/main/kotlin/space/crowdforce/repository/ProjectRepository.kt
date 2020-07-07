@@ -64,16 +64,19 @@ class ProjectRepository(
         .where(PROJECTS.ID.eq(projectId))
         .fetchOne(PROJECT_MAPPER)
 
-    fun findAll(): List<Project> = dslContext.selectFrom(PROJECTS)
-        .fetch(PROJECT_MAPPER)
-
-    fun findAll(userId: Int): List<Project> = dslContext.select()
-        .from(PROJECTS.leftJoin(PROJECT_SUBSCRIBERS)
-            .on(PROJECT_SUBSCRIBERS.PROJECT_ID.eq(PROJECTS.ID))
-        )
-        .where(PROJECT_SUBSCRIBERS.USER_ID.eq(userId))
-        .or(PROJECT_SUBSCRIBERS.USER_ID.isNull)
-        .fetch(PROJECT_WITH_SUBSCRIBER_MAPPER)
+    fun findAll(userId: Int? = null): List<Project> {
+        return if (userId == null)
+            dslContext.selectFrom(PROJECTS)
+                .fetch(PROJECT_MAPPER)
+        else
+            dslContext.select()
+                .from(PROJECTS.leftJoin(PROJECT_SUBSCRIBERS)
+                    .on(PROJECT_SUBSCRIBERS.PROJECT_ID.eq(PROJECTS.ID))
+                )
+                .where(PROJECT_SUBSCRIBERS.USER_ID.eq(userId))
+                .or(PROJECT_SUBSCRIBERS.USER_ID.isNull)
+                .fetch(PROJECT_WITH_SUBSCRIBER_MAPPER)
+    }
 
     fun update(projectId: Int, name: String, description: String, location: Location) = dslContext.update(PROJECTS)
         .set(PROJECTS.NAME, name)

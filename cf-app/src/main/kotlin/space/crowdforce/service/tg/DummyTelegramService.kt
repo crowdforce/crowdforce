@@ -1,13 +1,12 @@
-package space.crowdforce
+package space.crowdforce.service.tg
 
 import dev.whyoleg.ktd.api.TdApi
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
-import space.crowdforce.service.tg.TelegramService
 
 @Component
-@Profile("test")
-class TestTelegramService : TelegramService {
+@Profile("test", "dev")
+class DummyTelegramService : TelegramService {
     override suspend fun searchPublicChat(username: String?): TdApi.Chat {
         return TdApi.Chat(1, TdApi.ChatTypeBasicGroup(1), null, "test", null, TdApi.ChatPermissions(),
             null, 1, false, false, false, false, false, false,

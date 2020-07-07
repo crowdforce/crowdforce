@@ -10,5 +10,5 @@ data class Activity(
     val startDate: LocalDateTime,
     val endDate: LocalDateTime,
     val projectId: Int,
-    val participant: Boolean
+    val participate: Boolean
 )

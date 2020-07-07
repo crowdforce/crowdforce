@@ -24,11 +24,12 @@ class ActivityService(
         description: String,
         startTime: LocalDateTime,
         endTime: LocalDateTime
-    ) : Activity {
-        val project = projectService.getProject(projectId) ?: throw RuntimeException("Invalid project Id $projectId")
+    ): Activity {
+        val project = projectService.findProject(projectId)
+            ?: throw RuntimeException("Invalid projectId [projectId: $projectId]")
 
-        if(project.ownerId != userId)
-            throw RuntimeException("Current user hasn't access")
+        if (project.ownerId != userId)
+            throw RuntimeException("Current user [userId: $userId] doesn't have access")
 
         return activityRepository.insert(projectId, name, description, now(), startTime, endTime)
     }
@@ -37,40 +38,40 @@ class ActivityService(
     fun takePart(userId: Int, activityId: Int) = participantRepository.insert(userId, activityId)
 
     @Transactional
-    fun getActivities(userId: Int?, projectId: Int): List<Activity> {
-        return if(userId == null)
-            activityRepository.findAll()
-        else
-            activityRepository.findAll(userId)
-    }
+    fun findActivities(userId: Int?, projectId: Int): List<Activity> = activityRepository.findAllByProjectId(projectId, userId)
 
     @Transactional
     fun updateActivity(activityId: Int, userId: Int, name: String, description: String, endTime: LocalDateTime, startTime: LocalDateTime) {
-        val activity = activityRepository.findAllById(activityId) ?: throw RuntimeException("Invalid activity Id $activityId")
+        val activity = activityRepository.findAllById(activityId)
+            ?: throw RuntimeException("Invalid activityId [activityId: $activityId, userId: $userId]")
 
-        val project = projectService.getProject(activity.projectId) ?: throw RuntimeException("Invalid project Id ${activity.projectId}")
+        val project = projectService.findProject(activity.projectId)
+            ?: throw RuntimeException("Invalid projectId [projectId: ${activity.projectId}, userId: $userId]")
 
-        if(project.ownerId != userId)
-            throw RuntimeException("Current user hasn't access")
+        if (project.ownerId != userId)
+            throw RuntimeException("Current user [userId: $userId] hasn't access")
 
         activityRepository.update(activityId, name, description, endTime, startTime)
     }
 
     @Transactional
     fun deleteActivity(activityId: Int, userId: Int) {
-        val activity = activityRepository.findAllById(activityId) ?: throw RuntimeException("Invalid activity Id $activityId")
+        val activity = activityRepository.findAllById(activityId)
+            ?: throw RuntimeException("Invalid activityId [activityId: $activityId, userId: $userId]")
 
-        val project = projectService.getProject(activity.projectId) ?: throw RuntimeException("Invalid project Id ${activity.projectId}")
+        val project = projectService.findProject(activity.projectId)
+            ?: throw RuntimeException("Invalid projectId [projectId: ${activity.projectId}, userId: $userId]")
 
-        if(project.ownerId != userId)
-            throw RuntimeException("Current user hasn't access")
+        if (project.ownerId != userId)
+            throw RuntimeException("Current user [userId: $userId] hasn't access")
 
         activityRepository.delete(activityId)
     }
 
     @Transactional
     fun getParticipants(activityId: Int): List<User> {
-        val activity = activityRepository.findAllById(activityId) ?: throw RuntimeException("Invalid activity Id $activityId")
+        val activity = activityRepository.findAllById(activityId)
+            ?: throw RuntimeException("Invalid activityId [activityId: $activityId]")
 
         return participantRepository.findAllByActivityId(activity.id)
     }
@@ -79,5 +80,4 @@ class ActivityService(
     fun deleteParticipant(userId: Int, activityId: Int) {
         participantRepository.delete(userId, activityId)
     }
-
 }

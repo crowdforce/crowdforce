@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional
 import space.crowdforce.domain.User
 import space.crowdforce.model.Tables
 import space.crowdforce.model.tables.records.UsersRecord
+import java.time.LocalDateTime
 
 @Repository
 @Transactional(propagation = Propagation.MANDATORY)
@@ -19,9 +20,9 @@ class UserRepository(
         val USER_MAPPER = { record: Record -> User(record.get("name") as String) }
     }
 
-    fun insert(userName: String): UsersRecord = dslContext.insertInto(Tables.USERS)
-        .columns(Tables.USERS.TG_USERNAME)
-        .values(userName)
+    fun insert(userName: String, currentTime: LocalDateTime): UsersRecord = dslContext.insertInto(Tables.USERS)
+        .columns(Tables.USERS.TG_USERNAME, Tables.USERS.REG_DATE)
+        .values(userName, currentTime)
         .returning()
         .fetchOne()
 

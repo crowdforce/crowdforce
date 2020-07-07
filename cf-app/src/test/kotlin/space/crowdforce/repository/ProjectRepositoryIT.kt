@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional
 import space.crowdforce.AbstractIT
 import space.crowdforce.domain.geo.Location
 import java.time.LocalDateTime
+import java.time.LocalDateTime.now
 import javax.inject.Inject
 
 @Transactional
@@ -13,7 +14,7 @@ internal class ProjectRepositoryIT : AbstractIT() {
     companion object {
         const val TEST_PROJECT_NAME = "project name"
         const val TEST_DESCRIPTION = "description"
-        val CURRENT_TIME: LocalDateTime = LocalDateTime.now()
+        val CURRENT_TIME: LocalDateTime = now()
         val TEST_LOCATION = Location(123.233, 123.23)
     }
 
@@ -25,7 +26,7 @@ internal class ProjectRepositoryIT : AbstractIT() {
 
     @Test
     fun `Should save project`() {
-        val user = userRepository.insert(TEST_USER)
+        val user = userRepository.insert(TEST_USER, now())
 
         val project = projectRepository.insert(
             user.id,

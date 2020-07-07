@@ -42,7 +42,6 @@ class ProjectControllerIT : AbstractIT() {
             .uri("/api/v1/projects")
             .exchange()
             .expectStatus().is2xxSuccessful
-            .expectHeader().valueEquals("Content-Type", "application/json")
             .expectBody().json(expected)
     }
 
@@ -62,7 +61,6 @@ class ProjectControllerIT : AbstractIT() {
             .uri("/api/v1/projects")
             .exchange()
             .expectStatus().is2xxSuccessful
-            .expectHeader().valueEquals("Content-Type", "application/json")
             .expectBody().json(expected)
     }
 
@@ -78,7 +76,7 @@ class ProjectControllerIT : AbstractIT() {
             .accept(MediaType.APPLICATION_JSON)
             .bodyValue(ProjectFormUI("test", "test", 123.123, 321.321))
             .exchange()
-            .expectStatus().isCreated
+            .expectStatus().is5xxServerError
     }
 
     @WithMockUser(username = TEST_USER)
@@ -116,14 +114,14 @@ class ProjectControllerIT : AbstractIT() {
 
         // act and check:
         webTestClient.put()
-            .uri("/api/v1/projects/{$project.id}")
+            .uri("/api/v1/projects/${project.id}")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .bodyValue(projectForm)
             .exchange()
             .expectStatus().is2xxSuccessful // TODO rest statuses evrywhere
 
-        assertThat(projectService.getProject(project.id))
+        assertThat(projectService.findProject(project.id))
             .satisfies {
                 assertThat(it!!.name).isEqualTo(projectForm.name)
                 assertThat(it.description).isEqualTo(projectForm.description)
@@ -146,7 +144,7 @@ class ProjectControllerIT : AbstractIT() {
             .accept(MediaType.APPLICATION_JSON)
             .bodyValue(projectForm)
             .exchange()
-            .expectStatus().is2xxSuccessful // TODO rest statuses evrywhere
+            .expectStatus().is5xxServerError
     }
 
     @WithMockUser(username = TEST_USER)
@@ -162,20 +160,12 @@ class ProjectControllerIT : AbstractIT() {
 
         // act and check:
         webTestClient.put()
-            .uri("/api/v1/projects/{$project.id}")
+            .uri("/api/v1/projects/${project.id}")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .bodyValue(projectForm)
             .exchange()
-            .expectStatus().is2xxSuccessful // TODO rest statuses evrywhere
-
-        assertThat(projectService.getProject(project.id))
-            .satisfies {
-                assertThat(it!!.name).isEqualTo(projectForm.name)
-                assertThat(it.description).isEqualTo(projectForm.description)
-                assertThat(it.location.latitude).isEqualTo(projectForm.lat)
-                assertThat(it.location.longitude).isEqualTo(projectForm.lng)
-            }
+            .expectStatus().is5xxServerError // TODO rest statuses evrywhere
     }
 
     @WithMockUser(username = TEST_USER)
@@ -193,7 +183,7 @@ class ProjectControllerIT : AbstractIT() {
             .exchange()
             .expectStatus().isAccepted
 
-        assertThat(projectService.getProject(project.id))
+        assertThat(projectService.findProject(project.id))
             .isNull()
     }
 
@@ -208,7 +198,7 @@ class ProjectControllerIT : AbstractIT() {
             .uri("/api/v1/projects/${project.id}")
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
-            .expectStatus().isAccepted
+            .expectStatus().is5xxServerError
     }
 
     @WithMockUser(username = TEST_USER)
@@ -225,6 +215,6 @@ class ProjectControllerIT : AbstractIT() {
             .uri("/api/v1/projects/${project.id}")
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
-            .expectStatus().isAccepted
+            .expectStatus().is5xxServerError
     }
 }

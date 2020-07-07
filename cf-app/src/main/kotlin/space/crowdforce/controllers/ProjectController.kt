@@ -2,7 +2,7 @@ package space.crowdforce.controllers
 
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
-import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.web.bind.annotation.*
 import space.crowdforce.controllers.model.*
 import space.crowdforce.domain.Activity
@@ -12,148 +12,123 @@ import space.crowdforce.domain.geo.Location
 import space.crowdforce.service.activity.ActivityService
 import space.crowdforce.service.project.ProjectService
 import space.crowdforce.service.user.UserService
-import java.lang.RuntimeException
 import java.security.Principal
 
 @Api(value = "/api/v1/projects", description = "")
 @RestController
-@RequestMapping("/api/v1/projects")
+@RequestMapping("/api/v1/projects", consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
 class ProjectController(
     private val projectService: ProjectService,
     private val activityService: ActivityService,
     private val userService: UserService
 ) {
-    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping
     @ApiOperation(value = "")
     fun getProjects(principal: Principal?): List<ProjectUI> {
-        val userId = if (principal != null) userService.getUserIdByName(principal.name) else null
+        val userId = principal?.let { userService.getUserIdByName(principal.name) }
 
         return projectService.getAllProjectAggregation(userId).map { map(it) }
     }
 
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping
     suspend fun addProject(
         principal: Principal?,
         @RequestBody project: ProjectFormUI
     ): ProjectUI {
-        if (principal == null)
-            throw RuntimeException("Unauthrized")
-
-        val userId = userService.getUserIdByName(principal.name) ?: throw RuntimeException("Unauthrized")
+        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
 
         return map(projectService.createProject(userId, project.name, project.description, Location(project.lng, project.lat)))
     }
 
-    @PutMapping("/{projectId}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("/{projectId}")
     suspend fun updateProject(
         @PathVariable("projectId") projectId: Int,
         principal: Principal?,
         @RequestBody project: ProjectFormUI
     ) {
-        if (principal == null)
-            throw RuntimeException("Unauthrized")
-
-        val userId = userService.getUserIdByName(principal.name) ?: throw RuntimeException("Unauthrized")
+        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
 
         projectService.updateProject(projectId, userId, project.name, project.description, Location(project.lng, project.lat))
     }
 
-    @DeleteMapping("/{projectId}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping("/{projectId}")
     suspend fun deleteProject(
         @PathVariable("projectId") projectId: Int,
         principal: Principal?
     ) {
-        if (principal == null)
-            throw RuntimeException("Unauthrized")
+        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
 
-        val userId = userService.getUserIdByName(principal.name) ?: throw RuntimeException("Unauthrized")
-
-        return projectService.deleteProject(projectId, userId)
+        projectService.deleteProject(projectId, userId)
     }
 
-    @GetMapping("/{projectId}/subscribers", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping("/{projectId}/subscribers")
     suspend fun getSubscribers(
         @PathVariable("projectId") projectId: Int
     ): List<SubscriberUI> =
-        projectService.getSubscribers(projectId).map { map(it) }
+        projectService.findSubscribers(projectId).map { map(it) }
 
-    @PutMapping("/{projectId}/subscribers", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("/{projectId}/subscribers")
     suspend fun subscribeToProject(
         @PathVariable("projectId") projectId: Int,
         principal: Principal?
     ) {
-        if (principal == null)
-            throw RuntimeException("Unauthrized")
-
-        val userId = userService.getUserIdByName(principal.name) ?: throw RuntimeException("Unauthrized")
+        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
 
         projectService.subscribeUser(projectId, userId)
     }
 
-    @DeleteMapping("/{projectId}/subscribers", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping("/{projectId}/subscribers")
     suspend fun unsubscribeToProject(
         @PathVariable("projectId") projectId: Int,
         principal: Principal?
     ) {
-        if (principal == null)
-            throw RuntimeException("Unauthrized")
-
-        val userId = userService.getUserIdByName(principal.name) ?: throw RuntimeException("Unauthrized")
+        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
 
         projectService.unsubscribeUser(projectId, userId)
     }
 
-    @GetMapping("/{projectId}/activities", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping("/{projectId}/activities")
     fun getActivities(@PathVariable("projectId") projectId: Int, principal: Principal?): List<ActivityUI> {
-        val userId = if (principal != null) userService.getUserIdByName(principal.name) else null
+        val userId = principal?.let { userService.getUserIdByName(it.name) }
 
-        return activityService.getActivities(userId, projectId).map { map(it) }
+        return activityService.findActivities(userId, projectId).map { map(it) }
     }
 
-    @PutMapping("/{projectId}/activities/{activityId}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("/{projectId}/activities/{activityId}")
     suspend fun updateActivity(
         @PathVariable("projectId") projectId: Int,
         @PathVariable("activityId") activityId: Int,
         principal: Principal?,
         @RequestBody activity: ActivityFormUI
     ) {
-        if (principal == null)
-            throw RuntimeException("Unauthrized")
-
-        val userId = userService.getUserIdByName(principal.name) ?: throw RuntimeException("Unauthrized")
+        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
 
         activityService.updateActivity(activityId, userId, activity.name, activity.description, activity.endTime, activity.startTime)
     }
 
-    @DeleteMapping("/{projectId}/activities/{activityId}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping("/{projectId}/activities/{activityId}")
     suspend fun deleteActivites(
         @PathVariable("projectId") projectId: Int,
         @PathVariable("activityId") activityId: Int,
         principal: Principal?
     ) {
-        if (principal == null)
-            throw RuntimeException("Unauthrized")
-
-        val userId = userService.getUserIdByName(principal.name) ?: throw RuntimeException("Unauthrized")
+        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
 
         activityService.deleteActivity(activityId, userId)
     }
 
-    @PostMapping("/{projectId}/activities", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping("/{projectId}/activities")
     suspend fun addActivites(
         @PathVariable("projectId") projectId: Int,
         principal: Principal?,
         @RequestBody activity: ActivityFormUI
     ) {
-        if (principal == null)
-            throw RuntimeException("Unauthrized")
-
-        val userId = userService.getUserIdByName(principal.name) ?: throw RuntimeException("Unauthrized")
+        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
 
         activityService.createActivity(userId, projectId, activity.name, activity.description, activity.startTime, activity.endTime)
     }
 
-    @GetMapping("/{projectId}/activities/{activityId}/participants", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping("/{projectId}/activities/{activityId}/participants")
     suspend fun getParticipants(
         @PathVariable("projectId") projectId: Int,
         @PathVariable("activityId") activityId: Int
@@ -162,30 +137,24 @@ class ProjectController(
     }
 
 
-    @PutMapping("/{projectId}/activities/{activityId}/participants", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("/{projectId}/activities/{activityId}/participants")
     suspend fun takePartActivity(
         @PathVariable("projectId") projectId: Int,
         @PathVariable("activityId") activityId: Int,
         principal: Principal?
     ) {
-        if (principal == null)
-            throw RuntimeException("Unauthrized")
-
-        val userId = userService.getUserIdByName(principal.name) ?: throw RuntimeException("Unauthrized")
+        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
 
         activityService.takePart(userId, activityId)
     }
 
-    @DeleteMapping("/{projectId}/activities/{activityId}/participants", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping("/{projectId}/activities/{activityId}/participants")
     suspend fun leftActivity(
         @PathVariable("projectId") projectId: Int,
         @PathVariable("activityId") activityId: Int,
         principal: Principal?
     ) {
-        if (principal == null)
-            throw RuntimeException("Unauthrized")
-
-        val userId = userService.getUserIdByName(principal.name) ?: throw RuntimeException("Unauthrized")
+        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
 
         activityService.deleteParticipant(userId, activityId)
     }
@@ -200,7 +169,7 @@ class ProjectController(
             activity.description,
             activity.startDate,
             activity.endDate,
-            activity.participant
+            activity.participate
         )
     }
 

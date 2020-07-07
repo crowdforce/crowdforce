@@ -59,17 +59,21 @@ class ActivityRepository(
             .returning()
             .fetchOne())
 
-    fun findAll(): List<Activity> = dslContext.selectFrom(ACTIVITIES)
-        .fetch(ACTIVITY_MAPPER)
-
-
-    fun findAll(userId: Int): List<Activity> = dslContext.select()
-        .from(ACTIVITIES.leftJoin(ACTIVITY_PARTICIPANTS)
-            .on(ACTIVITY_PARTICIPANTS.ACTIVITY_ID.eq(ACTIVITIES.ID))
-        )
-        .where(ACTIVITY_PARTICIPANTS.USER_ID.eq(userId))
-        .or(ACTIVITY_PARTICIPANTS.USER_ID.isNull)
-        .fetch(ACTIVITY_WITH_PARTICIPANTS_MAPPER)
+    fun findAllByProjectId(projectId: Int, userId: Int? = null): List<Activity> {
+        return if (userId == null)
+            dslContext.selectFrom(ACTIVITIES)
+                .where(ACTIVITIES.PROJECT_ID.eq(projectId))
+                .fetch(ACTIVITY_MAPPER)
+        else
+            dslContext.select()
+                .from(ACTIVITIES.leftJoin(ACTIVITY_PARTICIPANTS)
+                    .on(ACTIVITY_PARTICIPANTS.ACTIVITY_ID.eq(ACTIVITIES.ID))
+                )
+                .where(ACTIVITY_PARTICIPANTS.USER_ID.eq(userId))
+                .and(ACTIVITIES.PROJECT_ID.eq(projectId))
+                .or(ACTIVITY_PARTICIPANTS.USER_ID.isNull)
+                .fetch(ACTIVITY_WITH_PARTICIPANTS_MAPPER)
+    }
 
     fun findAllById(activityId: Int): Activity? = dslContext.selectFrom(ACTIVITIES)
         .where(ACTIVITIES.ID.eq(activityId))
