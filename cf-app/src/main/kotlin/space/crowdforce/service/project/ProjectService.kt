@@ -9,7 +9,6 @@ import space.crowdforce.repository.ProjectRepository
 import space.crowdforce.repository.ProjectSubscriberRepository
 import java.time.LocalDateTime
 
-
 @Component
 class ProjectService(
     private val projectRepository: ProjectRepository,

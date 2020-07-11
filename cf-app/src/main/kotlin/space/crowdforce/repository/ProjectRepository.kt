@@ -12,7 +12,7 @@ import space.crowdforce.model.Tables.PROJECTS
 import space.crowdforce.model.Tables.PROJECT_SUBSCRIBERS
 import space.crowdforce.model.tables.records.ProjectsRecord
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Optional
 
 @Repository
 @Transactional(propagation = Propagation.MANDATORY)

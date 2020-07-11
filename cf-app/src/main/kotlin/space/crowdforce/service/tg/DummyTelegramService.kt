@@ -11,7 +11,7 @@ class DummyTelegramService : TelegramService {
         return TdApi.Chat(1, TdApi.ChatTypeBasicGroup(1), null, "test", null, TdApi.ChatPermissions(),
             null, 1, false, false, false, false, false, false,
             false, false, 1, 1, 1, 1,
-            TdApi.ChatNotificationSettings(false, 1,false,"tt", false, false,
+            TdApi.ChatNotificationSettings(false, 1, false, "tt", false, false,
                 false, false, false, false), null, 1, 1, null, "test")
     }
 

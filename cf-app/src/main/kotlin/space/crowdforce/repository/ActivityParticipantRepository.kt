@@ -27,7 +27,6 @@ class ActivityParticipantRepository(
         .or(Tables.PROJECT_SUBSCRIBERS.USER_ID.isNull)
         .fetch(UserRepository.USER_MAPPER)
 
-
     fun delete(userId: Int, activityId: Int) {
         dslContext.delete(ACTIVITY_PARTICIPANTS)
             .where(ACTIVITY_PARTICIPANTS.ACTIVITY_ID.eq(activityId))

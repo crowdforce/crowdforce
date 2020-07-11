@@ -10,7 +10,7 @@ import space.crowdforce.model.Tables.ACTIVITIES
 import space.crowdforce.model.Tables.ACTIVITY_PARTICIPANTS
 import space.crowdforce.model.tables.records.ActivitiesRecord
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Optional
 
 @Repository
 @Transactional(propagation = Propagation.MANDATORY)

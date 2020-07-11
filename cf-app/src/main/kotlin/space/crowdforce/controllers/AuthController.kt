@@ -3,7 +3,11 @@ package space.crowdforce.controllers
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
 import space.crowdforce.controllers.model.TelegramUserUI
 import space.crowdforce.controllers.model.UserUI
 import space.crowdforce.service.user.UserService

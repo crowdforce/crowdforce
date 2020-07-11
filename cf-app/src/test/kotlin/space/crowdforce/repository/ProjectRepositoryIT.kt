@@ -1,10 +1,13 @@
 package space.crowdforce.repository
 
 import org.assertj.core.api.Assertions.assertThat
+import org.jooq.DSLContext
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.transaction.annotation.Transactional
 import space.crowdforce.AbstractIT
 import space.crowdforce.domain.geo.Location
+import space.crowdforce.model.Tables
 import java.time.LocalDateTime
 import java.time.LocalDateTime.now
 import javax.inject.Inject
@@ -23,6 +26,16 @@ internal class ProjectRepositoryIT : AbstractIT() {
 
     @Inject
     private lateinit var projectRepository: ProjectRepository
+
+    @Inject
+    lateinit var dslContext: DSLContext
+
+    @BeforeEach
+    fun cleanUp() {
+        dslContext.truncate(Tables.USERS).cascade().execute()
+        dslContext.truncate(Tables.USER_CODES).cascade().execute()
+        dslContext.truncate(Tables.PROJECTS).cascade().execute()
+    }
 
     @Test
     fun `Should save project`() {
@@ -47,5 +60,4 @@ internal class ProjectRepositoryIT : AbstractIT() {
                 assertThat(it?.location).isEqualTo(TEST_LOCATION)
             }
     }
-
 }
