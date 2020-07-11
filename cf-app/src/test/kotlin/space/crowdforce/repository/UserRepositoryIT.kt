@@ -8,10 +8,11 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import space.crowdforce.AbstractIT
-import space.crowdforce.Tables
+import space.crowdforce.model.Tables
+import java.time.LocalDateTime.now
 
 @Transactional
-internal class UserRepositoryTest : AbstractIT() {
+internal class UserRepositoryIT : AbstractIT() {
 
     @Autowired
     lateinit var userRepository: UserRepository
@@ -27,25 +28,25 @@ internal class UserRepositoryTest : AbstractIT() {
 
     @Test
     fun `should insert user when it doesn't exist`() {
-        val user = userRepository.insert("siuwide")
+        val user = userRepository.insert("siuwide", now())
         assertThat(user.id).isNotNull()
         assertThat(user.tgUsername).isEqualTo("siuwide")
     }
 
     @Test
     fun `should throw exception when user exists`() {
-        val user = userRepository.insert("sdnwue")
+        val user = userRepository.insert("sdnwue", now())
         assertThat(user.id).isNotNull()
         assertThat(user.tgUsername).isEqualTo("sdnwue")
 
         assertThrows<RuntimeException> {
-            userRepository.insert("sdnwue")
+            userRepository.insert("sdnwue", now())
         }
     }
 
     @Test
     fun `should find user by userName`() {
-        val user = userRepository.insert("sfubu")
+        val user = userRepository.insert("sfubu", now())
         assertThat(user.id).isNotNull()
         assertThat(user.tgUsername).isEqualTo("sfubu")
 

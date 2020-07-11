@@ -9,7 +9,7 @@ import space.crowdforce.repository.UserCodesRepository
 import space.crowdforce.repository.UserRepository
 import space.crowdforce.service.tg.TelegramService
 import java.security.SecureRandom
-import java.time.LocalDateTime
+import java.time.LocalDateTime.now
 import kotlin.random.asKotlinRandom
 
 @Service
@@ -28,9 +28,9 @@ class UserService(
         val chat = telegram.searchPublicChat(userName)
 
         transactionTemplate.execute {
-            val user = userRepository.findByUserName(userName) ?: userRepository.insert(userName)
+            val user = userRepository.findByUserName(userName) ?: userRepository.insert(userName, now())
 
-            userCodesRepository.upsertUserCode(user.id, passwordEncoder.encode(code), LocalDateTime.now())
+            userCodesRepository.upsertUserCode(user.id, passwordEncoder.encode(code), now())
         }
 
         telegram.message(TdApi.SendMessage(
@@ -38,4 +38,8 @@ class UserService(
             inputMessageContent = TdApi.InputMessageText(TdApi.FormattedText("Ваш код: $code"))
         ))
     }
+
+    @Transactional
+    fun getUserIdByName(userName: String): Int? =
+        userRepository.findByUserName(userName)?.id
 }

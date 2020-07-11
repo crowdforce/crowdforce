@@ -30,8 +30,5 @@ build/
 ### VS Code ###
 .vscode/
 
-### Jooq ###
-cf-database/src/main/java/*
-
 ### Telegram ###
 telegram/

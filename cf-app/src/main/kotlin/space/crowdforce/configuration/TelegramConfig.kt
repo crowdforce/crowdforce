@@ -64,6 +64,7 @@ class TelegramConfiguration {
 @Validated
 @Component
 @ConfigurationProperties(prefix = "telegram")
+@Profile("prod")
 class TelegramProperties {
     @Min(1)
     var apiId: Int = 1
