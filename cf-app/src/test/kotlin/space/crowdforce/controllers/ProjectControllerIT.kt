@@ -40,6 +40,7 @@ class ProjectControllerIT : AbstractIT() {
         // act and check:
         webTestClient.get()
             .uri("/api/v1/projects")
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .exchange()
             .expectStatus().is2xxSuccessful
             .expectBody().json(expected)
@@ -59,6 +60,8 @@ class ProjectControllerIT : AbstractIT() {
         // act and check:
         webTestClient.get()
             .uri("/api/v1/projects")
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus().is2xxSuccessful
             .expectBody().json(expected)
@@ -180,8 +183,9 @@ class ProjectControllerIT : AbstractIT() {
         webTestClient.delete()
             .uri("/api/v1/projects/${project.id}")
             .accept(MediaType.APPLICATION_JSON)
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .exchange()
-            .expectStatus().isAccepted
+            .expectStatus().isOk
 
         assertThat(projectService.findProject(project.id))
             .isNull()
@@ -197,6 +201,7 @@ class ProjectControllerIT : AbstractIT() {
         webTestClient.delete()
             .uri("/api/v1/projects/${project.id}")
             .accept(MediaType.APPLICATION_JSON)
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .exchange()
             .expectStatus().is5xxServerError
     }
@@ -214,6 +219,7 @@ class ProjectControllerIT : AbstractIT() {
         webTestClient.delete()
             .uri("/api/v1/projects/${project.id}")
             .accept(MediaType.APPLICATION_JSON)
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .exchange()
             .expectStatus().is5xxServerError
     }

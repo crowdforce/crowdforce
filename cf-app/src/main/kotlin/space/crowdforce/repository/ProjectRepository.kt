@@ -86,6 +86,6 @@ class ProjectRepository(
         .execute()
 
     fun delete(projectId: Int) = dslContext.delete(PROJECTS)
-        .where(PROJECTS.ID.eq(100))
+        .where(PROJECTS.ID.eq(projectId))
         .execute()
 }
