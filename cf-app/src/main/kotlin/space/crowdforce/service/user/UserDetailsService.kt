@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
 import space.crowdforce.repository.UserCodesRepository
-import space.crowdforce.repository.UserRepository
 
 /**
  * The part of spring security framework, makes authentication via telegram codes.
@@ -17,7 +16,7 @@ import space.crowdforce.repository.UserRepository
 @Component
 class UserDetailsService(
     private val userCodesRepository: UserCodesRepository,
-    private val userRepository: UserRepository,
+    private val userService: UserService,
     @Value("\${security.auth.expiration-code-time-seconds}") var expirationCodeTimeSeconds: Long
 ) : ReactiveUserDetailsService {
     /**
@@ -29,7 +28,7 @@ class UserDetailsService(
      */
     @Transactional
     override fun findByUsername(userName: String): Mono<UserDetails> =
-        Mono.justOrEmpty(userRepository.findByUserName(userName))
-            .flatMap { Mono.justOrEmpty(userCodesRepository.getActiveUserCode(it.id, expirationCodeTimeSeconds)) }
+        Mono.justOrEmpty(userService.getUserIdByName(userName))
+            .flatMap { Mono.justOrEmpty(userService.getActiveUserCode(it, expirationCodeTimeSeconds)) }
             .map { User(userName, it, listOf(SimpleGrantedAuthority("default"))) }
 }

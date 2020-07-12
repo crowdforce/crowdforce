@@ -42,4 +42,8 @@ class UserService(
     @Transactional
     fun getUserIdByName(userName: String): Int? =
         userRepository.findByUserName(userName)?.id
+
+    @Transactional
+    fun getActiveUserCode(userId: Int, expirationCodeTimeSeconds: Long): String? =
+        userCodesRepository.getActiveUserCode(userId, expirationCodeTimeSeconds)
 }
