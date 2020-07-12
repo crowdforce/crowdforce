@@ -20,6 +20,8 @@ class SecurityConfig {
 
         http.httpBasic()
             .and()
+            .cors()
+            .and()
             .csrf().disable() // csrfTokenRepository(CookieServerCsrfTokenRepository.withHttpOnlyFalse())
 
         return http.build()
