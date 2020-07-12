@@ -16,6 +16,7 @@ class SecurityConfig {
         http.authorizeExchange()
             .pathMatchers("/**").permitAll()
             .anyExchange().authenticated()
+            .and().formLogin()
 
         http.httpBasic()
             .and()
