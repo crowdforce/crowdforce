@@ -4,8 +4,7 @@ import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
-import space.crowdforce.model.Tables
-import space.crowdforce.model.tables.records.UserCodesRecord
+import space.crowdforce.model.Tables.USER_CODES
 import java.time.LocalDateTime
 
 @Repository
@@ -16,19 +15,31 @@ class UserCodesRepository(
     fun getActiveUserCode(
         userId: Int,
         expirationCodeTimeSeconds: Long
-    ): String? = dslContext.select(Tables.USER_CODES.CODE)
-        .where(Tables.USER_CODES.USER_ID.eq(userId))
-        .and(Tables.USER_CODES.CREATION_TIME.lessOrEqual(LocalDateTime.now().plusSeconds(expirationCodeTimeSeconds)))
-        .fetchOne()
-        .value1()
+    ): String? = dslContext.selectFrom(USER_CODES)
+        .where(USER_CODES.USER_ID.eq(userId))
+        .and(USER_CODES.CREATION_TIME.lessOrEqual(LocalDateTime.now().plusSeconds(expirationCodeTimeSeconds)))
+        .fetchAny()?.code
 
     fun upsertUserCode(
         userId: Int,
         code: String,
         currentTime: LocalDateTime
-    ): UserCodesRecord = dslContext.insertInto(Tables.USER_CODES)
-        .columns(Tables.USER_CODES.USER_ID, Tables.USER_CODES.CODE, Tables.USER_CODES.CREATION_TIME)
-        .values(userId, code, currentTime)
-        .returning()
-        .fetchOne()
+    ): Int {
+        // TODO make upsert
+        val userCode = dslContext.selectFrom(USER_CODES)
+            .where(USER_CODES.USER_ID.eq(userId))
+            .fetchAny()
+
+        return if (userCode != null) {
+            dslContext.update(USER_CODES)
+                .set(USER_CODES.CREATION_TIME, currentTime)
+                .set(USER_CODES.CODE, code)
+                .where(USER_CODES.USER_ID.eq(userId))
+                .execute()
+        } else {
+            dslContext.insertInto(USER_CODES, USER_CODES.USER_ID, USER_CODES.CODE, USER_CODES.CREATION_TIME)
+                .values(userId, code, currentTime)
+                .execute()
+        }
+    }
 }
