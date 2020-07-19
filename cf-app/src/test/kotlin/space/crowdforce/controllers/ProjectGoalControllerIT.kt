@@ -47,7 +47,7 @@ class ProjectGoalControllerIT : AbstractIT() {
 
         // act and check:
         webTestClient.get()
-            .uri("/api/v1/projects/${projectId}/goals")
+            .uri("/api/v1/projects/$projectId/goals")
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .exchange()
             .expectStatus().is2xxSuccessful
