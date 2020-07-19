@@ -1,8 +1,10 @@
 package space.crowdforce.dsl
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import space.crowdforce.controllers.model.GoalFormUI
 import space.crowdforce.controllers.model.ProjectUI
 import space.crowdforce.domain.geo.Location
+import space.crowdforce.service.goal.GoalService
 import space.crowdforce.service.project.ProjectService
 import space.crowdforce.service.user.UserService
 import java.util.concurrent.atomic.AtomicInteger
@@ -13,6 +15,7 @@ class ProjectBuilder(
     private var ownerUserName: String,
     private var userService: UserService,
     private var projectService: ProjectService,
+    private var goalService: GoalService,
     objectMapper: ObjectMapper
 ) : AbstractBuilder<List<ProjectUI>>(objectMapper) {
     companion object {
@@ -21,6 +24,7 @@ class ProjectBuilder(
 
     private val counterId = AtomicInteger(1)
     private val subscribers = ArrayList<String>()
+    private val goals = ArrayList<GoalFormUI>()
     private val results = ArrayList<ProjectUI>()
 
     fun project(ownerName: String): ProjectBuilder {
@@ -32,6 +36,12 @@ class ProjectBuilder(
 
     fun witSubscriber(userName: String): ProjectBuilder {
         subscribers.add(userName)
+
+        return this
+    }
+
+    fun withGoal(goalFormUI: GoalFormUI): ProjectBuilder {
+        goals.add(goalFormUI)
 
         return this
     }
@@ -52,6 +62,10 @@ class ProjectBuilder(
         subscribers.forEach {
             projectService.subscribeUser(userService.getUserIdByName(it)
                 ?: throw RuntimeException("User not found $it"), project.id)
+        }
+
+        goals.forEach {
+            goalService.addGoal(project.id, project.ownerId, it.name, it.description, it.progress)
         }
 
         results.add(ProjectUI(

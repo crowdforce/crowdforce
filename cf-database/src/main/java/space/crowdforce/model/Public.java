@@ -15,6 +15,7 @@ import org.jooq.impl.SchemaImpl;
 import space.crowdforce.model.tables.Activities;
 import space.crowdforce.model.tables.ActivityParticipants;
 import space.crowdforce.model.tables.FlywaySchemaHistory;
+import space.crowdforce.model.tables.Goals;
 import space.crowdforce.model.tables.ProjectSubscribers;
 import space.crowdforce.model.tables.Projects;
 import space.crowdforce.model.tables.UserCodes;
@@ -27,7 +28,7 @@ import space.crowdforce.model.tables.Users;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -1871300855;
+    private static final long serialVersionUID = -1612304993;
 
     /**
      * The reference instance of <code>public</code>
@@ -48,6 +49,11 @@ public class Public extends SchemaImpl {
      * The table <code>public.flyway_schema_history</code>.
      */
     public final FlywaySchemaHistory FLYWAY_SCHEMA_HISTORY = FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY;
+
+    /**
+     * The table <code>public.goals</code>.
+     */
+    public final Goals GOALS = Goals.GOALS;
 
     /**
      * The table <code>public.project_subscribers</code>.
@@ -86,6 +92,7 @@ public class Public extends SchemaImpl {
     public final List<Sequence<?>> getSequences() {
         return Arrays.<Sequence<?>>asList(
             Sequences.ACTIVITIES_ID_SEQ,
+            Sequences.GOALS_ID_SEQ,
             Sequences.PROJECTS_ID_SEQ,
             Sequences.USERS_ID_SEQ);
     }
@@ -96,6 +103,7 @@ public class Public extends SchemaImpl {
             Activities.ACTIVITIES,
             ActivityParticipants.ACTIVITY_PARTICIPANTS,
             FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY,
+            Goals.GOALS,
             ProjectSubscribers.PROJECT_SUBSCRIBERS,
             Projects.PROJECTS,
             UserCodes.USER_CODES,
