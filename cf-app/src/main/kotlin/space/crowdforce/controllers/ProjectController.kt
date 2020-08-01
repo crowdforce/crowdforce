@@ -2,7 +2,6 @@ package space.crowdforce.controllers
 
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -24,7 +23,6 @@ import space.crowdforce.domain.Activity
 import space.crowdforce.domain.Project
 import space.crowdforce.domain.User
 import space.crowdforce.domain.geo.Location
-import space.crowdforce.exception.OperationException
 import space.crowdforce.exception.UnauthorizedAccessException
 import space.crowdforce.service.activity.ActivityService
 import space.crowdforce.service.goal.GoalService
@@ -197,17 +195,11 @@ class ProjectController(
         @RequestBody goalFormUI: GoalFormUI,
         principal: Principal?
     ): ResponseEntity<Any> {
-        return try {
-            val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw UnauthorizedAccessException()
+        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw UnauthorizedAccessException()
 
-            goalService.updateGoal(projectId, goalId, userId, goalFormUI.name, goalFormUI.description, goalFormUI.progress)
+        goalService.updateGoal(projectId, goalId, userId, goalFormUI.name, goalFormUI.description, goalFormUI.progress)
 
-            ResponseEntity.ok().build()
-        } catch (e: UnauthorizedAccessException) {
-            ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.message)
-        } catch (e: OperationException) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
-        }
+        return ResponseEntity.ok().build()
     }
 
     @DeleteMapping("/{projectId}/goals/{goalId}")
@@ -216,17 +208,11 @@ class ProjectController(
         @PathVariable("goalId") goalId: Int,
         principal: Principal?
     ): ResponseEntity<Any> {
-        return try {
-            val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw UnauthorizedAccessException()
+        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw UnauthorizedAccessException()
 
-            goalService.deleteGoal(projectId, goalId, userId)
+        goalService.deleteGoal(projectId, goalId, userId)
 
-            ResponseEntity.ok().build()
-        } catch (e: UnauthorizedAccessException) {
-            ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.message)
-        } catch (e: OperationException) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
-        }
+        return ResponseEntity.ok().build()
     }
 
     @PostMapping("/{projectId}/goals")
@@ -235,17 +221,11 @@ class ProjectController(
         @RequestBody goalFormUI: GoalFormUI,
         principal: Principal?
     ): ResponseEntity<Any> {
-        return try {
-            val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw UnauthorizedAccessException()
+        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw UnauthorizedAccessException()
 
-            val goal = mapperService.map(goalService.addGoal(projectId, userId, goalFormUI.name, goalFormUI.description, goalFormUI.progress))
+        val goal = mapperService.map(goalService.addGoal(projectId, userId, goalFormUI.name, goalFormUI.description, goalFormUI.progress))
 
-            ResponseEntity.ok().body(goal)
-        } catch (e: UnauthorizedAccessException) {
-            ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.message)
-        } catch (e: OperationException) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
-        }
+        return ResponseEntity.ok().body(goal)
     }
 
     fun map(user: User): SubscriberUI =
