@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import space.crowdforce.exception.OperationException
 import space.crowdforce.exception.UnauthorizedAccessException
 
-
 @ControllerAdvice
 class GlobalControllerExceptionHandler {
     @ExceptionHandler(UnauthorizedAccessException::class)
