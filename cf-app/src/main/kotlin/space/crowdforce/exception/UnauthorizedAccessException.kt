@@ -1,5 +1,3 @@
 package space.crowdforce.exception
 
-import java.lang.RuntimeException
-
-class UnauthorizedAccessException : RuntimeException()
+class UnauthorizedAccessException(override val message: String = "Unauthorized") : OperationException(message)

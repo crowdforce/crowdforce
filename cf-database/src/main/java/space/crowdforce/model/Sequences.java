@@ -20,6 +20,11 @@ public class Sequences {
     public static final Sequence<Integer> ACTIVITIES_ID_SEQ = Internal.createSequence("activities_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.INTEGER.nullable(false), null, null, null, null, false, null);
 
     /**
+     * The sequence <code>public.goals_id_seq</code>
+     */
+    public static final Sequence<Integer> GOALS_ID_SEQ = Internal.createSequence("goals_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.INTEGER.nullable(false), null, null, null, null, false, null);
+
+    /**
      * The sequence <code>public.projects_id_seq</code>
      */
     public static final Sequence<Integer> PROJECTS_ID_SEQ = Internal.createSequence("projects_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.INTEGER.nullable(false), null, null, null, null, false, null);

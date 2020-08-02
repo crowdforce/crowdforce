@@ -3,32 +3,52 @@ package space.crowdforce.dsl
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.jooq.DSLContext
 import org.springframework.stereotype.Component
+import space.crowdforce.domain.Goal
 import space.crowdforce.model.Tables.PROJECTS
 import space.crowdforce.model.Tables.USERS
+import space.crowdforce.service.goal.GoalService
+import space.crowdforce.service.mapper.MapperService
 import space.crowdforce.service.project.ProjectService
 import space.crowdforce.service.user.UserService
 
 @Component
 class GiveMe(
-    private var userService: UserService,
-    private var projectService: ProjectService,
-    private var objectMapper: ObjectMapper,
-    private val dslContext: DSLContext
+    private val userService: UserService,
+    private val projectService: ProjectService,
+    private val objectMapper: ObjectMapper,
+    private val goalService: GoalService,
+    private val dslContext: DSLContext,
+    private val mapperService: MapperService
 ) {
     fun emptyDatabase() {
         dslContext.delete(USERS).execute()
         dslContext.delete(PROJECTS).execute()
     }
+
     fun user(userName: String): UserBuilder = UserBuilder(userName, userService, objectMapper)
-    fun unauthorized() = GiveMeContext(null, userService, projectService, objectMapper)
-    fun authorized(authorizedUserName: String) = GiveMeContext(authorizedUserName, userService, projectService, objectMapper)
+    fun unauthorized() = GiveMeContext(null, userService, projectService, goalService, objectMapper)
+    fun authorized(authorizedUserName: String) = GiveMeContext(authorizedUserName, userService, projectService, goalService, objectMapper)
+
+    fun json(obj: Any): String {
+        if (obj is List<*>)
+            return objectMapper.writeValueAsString(obj.map {
+                if (it is Goal)
+                    mapperService.map(it)
+            })
+
+        if (obj is Goal)
+            return objectMapper.writeValueAsString(mapperService.map(obj))
+
+        throw RuntimeException("Unsupported mapper for $obj")
+    }
 }
 
 class GiveMeContext(
     private var authorizedUserName: String?,
     private var userService: UserService,
     private var projectService: ProjectService,
+    private var goalService: GoalService,
     private var objectMapper: ObjectMapper
 ) {
-    fun project(ownerName: String): ProjectBuilder = ProjectBuilder(authorizedUserName, ownerName, userService, projectService, objectMapper)
+    fun project(ownerName: String): ProjectBuilder = ProjectBuilder(authorizedUserName, ownerName, userService, projectService, goalService, objectMapper)
 }

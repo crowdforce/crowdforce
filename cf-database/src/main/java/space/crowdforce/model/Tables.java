@@ -7,6 +7,7 @@ package space.crowdforce.model;
 import space.crowdforce.model.tables.Activities;
 import space.crowdforce.model.tables.ActivityParticipants;
 import space.crowdforce.model.tables.FlywaySchemaHistory;
+import space.crowdforce.model.tables.Goals;
 import space.crowdforce.model.tables.ProjectSubscribers;
 import space.crowdforce.model.tables.Projects;
 import space.crowdforce.model.tables.UserCodes;
@@ -33,6 +34,11 @@ public class Tables {
      * The table <code>public.flyway_schema_history</code>.
      */
     public static final FlywaySchemaHistory FLYWAY_SCHEMA_HISTORY = FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY;
+
+    /**
+     * The table <code>public.goals</code>.
+     */
+    public static final Goals GOALS = Goals.GOALS;
 
     /**
      * The table <code>public.project_subscribers</code>.

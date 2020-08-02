@@ -3,6 +3,7 @@ package space.crowdforce.controllers
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,11 +17,16 @@ import space.crowdforce.controllers.model.SubscriberUI
 import space.crowdforce.controllers.model.ProjectFormUI
 import space.crowdforce.controllers.model.ActivityUI
 import space.crowdforce.controllers.model.ActivityFormUI
+import space.crowdforce.controllers.model.GoalUI
+import space.crowdforce.controllers.model.GoalFormUI
 import space.crowdforce.domain.Activity
 import space.crowdforce.domain.Project
 import space.crowdforce.domain.User
 import space.crowdforce.domain.geo.Location
+import space.crowdforce.exception.UnauthorizedAccessException
 import space.crowdforce.service.activity.ActivityService
+import space.crowdforce.service.goal.GoalService
+import space.crowdforce.service.mapper.MapperService
 import space.crowdforce.service.project.ProjectService
 import space.crowdforce.service.user.UserService
 import java.security.Principal
@@ -31,7 +37,9 @@ import java.security.Principal
 class ProjectController(
     private val projectService: ProjectService,
     private val activityService: ActivityService,
-    private val userService: UserService
+    private val userService: UserService,
+    private val goalService: GoalService,
+    private val mapperService: MapperService
 ) {
     @GetMapping
     @ApiOperation(value = "")
@@ -167,6 +175,57 @@ class ProjectController(
         val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
 
         activityService.deleteParticipant(userId, activityId)
+    }
+
+    @GetMapping("/{projectId}/goals")
+    suspend fun getGoals(@PathVariable("projectId") projectId: Int): List<GoalUI> = goalService.findGoals(projectId)
+        .map { mapperService.map(it) }
+
+    @GetMapping("/{projectId}/goals/{goalId}")
+    suspend fun getGoal(
+        @PathVariable("projectId") projectId: Int,
+        @PathVariable("goalId") goalId: Int
+    ): ResponseEntity<GoalUI> = goalService.findGoal(goalId)?.let { ResponseEntity.ok().body(mapperService.map(it)) }
+        ?: ResponseEntity.notFound().build()
+
+    @PutMapping("/{projectId}/goals/{goalId}")
+    suspend fun updateGoals(
+        @PathVariable("projectId") projectId: Int,
+        @PathVariable("goalId") goalId: Int,
+        @RequestBody goalFormUI: GoalFormUI,
+        principal: Principal?
+    ): ResponseEntity<Any> {
+        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw UnauthorizedAccessException()
+
+        goalService.updateGoal(projectId, goalId, userId, goalFormUI.name, goalFormUI.description, goalFormUI.progress)
+
+        return ResponseEntity.ok().build()
+    }
+
+    @DeleteMapping("/{projectId}/goals/{goalId}")
+    suspend fun deleteGoals(
+        @PathVariable("projectId") projectId: Int,
+        @PathVariable("goalId") goalId: Int,
+        principal: Principal?
+    ): ResponseEntity<Any> {
+        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw UnauthorizedAccessException()
+
+        goalService.deleteGoal(projectId, goalId, userId)
+
+        return ResponseEntity.ok().build()
+    }
+
+    @PostMapping("/{projectId}/goals")
+    suspend fun addGoals(
+        @PathVariable("projectId") projectId: Int,
+        @RequestBody goalFormUI: GoalFormUI,
+        principal: Principal?
+    ): ResponseEntity<Any> {
+        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw UnauthorizedAccessException()
+
+        val goal = mapperService.map(goalService.addGoal(projectId, userId, goalFormUI.name, goalFormUI.description, goalFormUI.progress))
+
+        return ResponseEntity.ok().body(goal)
     }
 
     fun map(user: User): SubscriberUI =
