@@ -2,7 +2,7 @@ package space.crowdforce.dsl
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import space.crowdforce.service.user.UserService
-import java.util.*
+import java.util.UUID
 
 class UserBuilder(
     private val telegramId: Int,

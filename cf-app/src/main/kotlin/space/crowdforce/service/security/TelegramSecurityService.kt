@@ -22,20 +22,20 @@ import javax.crypto.spec.SecretKeySpec
 class TelegramSecurityService(
     private val serverSecurityContextRepository: ServerSecurityContextRepository,
     private val userService: UserService,
-    @Value("\${telegram.bot.token}") private val tgBotToken : String
+    @Value("\${telegram.bot.token}") private val tgBotToken: String
 ) {
     fun authenticate(
         telegramId: Int,
         hash: String,
         authDate: Long,
         queryParams: Map<String, String>,
-        severExchange: ServerWebExchange): Mono<Void>
-    {
-      /* todo if(authDate < System.currentTimeMillis())*/
+        severExchange: ServerWebExchange
+    ): Mono<Void> {
+        /* todo if(authDate < System.currentTimeMillis())*/
 
         val validToken = buildToken(queryParams)
 
-        if(validToken == hash) {
+        if (validToken == hash) {
             userService.getOrCreateUser(telegramId, name(queryParams))
 
             val token = UsernamePasswordAuthenticationToken(
@@ -50,19 +50,17 @@ class TelegramSecurityService(
         throw BadCredentialsException("Wrong token [$hash].")
     }
 
-    private fun name(queryParams: Map<String, String>) : String
-       = queryParams.get("username").let {
-            queryParams.get("first_name")
-        }.let {
-            queryParams.get("id")!!
-        }
+    private fun name(queryParams: Map<String, String>): String = queryParams.get("username").let {
+        queryParams.get("first_name")
+    }.let {
+        queryParams.get("id")!!
+    }
 
-
-    private fun buildToken(queryParams: Map<String, String>) : String {
+    private fun buildToken(queryParams: Map<String, String>): String {
         val str: String = queryParams.entries.stream()
             .filter { it.key != "hash" && it.key != "redirectTo" }
             .sorted { a: Map.Entry<String, Any>, b: Map.Entry<String, Any> -> a.key.compareTo(b.key) }
-            .map { kvp: Map.Entry<String, Any> -> kvp.key + "=" + kvp.value}
+            .map { kvp: Map.Entry<String, Any> -> kvp.key + "=" + kvp.value }
             .collect(Collectors.joining("\n"))
 
         val sk = SecretKeySpec( // Get SHA 256 from telegram token
@@ -72,6 +70,6 @@ class TelegramSecurityService(
         mac.init(sk)
         val result: ByteArray = mac.doFinal(str.toByteArray(StandardCharsets.UTF_8))
 
-        return Hex.encodeHexString( result )
+        return Hex.encodeHexString(result)
     }
 }

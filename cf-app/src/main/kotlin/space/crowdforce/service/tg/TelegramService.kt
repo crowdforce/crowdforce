@@ -1,5 +1,3 @@
 package space.crowdforce.service.tg
 
-interface TelegramService {
-
-}
+interface TelegramService

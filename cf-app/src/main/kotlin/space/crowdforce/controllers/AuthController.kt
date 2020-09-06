@@ -34,8 +34,9 @@ class AuthController(
         @RequestParam("redirectTo") redirectTo: String,
         @RequestParam("auth_date") authDate: Long,
         severExchange: ServerWebExchange
-    ): Mono<String> = securityService.authenticate(id, hash, authDate, toSingleMap(severExchange.request.queryParams), severExchange)
-        .then(Mono.just("redirect:${redirectTo}"))
+    ): Mono<String> =
+        securityService.authenticate(id, hash, authDate, toSingleMap(severExchange.request.queryParams), severExchange)
+            .then(Mono.just("redirect:$redirectTo"))
 
     fun toSingleMap(queryParams: MultiValueMap<String, String>): Map<String, String> =
         queryParams.entries.stream().collect(Collectors.toMap({ it.key }, { it.value.first() }))

@@ -5,6 +5,4 @@ import org.springframework.stereotype.Component
 
 @Component
 @Profile("prod")
-class TelegramServiceImpl() : TelegramService {
-
-}
+class TelegramServiceImpl() : TelegramService
