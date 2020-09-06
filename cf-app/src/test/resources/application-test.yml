@@ -1,17 +1,12 @@
-telegram:
-  apiId: 2
-  apiHash: hash
-  applicationVersion: 1.0.0
-  databaseDirectory: telegram
-  deviceModel: model
-  filesDirectory: telegram
-  systemLanguageCode: eu
-  systemVersion: 1
-  databaseEncryptionKey: key
-  binLogBase64: dGVzdA==
-
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/crowdforce
     username: crowdforce
     password: crowdforce
+
+  main:
+    web-application-type: reactive
+
+telegram:
+  bot:
+    token: test-token #"your_telegram_bot_token"

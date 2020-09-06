@@ -2,6 +2,7 @@ package space.crowdforce.dsl
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import space.crowdforce.service.user.UserService
+import java.util.*
 
 class UserBuilder(
     private val telegramId: Int,
@@ -9,6 +10,6 @@ class UserBuilder(
     objectMapper: ObjectMapper
 ) : AbstractBuilder<Int>(objectMapper) {
     override fun please(): Int {
-        return userService.getUserIdByTelegramId(telegramId)!!
+        return userService.getOrCreateUser(telegramId, UUID.randomUUID().toString()).id
     }
 }

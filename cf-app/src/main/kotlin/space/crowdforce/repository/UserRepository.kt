@@ -26,7 +26,7 @@ class UserRepository(
         .returning()
         .fetchOne()
 
-    fun findByTelegramId(telegramId: Int): UsersRecord? = dslContext.select(Tables.USERS.ID, Tables.USERS.TG_ID, Tables.USERS.REG_DATE)
+    fun findByTelegramId(telegramId: Int): UsersRecord? = dslContext.select(Tables.USERS.ID, Tables.USERS.NAME, Tables.USERS.TG_ID, Tables.USERS.REG_DATE)
         .from(Tables.USERS)
         .where(Tables.USERS.TG_ID.eq(telegramId))
         .fetchOneInto(UsersRecord::class.java)
