@@ -6,7 +6,6 @@
     <modules>
         <module>cf-app</module>
         <module>cf-database</module>
-        <module>cf-utils</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

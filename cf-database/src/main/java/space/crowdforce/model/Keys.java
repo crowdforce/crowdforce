@@ -16,7 +16,6 @@ import space.crowdforce.model.tables.FlywaySchemaHistory;
 import space.crowdforce.model.tables.Goals;
 import space.crowdforce.model.tables.ProjectSubscribers;
 import space.crowdforce.model.tables.Projects;
-import space.crowdforce.model.tables.UserCodes;
 import space.crowdforce.model.tables.Users;
 import space.crowdforce.model.tables.records.ActivitiesRecord;
 import space.crowdforce.model.tables.records.ActivityParticipantsRecord;
@@ -24,7 +23,6 @@ import space.crowdforce.model.tables.records.FlywaySchemaHistoryRecord;
 import space.crowdforce.model.tables.records.GoalsRecord;
 import space.crowdforce.model.tables.records.ProjectSubscribersRecord;
 import space.crowdforce.model.tables.records.ProjectsRecord;
-import space.crowdforce.model.tables.records.UserCodesRecord;
 import space.crowdforce.model.tables.records.UsersRecord;
 
 
@@ -56,9 +54,9 @@ public class Keys {
     public static final UniqueKey<ProjectSubscribersRecord> PROJECT_SUBSCRIBERS_USER_ID_PROJECT_ID_KEY = UniqueKeys0.PROJECT_SUBSCRIBERS_USER_ID_PROJECT_ID_KEY;
     public static final UniqueKey<ProjectsRecord> PROJECTS_PKEY = UniqueKeys0.PROJECTS_PKEY;
     public static final UniqueKey<ProjectsRecord> PROJECTS_NAME_KEY = UniqueKeys0.PROJECTS_NAME_KEY;
-    public static final UniqueKey<UserCodesRecord> USER_CODES_USER_ID_KEY = UniqueKeys0.USER_CODES_USER_ID_KEY;
     public static final UniqueKey<UsersRecord> USERS_PKEY = UniqueKeys0.USERS_PKEY;
-    public static final UniqueKey<UsersRecord> USERS_TG_USERNAME_KEY = UniqueKeys0.USERS_TG_USERNAME_KEY;
+    public static final UniqueKey<UsersRecord> USERS_NAME_KEY = UniqueKeys0.USERS_NAME_KEY;
+    public static final UniqueKey<UsersRecord> USERS_TG_ID_KEY = UniqueKeys0.USERS_TG_ID_KEY;
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -71,7 +69,6 @@ public class Keys {
     public static final ForeignKey<ProjectSubscribersRecord, ProjectsRecord> PROJECT_SUBSCRIBERS__PROJECT_SUBSCRIBERS_PROJECT_ID_FKEY = ForeignKeys0.PROJECT_SUBSCRIBERS__PROJECT_SUBSCRIBERS_PROJECT_ID_FKEY;
     public static final ForeignKey<ProjectSubscribersRecord, UsersRecord> PROJECT_SUBSCRIBERS__PROJECT_SUBSCRIBERS_USER_ID_FKEY = ForeignKeys0.PROJECT_SUBSCRIBERS__PROJECT_SUBSCRIBERS_USER_ID_FKEY;
     public static final ForeignKey<ProjectsRecord, UsersRecord> PROJECTS__PROJECTS_OWNER_ID_FKEY = ForeignKeys0.PROJECTS__PROJECTS_OWNER_ID_FKEY;
-    public static final ForeignKey<UserCodesRecord, UsersRecord> USER_CODES__USER_CODES_USER_ID_FKEY = ForeignKeys0.USER_CODES__USER_CODES_USER_ID_FKEY;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
@@ -93,9 +90,9 @@ public class Keys {
         public static final UniqueKey<ProjectSubscribersRecord> PROJECT_SUBSCRIBERS_USER_ID_PROJECT_ID_KEY = Internal.createUniqueKey(ProjectSubscribers.PROJECT_SUBSCRIBERS, "project_subscribers_user_id_project_id_key", new TableField[] { ProjectSubscribers.PROJECT_SUBSCRIBERS.USER_ID, ProjectSubscribers.PROJECT_SUBSCRIBERS.PROJECT_ID }, true);
         public static final UniqueKey<ProjectsRecord> PROJECTS_PKEY = Internal.createUniqueKey(Projects.PROJECTS, "projects_pkey", new TableField[] { Projects.PROJECTS.ID }, true);
         public static final UniqueKey<ProjectsRecord> PROJECTS_NAME_KEY = Internal.createUniqueKey(Projects.PROJECTS, "projects_name_key", new TableField[] { Projects.PROJECTS.NAME }, true);
-        public static final UniqueKey<UserCodesRecord> USER_CODES_USER_ID_KEY = Internal.createUniqueKey(UserCodes.USER_CODES, "user_codes_user_id_key", new TableField[] { UserCodes.USER_CODES.USER_ID }, true);
         public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, "users_pkey", new TableField[] { Users.USERS.ID }, true);
-        public static final UniqueKey<UsersRecord> USERS_TG_USERNAME_KEY = Internal.createUniqueKey(Users.USERS, "users_tg_username_key", new TableField[] { Users.USERS.TG_USERNAME }, true);
+        public static final UniqueKey<UsersRecord> USERS_NAME_KEY = Internal.createUniqueKey(Users.USERS, "users_name_key", new TableField[] { Users.USERS.NAME }, true);
+        public static final UniqueKey<UsersRecord> USERS_TG_ID_KEY = Internal.createUniqueKey(Users.USERS, "users_tg_id_key", new TableField[] { Users.USERS.TG_ID }, true);
     }
 
     private static class ForeignKeys0 {
@@ -106,6 +103,5 @@ public class Keys {
         public static final ForeignKey<ProjectSubscribersRecord, ProjectsRecord> PROJECT_SUBSCRIBERS__PROJECT_SUBSCRIBERS_PROJECT_ID_FKEY = Internal.createForeignKey(Keys.PROJECTS_PKEY, ProjectSubscribers.PROJECT_SUBSCRIBERS, "project_subscribers_project_id_fkey", new TableField[] { ProjectSubscribers.PROJECT_SUBSCRIBERS.PROJECT_ID }, true);
         public static final ForeignKey<ProjectSubscribersRecord, UsersRecord> PROJECT_SUBSCRIBERS__PROJECT_SUBSCRIBERS_USER_ID_FKEY = Internal.createForeignKey(Keys.USERS_PKEY, ProjectSubscribers.PROJECT_SUBSCRIBERS, "project_subscribers_user_id_fkey", new TableField[] { ProjectSubscribers.PROJECT_SUBSCRIBERS.USER_ID }, true);
         public static final ForeignKey<ProjectsRecord, UsersRecord> PROJECTS__PROJECTS_OWNER_ID_FKEY = Internal.createForeignKey(Keys.USERS_PKEY, Projects.PROJECTS, "projects_owner_id_fkey", new TableField[] { Projects.PROJECTS.OWNER_ID }, true);
-        public static final ForeignKey<UserCodesRecord, UsersRecord> USER_CODES__USER_CODES_USER_ID_FKEY = Internal.createForeignKey(Keys.USERS_PKEY, UserCodes.USER_CODES, "user_codes_user_id_fkey", new TableField[] { UserCodes.USER_CODES.USER_ID }, true);
     }
 }

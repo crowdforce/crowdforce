@@ -1,16 +1,10 @@
 -- User
 CREATE TABLE users (
   id                       SERIAL PRIMARY KEY,
-  tg_username              VARCHAR(255) NOT NULL,
+  name                     VARCHAR(255) NOT NULL,
+  tg_id                    INT NOT NULL,
   reg_date                 TIMESTAMP NOT NULL,
-  UNIQUE (tg_username)
-);
-
-CREATE TABLE user_codes (
-  user_id                   INT REFERENCES users (id) ON DELETE CASCADE NOT NULL,
-  code                      VARCHAR(120) NOT NULL,
-  creation_time             TIMESTAMP NOT NULL,
-  UNIQUE (user_id)
+  UNIQUE (tg_id), UNIQUE (name)
 );
 
 -- Project
@@ -46,4 +40,13 @@ CREATE TABLE activity_participants (
   activity_id              INT REFERENCES activities (id) ON DELETE CASCADE NOT NULL,
    user_id                 INT REFERENCES users (id) ON DELETE CASCADE NOT NULL,
    UNIQUE (user_id, activity_id)
+);
+
+CREATE TABLE goals (
+  id                       SERIAL PRIMARY KEY,
+  name                     VARCHAR(255) NOT NULL,
+  description              TEXT,
+  creation_time            TIMESTAMP NOT NULL,
+  project_id               INT REFERENCES projects (id) ON DELETE CASCADE NOT NULL,
+  progress_bar             INT DEFAULT 0
 );

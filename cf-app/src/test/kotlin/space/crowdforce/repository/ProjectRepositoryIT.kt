@@ -33,13 +33,12 @@ internal class ProjectRepositoryIT : AbstractIT() {
     @BeforeEach
     fun cleanUp() {
         dslContext.truncate(Tables.USERS).cascade().execute()
-        dslContext.truncate(Tables.USER_CODES).cascade().execute()
         dslContext.truncate(Tables.PROJECTS).cascade().execute()
     }
 
     @Test
     fun `Should save project`() {
-        val user = userRepository.insert(TEST_USER, now())
+        val user = userRepository.insert(TEST_TELEGRAM_USER_ID.toInt(), TEST_TELEGRAM_USER_ID, now())
 
         val project = projectRepository.insert(
             user.id,

@@ -25,16 +25,16 @@ class ProjectControllerIT : AbstractIT() {
     @BeforeEach
     internal fun setUp() = giveMe.emptyDatabase()
 
-    @WithMockUser(username = TEST_USER)
+    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
     @Test
     fun `Should return list of projects with auth user`() {
         // given:
-        giveMe.user(TEST_USER).please()
+        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
 
-        val expected = giveMe.authorized(TEST_USER)
-            .project(ownerName = TEST_USER)
+        val expected = giveMe.authorized(TEST_TELEGRAM_USER_ID.toInt())
+            .project(ownerTelegramId = TEST_TELEGRAM_USER_ID.toInt())
             .and()
-            .project(ownerName = TEST_USER).witSubscriber(TEST_USER)
+            .project(ownerName = TEST_TELEGRAM_USER_ID.toInt()).witSubscriber(TEST_TELEGRAM_USER_ID.toInt())
             .pleaseJson()
 
         // act and check:
@@ -49,12 +49,12 @@ class ProjectControllerIT : AbstractIT() {
     @Test
     fun `Should return list of projects`() {
         // given:
-        giveMe.user(TEST_USER).please()
+        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
 
         val expected = giveMe.unauthorized()
-            .project(ownerName = TEST_USER)
+            .project(ownerTelegramId = TEST_TELEGRAM_USER_ID.toInt())
             .and()
-            .project(ownerName = TEST_USER).witSubscriber(TEST_USER)
+            .project(ownerName = TEST_TELEGRAM_USER_ID.toInt()).witSubscriber(TEST_TELEGRAM_USER_ID.toInt())
             .pleaseJson()
 
         // act and check:
@@ -70,7 +70,7 @@ class ProjectControllerIT : AbstractIT() {
     @Test
     fun `Should add a project unauthorized user`() {
         // given:
-        giveMe.user(TEST_USER).please()
+        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
 
         // act and check:
         webTestClient.post()
@@ -82,11 +82,11 @@ class ProjectControllerIT : AbstractIT() {
             .expectStatus().is5xxServerError
     }
 
-    @WithMockUser(username = TEST_USER)
+    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
     @Test
     fun `Should add a project`() {
         // given:
-        giveMe.user(TEST_USER).please()
+        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
 
         val projectForm = ProjectFormUI("test", "test", 123.123, 321.321)
 
@@ -106,12 +106,12 @@ class ProjectControllerIT : AbstractIT() {
             .jsonPath("$.lng").isEqualTo(projectForm.lng)
     }
 
-    @WithMockUser(username = TEST_USER)
+    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
     @Test
     fun `Should update project fields`() {
         // given:
-        giveMe.user(TEST_USER).please()
-        val project = giveMe.authorized(TEST_USER).project(TEST_USER).please()[0]
+        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+        val project = giveMe.authorized(TEST_TELEGRAM_USER_ID.toInt()).project(TEST_TELEGRAM_USER_ID.toInt()).please()[0]
 
         val projectForm = ProjectFormUI("updated", "updated", 123.123, 321.321)
 
@@ -136,7 +136,7 @@ class ProjectControllerIT : AbstractIT() {
     @Test
     fun `Should update project fields unauthorized user`() {
         // given:
-        giveMe.user(TEST_USER).please()
+        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
 
         val projectForm = ProjectFormUI("test", "test", 123.123, 321.321)
 
@@ -150,14 +150,14 @@ class ProjectControllerIT : AbstractIT() {
             .expectStatus().is5xxServerError
     }
 
-    @WithMockUser(username = TEST_USER)
+    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
     @Test
     fun `Should update project fields not owner`() {
         // given:
-        val userName = "another_test_user"
-        giveMe.user(userName).please()
-        giveMe.user(TEST_USER).please()
-        val project = giveMe.authorized(TEST_USER).project(userName).please()[0]
+        val telegramId = 4343
+        giveMe.user(telegramId).please()
+        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+        val project = giveMe.authorized(TEST_TELEGRAM_USER_ID.toInt()).project(telegramId).please()[0]
 
         val projectForm = ProjectFormUI("updated", "updated", 123.123, 321.321)
 
@@ -171,13 +171,13 @@ class ProjectControllerIT : AbstractIT() {
             .expectStatus().is5xxServerError // TODO rest statuses evrywhere
     }
 
-    @WithMockUser(username = TEST_USER)
+    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
     @Test
     fun `Should delete project`() {
         // given:
-        giveMe.user(TEST_USER).please()
+        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
 
-        val project = giveMe.authorized(TEST_USER).project(TEST_USER).please()[0]
+        val project = giveMe.authorized(TEST_TELEGRAM_USER_ID.toInt()).project(TEST_TELEGRAM_USER_ID.toInt()).please()[0]
 
         // act and check:
         webTestClient.delete()
@@ -194,8 +194,8 @@ class ProjectControllerIT : AbstractIT() {
     @Test
     fun `Should delete project unauthorized user`() {
         // given:
-        giveMe.user(TEST_USER).please()
-        val project = giveMe.unauthorized().project(TEST_USER).please()[0]
+        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+        val project = giveMe.unauthorized().project(TEST_TELEGRAM_USER_ID.toInt()).please()[0]
 
         // act:
         webTestClient.delete()
@@ -206,14 +206,14 @@ class ProjectControllerIT : AbstractIT() {
             .expectStatus().is5xxServerError
     }
 
-    @WithMockUser(username = TEST_USER)
+    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
     @Test
     fun `Should delete project not owner`() {
         // given:
-        val userName = "another_test_user"
-        giveMe.user(TEST_USER).please()
-        giveMe.user(userName).please()
-        val project = giveMe.authorized(userName).project(userName).please()[0]
+        val anotherTelegramId = 353
+        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+        giveMe.user(anotherTelegramId).please()
+        val project = giveMe.authorized(anotherTelegramId).project(anotherTelegramId).please()[0]
 
         // act:
         webTestClient.delete()

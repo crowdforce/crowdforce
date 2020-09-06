@@ -25,9 +25,9 @@ class GiveMe(
         dslContext.delete(PROJECTS).execute()
     }
 
-    fun user(userName: String): UserBuilder = UserBuilder(userName, userService, objectMapper)
+    fun user(telegramId: Int): UserBuilder = UserBuilder(telegramId, userService, objectMapper)
     fun unauthorized() = GiveMeContext(null, userService, projectService, goalService, objectMapper)
-    fun authorized(authorizedUserName: String) = GiveMeContext(authorizedUserName, userService, projectService, goalService, objectMapper)
+    fun authorized(authorizedUserTelegramId: Int) = GiveMeContext(authorizedUserTelegramId, userService, projectService, goalService, objectMapper)
 
     fun json(obj: Any): String {
         if (obj is List<*>)
@@ -44,11 +44,11 @@ class GiveMe(
 }
 
 class GiveMeContext(
-    private var authorizedUserName: String?,
+    private var authorizedUserName: Int?,
     private var userService: UserService,
     private var projectService: ProjectService,
     private var goalService: GoalService,
     private var objectMapper: ObjectMapper
 ) {
-    fun project(ownerName: String): ProjectBuilder = ProjectBuilder(authorizedUserName, ownerName, userService, projectService, goalService, objectMapper)
+    fun project(ownerTelegramId: Int): ProjectBuilder = ProjectBuilder(authorizedUserName, ownerTelegramId, userService, projectService, goalService, objectMapper)
 }

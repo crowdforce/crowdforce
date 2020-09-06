@@ -7,20 +7,21 @@ import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.server.SecurityWebFilterChain
+import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository
 
 @Configuration
 @EnableWebFluxSecurity
 class SecurityConfig {
     @Bean
+    fun serverSecurityContextRepository() = WebSessionServerSecurityContextRepository()
+
+    @Bean
     fun securitygWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         http.authorizeExchange()
             .pathMatchers("/**").permitAll()
             .anyExchange().authenticated()
-            .and().formLogin()
 
-        http.httpBasic()
-            .and()
-            .cors()
+        http.cors()
             .and()
             .csrf().disable() // csrfTokenRepository(CookieServerCsrfTokenRepository.withHttpOnlyFalse())
 

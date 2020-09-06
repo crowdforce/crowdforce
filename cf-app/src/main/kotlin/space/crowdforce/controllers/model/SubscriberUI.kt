@@ -1,3 +1,3 @@
 package space.crowdforce.controllers.model
 
-data class SubscriberUI(val name: String)
+data class SubscriberUI(val telegramId: Int)

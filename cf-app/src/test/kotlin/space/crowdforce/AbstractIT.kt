@@ -15,7 +15,7 @@ import java.io.File
 @ActiveProfiles("test")
 class AbstractIT {
     companion object {
-        const val TEST_USER = "test_user"
+        const val TEST_TELEGRAM_USER_ID = "321"
 
         private val dockerContainers = KDockerComposeContainer(File("src/test/resources/docker-compose-test.yml"))
             .withLocalCompose(true)
