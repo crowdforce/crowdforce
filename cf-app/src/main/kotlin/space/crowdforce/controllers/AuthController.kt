@@ -31,7 +31,7 @@ class AuthController(
     fun auth(
         @RequestParam("id") id: Int,
         @RequestParam("hash") hash: String,
-        @RequestParam("redirectTo") redirectTo: String,
+        @RequestParam("redirect_to") redirectTo: String,
         @RequestParam("auth_date") authDate: Long,
         severExchange: ServerWebExchange
     ): Mono<String> =
