@@ -7,7 +7,7 @@ on:
       - test-deploy
 
 jobs:
-  build:
+  build_and_deploy:
     runs-on: [ubuntu-latest]
 
     steps:
@@ -45,7 +45,10 @@ jobs:
           host: ${{ secrets.CF_SERVER_IP }}
           username: ${{ secrets.CF_SERVER_USER }}
           password: ${{ secrets.CF_SERVER_PASS }}
-          script: sudo systemctl restart crowdforce-app.service
+          port: ${{ secrets.CF_SERVER_PORT }}
+          script: |
+            sudo systemctl restart crowdforce-app.service
+            sudo systemctl status crowdforce-app.service
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
