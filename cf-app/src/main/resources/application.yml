@@ -10,23 +10,11 @@ management:
         include: "health,info"
 
 telegram:
-  apiId: ${TELEGRAM_API_ID}
-  apiHash: ${TELEGRAM_API_HASH}
-  applicationVersion: 1.0.0
-  databaseDirectory: ${TELEGRAM_DB_DIR}
-  deviceModel: model
-  filesDirectory: ${TELEGRAM_DB_DIR}
-  systemLanguageCode: eu
-  systemVersion: 1
-  databaseEncryptionKey: ${TELEGRAM_DB_ENCRYPTION_KEY}
-  binLogBase64: ${TELEGRAM_BIN_LOG}
+  bot:
+    token: ${TOKEN} #"your_telegram_bot_token"
 
 spring:
   datasource:
     url: jdbc:postgresql://${DB_HOST}:5432/crowdforce
     username: ${DB_USER}
     password: ${DB_PASSWORD}
-
-security:
-  auth:
-    expiration-code-time-seconds: 300

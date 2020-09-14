@@ -44,7 +44,7 @@ class ProjectController(
     @GetMapping
     @ApiOperation(value = "")
     fun getProjects(principal: Principal?): List<ProjectUI> {
-        val userId = principal?.let { userService.getUserIdByName(principal.name) }
+        val userId = principal?.let { userService.getUserIdByTelegramId(principal.name.toInt()) }
 
         return projectService.getAllProjectAggregation(userId).map { map(it) }
     }
@@ -54,7 +54,8 @@ class ProjectController(
         principal: Principal?,
         @RequestBody project: ProjectFormUI
     ): ProjectUI {
-        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw RuntimeException("Unauthorized")
 
         return map(projectService.createProject(userId, project.name, project.description, Location(project.lng, project.lat)))
     }
@@ -65,7 +66,8 @@ class ProjectController(
         principal: Principal?,
         @RequestBody project: ProjectFormUI
     ) {
-        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw RuntimeException("Unauthorized")
 
         projectService.updateProject(projectId, userId, project.name, project.description, Location(project.lng, project.lat))
     }
@@ -75,7 +77,8 @@ class ProjectController(
         @PathVariable("projectId") projectId: Int,
         principal: Principal?
     ) {
-        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw RuntimeException("Unauthorized")
 
         projectService.deleteProject(projectId, userId)
     }
@@ -91,7 +94,8 @@ class ProjectController(
         @PathVariable("projectId") projectId: Int,
         principal: Principal?
     ) {
-        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw RuntimeException("Unauthorized")
 
         projectService.subscribeUser(projectId, userId)
     }
@@ -101,14 +105,15 @@ class ProjectController(
         @PathVariable("projectId") projectId: Int,
         principal: Principal?
     ) {
-        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw RuntimeException("Unauthorized")
 
         projectService.unsubscribeUser(projectId, userId)
     }
 
     @GetMapping("/{projectId}/activities")
     fun getActivities(@PathVariable("projectId") projectId: Int, principal: Principal?): List<ActivityUI> {
-        val userId = principal?.let { userService.getUserIdByName(it.name) }
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
 
         return activityService.findActivities(userId, projectId).map { map(it) }
     }
@@ -120,7 +125,8 @@ class ProjectController(
         principal: Principal?,
         @RequestBody activity: ActivityFormUI
     ) {
-        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw RuntimeException("Unauthorized")
 
         activityService.updateActivity(activityId, userId, activity.name, activity.description, activity.endTime, activity.startTime)
     }
@@ -131,7 +137,8 @@ class ProjectController(
         @PathVariable("activityId") activityId: Int,
         principal: Principal?
     ) {
-        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw RuntimeException("Unauthorized")
 
         activityService.deleteActivity(activityId, userId)
     }
@@ -142,7 +149,8 @@ class ProjectController(
         principal: Principal?,
         @RequestBody activity: ActivityFormUI
     ) {
-        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw RuntimeException("Unauthorized")
 
         activityService.createActivity(userId, projectId, activity.name, activity.description, activity.startTime, activity.endTime)
     }
@@ -161,7 +169,8 @@ class ProjectController(
         @PathVariable("activityId") activityId: Int,
         principal: Principal?
     ) {
-        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw RuntimeException("Unauthorized")
 
         activityService.takePart(userId, activityId)
     }
@@ -172,7 +181,8 @@ class ProjectController(
         @PathVariable("activityId") activityId: Int,
         principal: Principal?
     ) {
-        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw RuntimeException("Unauthorized")
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw RuntimeException("Unauthorized")
 
         activityService.deleteParticipant(userId, activityId)
     }
@@ -195,7 +205,8 @@ class ProjectController(
         @RequestBody goalFormUI: GoalFormUI,
         principal: Principal?
     ): ResponseEntity<Any> {
-        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw UnauthorizedAccessException()
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw UnauthorizedAccessException()
 
         goalService.updateGoal(projectId, goalId, userId, goalFormUI.name, goalFormUI.description, goalFormUI.progress)
 
@@ -208,7 +219,8 @@ class ProjectController(
         @PathVariable("goalId") goalId: Int,
         principal: Principal?
     ): ResponseEntity<Any> {
-        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw UnauthorizedAccessException()
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw UnauthorizedAccessException()
 
         goalService.deleteGoal(projectId, goalId, userId)
 
@@ -221,7 +233,8 @@ class ProjectController(
         @RequestBody goalFormUI: GoalFormUI,
         principal: Principal?
     ): ResponseEntity<Any> {
-        val userId = principal?.let { userService.getUserIdByName(it.name) } ?: throw UnauthorizedAccessException()
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw UnauthorizedAccessException()
 
         val goal = mapperService.map(goalService.addGoal(projectId, userId, goalFormUI.name, goalFormUI.description, goalFormUI.progress))
 
@@ -229,7 +242,7 @@ class ProjectController(
     }
 
     fun map(user: User): SubscriberUI =
-        SubscriberUI(user.name)
+        SubscriberUI(user.telegramId)
 
     fun map(activity: Activity): ActivityUI {
         return ActivityUI(

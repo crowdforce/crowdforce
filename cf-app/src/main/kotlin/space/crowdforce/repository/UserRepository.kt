@@ -17,17 +17,17 @@ class UserRepository(
 ) {
 
     companion object {
-        val USER_MAPPER = { record: Record -> User(record.get("name") as String) }
+        val USER_MAPPER = { record: Record -> User(record.get("telegram_id") as Int) }
     }
 
-    fun insert(userName: String, currentTime: LocalDateTime): UsersRecord = dslContext.insertInto(Tables.USERS)
-        .columns(Tables.USERS.TG_USERNAME, Tables.USERS.REG_DATE)
-        .values(userName, currentTime)
+    fun insert(telegramId: Int, name: String, currentTime: LocalDateTime): UsersRecord = dslContext.insertInto(Tables.USERS)
+        .columns(Tables.USERS.TG_ID, Tables.USERS.NAME, Tables.USERS.REG_DATE)
+        .values(telegramId, name, currentTime)
         .returning()
         .fetchOne()
 
-    fun findByUserName(userName: String): UsersRecord? = dslContext.select(Tables.USERS.ID, Tables.USERS.TG_USERNAME, Tables.USERS.REG_DATE)
+    fun findByTelegramId(telegramId: Int): UsersRecord? = dslContext.select(Tables.USERS.ID, Tables.USERS.NAME, Tables.USERS.TG_ID, Tables.USERS.REG_DATE)
         .from(Tables.USERS)
-        .where(Tables.USERS.TG_USERNAME.eq(userName))
+        .where(Tables.USERS.TG_ID.eq(telegramId))
         .fetchOneInto(UsersRecord::class.java)
 }

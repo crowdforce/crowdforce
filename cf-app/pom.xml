@@ -32,15 +32,16 @@
 
     <dependencies>
         <dependency>
-            <groupId>dev.whyoleg.ktd</groupId>
-            <artifactId>ktd-api-coroutines-jvm</artifactId>
-            <version>0.5.0-1.5.4</version>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
+            <version>4.9.1</version>
         </dependency>
 
         <dependency>
-            <groupId>dev.whyoleg.ktd</groupId>
-            <artifactId>ktd-client-coroutines-jvm</artifactId>
-            <version>0.5.0</version>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>8.0.1</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- <editor-fold desc="crowdforce dependencies" -->
@@ -166,11 +167,6 @@
                     <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>

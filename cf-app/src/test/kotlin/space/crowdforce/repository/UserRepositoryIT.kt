@@ -23,34 +23,33 @@ internal class UserRepositoryIT : AbstractIT() {
     @BeforeEach
     fun cleanUp() {
         dslContext.truncate(Tables.USERS).cascade().execute()
-        dslContext.truncate(Tables.USER_CODES).cascade().execute()
     }
 
     @Test
     fun `should insert user when it doesn't exist`() {
-        val user = userRepository.insert("siuwide", now())
+        val user = userRepository.insert(234, TEST_TELEGRAM_USER_ID, now())
         assertThat(user.id).isNotNull()
-        assertThat(user.tgUsername).isEqualTo("siuwide")
+        assertThat(user.tgId).isEqualTo(234)
     }
 
     @Test
     fun `should throw exception when user exists`() {
-        val user = userRepository.insert("sdnwue", now())
+        val user = userRepository.insert(342, TEST_TELEGRAM_USER_ID, now())
         assertThat(user.id).isNotNull()
-        assertThat(user.tgUsername).isEqualTo("sdnwue")
+        assertThat(user.tgId).isEqualTo(342)
 
         assertThrows<RuntimeException> {
-            userRepository.insert("sdnwue", now())
+            userRepository.insert(342, TEST_TELEGRAM_USER_ID, now())
         }
     }
 
     @Test
     fun `should find user by userName`() {
-        val user = userRepository.insert("sfubu", now())
+        val user = userRepository.insert(3232, TEST_TELEGRAM_USER_ID, now())
         assertThat(user.id).isNotNull()
-        assertThat(user.tgUsername).isEqualTo("sfubu")
+        assertThat(user.tgId).isEqualTo(3232)
 
-        val byUserName = userRepository.findByUserName("sfubu")
+        val byUserName = userRepository.findByTelegramId(3232)
         assertThat(user).isEqualTo(byUserName)
     }
 }

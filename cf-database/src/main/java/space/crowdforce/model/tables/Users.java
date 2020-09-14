@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row3;
+import org.jooq.Row4;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -33,7 +33,7 @@ import space.crowdforce.model.tables.records.UsersRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Users extends TableImpl<UsersRecord> {
 
-    private static final long serialVersionUID = 1941344634;
+    private static final long serialVersionUID = 26541330;
 
     /**
      * The reference instance of <code>public.users</code>
@@ -54,9 +54,14 @@ public class Users extends TableImpl<UsersRecord> {
     public final TableField<UsersRecord, Integer> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('users_id_seq'::regclass)", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
-     * The column <code>public.users.tg_username</code>.
+     * The column <code>public.users.name</code>.
      */
-    public final TableField<UsersRecord, String> TG_USERNAME = createField(DSL.name("tg_username"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<UsersRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
+
+    /**
+     * The column <code>public.users.tg_id</code>.
+     */
+    public final TableField<UsersRecord, Integer> TG_ID = createField(DSL.name("tg_id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>public.users.reg_date</code>.
@@ -113,7 +118,7 @@ public class Users extends TableImpl<UsersRecord> {
 
     @Override
     public List<UniqueKey<UsersRecord>> getKeys() {
-        return Arrays.<UniqueKey<UsersRecord>>asList(Keys.USERS_PKEY, Keys.USERS_TG_USERNAME_KEY);
+        return Arrays.<UniqueKey<UsersRecord>>asList(Keys.USERS_PKEY, Keys.USERS_NAME_KEY, Keys.USERS_TG_ID_KEY);
     }
 
     @Override
@@ -143,11 +148,11 @@ public class Users extends TableImpl<UsersRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row3 type methods
+    // Row4 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<Integer, String, LocalDateTime> fieldsRow() {
-        return (Row3) super.fieldsRow();
+    public Row4<Integer, String, Integer, LocalDateTime> fieldsRow() {
+        return (Row4) super.fieldsRow();
     }
 }
