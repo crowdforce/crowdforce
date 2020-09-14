@@ -2,6 +2,7 @@ package space.crowdforce.controllers
 
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
+import org.springframework.http.MediaType
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -33,7 +34,7 @@ import java.security.Principal
 
 @Api(value = "/api/v1/projects", description = "")
 @RestController
-@RequestMapping("/api/v1/projects", consumes = [APPLICATION_JSON_VALUE], produces = [APPLICATION_JSON_VALUE])
+@RequestMapping("/api/v1/projects", consumes = [MediaType.ALL_VALUE], produces = [APPLICATION_JSON_VALUE])
 class ProjectController(
     private val projectService: ProjectService,
     private val activityService: ActivityService,
