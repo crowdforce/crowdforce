@@ -58,7 +58,7 @@ class TelegramSecurityService(
 
     private fun buildToken(queryParams: Map<String, String>): String {
         val str: String = queryParams.entries.stream()
-            .filter { it.key != "hash" && it.key != "redirectTo" }
+            .filter { it.key != "hash" && it.key != "redirect_to" }
             .sorted { a: Map.Entry<String, Any>, b: Map.Entry<String, Any> -> a.key.compareTo(b.key) }
             .map { kvp: Map.Entry<String, Any> -> kvp.key + "=" + kvp.value }
             .collect(Collectors.joining("\n"))
