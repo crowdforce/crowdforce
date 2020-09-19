@@ -4,7 +4,7 @@ CREATE TABLE users (
   name                     VARCHAR(255) NOT NULL,
   tg_id                    INT NOT NULL,
   reg_date                 TIMESTAMP NOT NULL,
-  UNIQUE (tg_id), UNIQUE (name)
+  UNIQUE (tg_id)
 );
 
 -- Project

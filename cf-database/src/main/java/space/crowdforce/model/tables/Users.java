@@ -33,7 +33,7 @@ import space.crowdforce.model.tables.records.UsersRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Users extends TableImpl<UsersRecord> {
 
-    private static final long serialVersionUID = 26541330;
+    private static final long serialVersionUID = 1559373680;
 
     /**
      * The reference instance of <code>public.users</code>
@@ -118,7 +118,7 @@ public class Users extends TableImpl<UsersRecord> {
 
     @Override
     public List<UniqueKey<UsersRecord>> getKeys() {
-        return Arrays.<UniqueKey<UsersRecord>>asList(Keys.USERS_PKEY, Keys.USERS_NAME_KEY, Keys.USERS_TG_ID_KEY);
+        return Arrays.<UniqueKey<UsersRecord>>asList(Keys.USERS_PKEY, Keys.USERS_TG_ID_KEY);
     }
 
     @Override

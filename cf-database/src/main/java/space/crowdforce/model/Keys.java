@@ -55,7 +55,6 @@ public class Keys {
     public static final UniqueKey<ProjectsRecord> PROJECTS_PKEY = UniqueKeys0.PROJECTS_PKEY;
     public static final UniqueKey<ProjectsRecord> PROJECTS_NAME_KEY = UniqueKeys0.PROJECTS_NAME_KEY;
     public static final UniqueKey<UsersRecord> USERS_PKEY = UniqueKeys0.USERS_PKEY;
-    public static final UniqueKey<UsersRecord> USERS_NAME_KEY = UniqueKeys0.USERS_NAME_KEY;
     public static final UniqueKey<UsersRecord> USERS_TG_ID_KEY = UniqueKeys0.USERS_TG_ID_KEY;
 
     // -------------------------------------------------------------------------
@@ -91,7 +90,6 @@ public class Keys {
         public static final UniqueKey<ProjectsRecord> PROJECTS_PKEY = Internal.createUniqueKey(Projects.PROJECTS, "projects_pkey", new TableField[] { Projects.PROJECTS.ID }, true);
         public static final UniqueKey<ProjectsRecord> PROJECTS_NAME_KEY = Internal.createUniqueKey(Projects.PROJECTS, "projects_name_key", new TableField[] { Projects.PROJECTS.NAME }, true);
         public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, "users_pkey", new TableField[] { Users.USERS.ID }, true);
-        public static final UniqueKey<UsersRecord> USERS_NAME_KEY = Internal.createUniqueKey(Users.USERS, "users_name_key", new TableField[] { Users.USERS.NAME }, true);
         public static final UniqueKey<UsersRecord> USERS_TG_ID_KEY = Internal.createUniqueKey(Users.USERS, "users_tg_id_key", new TableField[] { Users.USERS.TG_ID }, true);
     }
 

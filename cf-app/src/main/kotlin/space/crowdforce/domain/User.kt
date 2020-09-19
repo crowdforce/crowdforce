@@ -1,5 +1,7 @@
 package space.crowdforce.domain
 
 data class User(
-    val telegramId: Int
+    val id: Int,
+    val telegramId: Int,
+    val name: String
 )
