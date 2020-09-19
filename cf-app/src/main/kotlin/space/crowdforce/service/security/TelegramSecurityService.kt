@@ -36,7 +36,7 @@ class TelegramSecurityService(
         val validToken = buildToken(queryParams)
 
         if (validToken == hash) {
-            userService.getOrCreateUser(telegramId, name(queryParams))
+            userService.getOrCreateUser(telegramId, username(queryParams))
 
             val token = UsernamePasswordAuthenticationToken(
                 BasicUserPrincipal(telegramId.toString()),
@@ -50,10 +50,13 @@ class TelegramSecurityService(
         throw BadCredentialsException("Wrong token [$hash].")
     }
 
-    private fun name(queryParams: Map<String, String>): String = queryParams.get("username").let {
-        queryParams.get("first_name")
-    }.let {
-        queryParams.get("id")!!
+    private fun username(queryParams: Map<String, String>): String = queryParams["username"]
+        ?: name(queryParams["first_name"], queryParams["last_name"]) ?: queryParams["id"]!!
+
+    private fun name(firstName: String?, lastName: String?): String? {
+        return if (firstName != null && lastName != null) {
+            "$firstName $lastName"
+        } else firstName ?: lastName
     }
 
     private fun buildToken(queryParams: Map<String, String>): String {
