@@ -34,6 +34,9 @@ class ProjectService(
     fun findProject(projectId: Int): Project? = projectRepository.findById(projectId)
 
     @Transactional
+    fun findProjectAggregation(projectId: Int, userId: Int) = projectRepository.findById(projectId, userId)
+
+    @Transactional
     fun getAllProjectAggregation(userId: Int?): List<Project> = projectRepository.findAll(userId)
 
     @Transactional

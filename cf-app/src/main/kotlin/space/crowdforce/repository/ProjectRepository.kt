@@ -64,6 +64,14 @@ class ProjectRepository(
         .where(PROJECTS.ID.eq(projectId))
         .fetchOne(PROJECT_MAPPER)
 
+    fun findById(projectId: Int, userId: Int): Project? = dslContext.select()
+        .from(PROJECTS.leftJoin(PROJECT_SUBSCRIBERS)
+            .on(PROJECT_SUBSCRIBERS.PROJECT_ID.eq(PROJECTS.ID))
+        )
+        .where(PROJECT_SUBSCRIBERS.USER_ID.eq(userId))
+        .or(PROJECT_SUBSCRIBERS.USER_ID.isNull)
+        .fetchOne(PROJECT_WITH_SUBSCRIBER_MAPPER)
+
     fun findAll(userId: Int? = null): List<Project> {
         return if (userId == null)
             dslContext.selectFrom(PROJECTS)

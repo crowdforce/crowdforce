@@ -24,6 +24,7 @@ import space.crowdforce.domain.Activity
 import space.crowdforce.domain.Project
 import space.crowdforce.domain.User
 import space.crowdforce.domain.geo.Location
+import space.crowdforce.exception.ResourceNotFoundException
 import space.crowdforce.exception.UnauthorizedAccessException
 import space.crowdforce.service.activity.ActivityService
 import space.crowdforce.service.goal.GoalService
@@ -60,6 +61,18 @@ class ProjectController(
 
         return map(projectService.createProject(userId, project.name, project.description, Location(project.lng, project.lat)))
     }
+
+    @GetMapping("/{projectId}")
+    suspend fun getProject(
+        @PathVariable("projectId") projectId: Int,
+        principal: Principal?
+    ): ProjectUI = map(if (principal == null) {
+        projectService.findProject(projectId) ?: throw ResourceNotFoundException()
+    } else {
+        val userId = userService.getUserIdByTelegramId(principal.name.toInt()) ?: throw UnauthorizedAccessException()
+
+        projectService.findProjectAggregation(projectId, userId) ?: throw ResourceNotFoundException()
+    })
 
     @PutMapping("/{projectId}")
     suspend fun updateProject(

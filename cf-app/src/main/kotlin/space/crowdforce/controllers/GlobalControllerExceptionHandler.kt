@@ -6,6 +6,7 @@ import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import space.crowdforce.exception.OperationException
+import space.crowdforce.exception.ResourceNotFoundException
 import space.crowdforce.exception.UnauthorizedAccessException
 
 @ControllerAdvice
@@ -21,4 +22,8 @@ class GlobalControllerExceptionHandler {
     @ExceptionHandler(OperationException::class)
     fun handleOperationException(e: Exception) =
         ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
+
+    @ExceptionHandler(ResourceNotFoundException::class)
+    fun handleResourceNotFoundException(e: Exception) =
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
 }

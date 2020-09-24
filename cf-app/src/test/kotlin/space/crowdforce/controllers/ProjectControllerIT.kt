@@ -1,5 +1,6 @@
 package space.crowdforce.controllers
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -21,6 +22,9 @@ class ProjectControllerIT : AbstractIT() {
 
     @Inject
     private lateinit var projectService: ProjectService
+
+    @Inject
+    private lateinit var objectMapper: ObjectMapper
 
     @BeforeEach
     internal fun setUp() = giveMe.emptyDatabase()
@@ -104,6 +108,49 @@ class ProjectControllerIT : AbstractIT() {
             .jsonPath("$.description").isEqualTo(projectForm.description)
             .jsonPath("$.lat").isEqualTo(projectForm.lat)
             .jsonPath("$.lng").isEqualTo(projectForm.lng)
+    }
+
+    @Test
+    fun `Should get project`() {
+        // given:
+        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+
+        val project = giveMe.unauthorized()
+            .project(ownerTelegramId = TEST_TELEGRAM_USER_ID.toInt())
+            .please()[0]
+
+        val projectJson = objectMapper.writeValueAsString(project)
+
+        // act and check:
+        webTestClient.get()
+            .uri("/api/v1/projects/${project.id}")
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().is2xxSuccessful
+            .expectBody().json(projectJson)
+    }
+
+    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
+    @Test
+    fun `Should get project with subscription`() {
+        // given:
+        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+
+        val project = giveMe.authorized(TEST_TELEGRAM_USER_ID.toInt())
+            .project(ownerTelegramId = TEST_TELEGRAM_USER_ID.toInt()).witSubscriber(TEST_TELEGRAM_USER_ID.toInt())
+            .please()[0]
+
+        val projectJson = objectMapper.writeValueAsString(project)
+
+        // act and check:
+        webTestClient.get()
+            .uri("/api/v1/projects/${project.id}")
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().is2xxSuccessful
+            .expectBody().json(projectJson)
     }
 
     @WithMockUser(username = TEST_TELEGRAM_USER_ID)
