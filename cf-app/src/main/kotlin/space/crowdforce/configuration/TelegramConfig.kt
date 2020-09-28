@@ -12,6 +12,7 @@ import space.crowdforce.service.tg.CustomTelegramBot
 
 @Configuration
 class TelegramConfig {
+    private val log = LoggerFactory.getLogger(TelegramConfig::class.java)
 
     @Autowired
     lateinit var crowdforce: CustomTelegramBot;
@@ -29,9 +30,5 @@ class TelegramConfig {
         } catch (e: TelegramApiException) {
             log.error("Bot registration was failed", e)
         }
-    }
-
-    companion object {
-        private val log = LoggerFactory.getLogger(TelegramConfig::class.java)
     }
 }

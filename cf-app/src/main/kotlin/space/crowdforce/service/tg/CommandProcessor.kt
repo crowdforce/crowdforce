@@ -9,42 +9,24 @@ import space.crowdforce.service.tg.command.*
 
 @Component
 class CommandProcessor(
-        val commandContext: CommandContext,
-        val userRepository: UserRepository,
-        val argumentsValidator: ArgumentsValidator,
+        private val commandContext: CommandContext,
+        private val userRepository: UserRepository,
+        private val argumentsValidator: ArgumentsValidator,
         commandList: List<Command>
 ) {
-
     companion object {
         val COMMAND_PREFIX = "/"
 
         private val log = LoggerFactory.getLogger(CommandProcessor::class.java)
     }
 
-    val commands: Map<String, Command> = commandList.map { it.name() to it }.toMap()
+    private val commands: Map<String, Command> = commandList.associateBy { it.name() }.toMap()
 
-    val nameMapper: Map<String, String> = mapOf(
+    private val nameMapper: Map<String, String> = mapOf(
             ProjectsGoalCommand.NAME to "Добавления цели проекта",
             ProjectsCommand.NAME to "Просмотр проекта",
             ProjectsGoalListCommand.NAME to "Список целей"
-    )
-
-    fun extractCommand(args: String, userContext: UserContext): Command? {
-        val argsList = args.trim().split(" ").toMutableList()
-
-        var commandStr = argsList[0]
-
-        commandStr = if (commandStr.startsWith(COMMAND_PREFIX))
-            commandStr.substring(COMMAND_PREFIX.length)
-        else commandStr
-
-        if(!commandStr.equals(userContext.lastCommand))
-            userContext.invalidate()
-
-        userContext.applyContext(parseParams(argsList.subList(1, argsList.size)))
-
-        return commands[commandStr]
-    }
+    )    
 
     @Transactional
     fun execute(userTgId: String, args: String): Response {
@@ -87,6 +69,26 @@ class CommandProcessor(
         context.put(messageId, args)
     }
 
+    private fun extractCommand(args: String, userContext: UserContext): Command? {
+        val argsList = args.trim().split(" ").toMutableList()
+
+        if(argsList.isEmpty())
+            return null
+
+        var commandStr = argsList[0]
+
+        commandStr = if (commandStr.startsWith(COMMAND_PREFIX))
+            commandStr.substring(COMMAND_PREFIX.length)
+        else commandStr
+
+        if(!commandStr.equals(userContext.lastCommand))
+            userContext.invalidate()
+
+        userContext.applyContext(parseParams(argsList.subList(1, argsList.size)))
+
+        return commands[commandStr]
+    }
+
     private fun executeCommand(command: Command, context: UserContext, userTgId: Int): Response {
         try {
             val user = userRepository.findByTelegramId(userTgId) ?: NULL_USER
@@ -100,7 +102,7 @@ class CommandProcessor(
 
             return prepareResponse(answer, context, command)
         } catch (e: Exception) {
-            log.error("Error during command execution", e)
+            log.error("Command execution failed: command=${command.name()}, userTgId=$userTgId, context=${context}", e)
 
             return Response("В момент выполнения произошла ошибка, попробуйте изменить параметры ввода")
         }
@@ -111,9 +113,9 @@ class CommandProcessor(
             context.invalidate()
 
         val actions = answer.links.map {
-            val command = commands[it.commandName] ?: command
+            val linkCommand = commands[it.commandName] ?: command
 
-            val argumentsFromContext = command.arguments()
+            val argumentsFromContext = linkCommand.arguments()
                     .filter { context.value(it) != null }
                     .map { "${it.argName}=${context.value(it)}" }
                     .joinToString(separator = " ")
@@ -122,9 +124,9 @@ class CommandProcessor(
                     .map { "${it.first}=${it.second}" }
                     .joinToString(separator = " ")
 
-            val viewName = it.viewName ?: nameMapper[command.name()] ?: command.name()
+            val viewName = it.viewName ?: nameMapper[linkCommand.name()] ?: linkCommand.name()
 
-            viewName to "/${command.name()} $argumentsFromContext $argumentsFromCommand"
+            viewName to "/${linkCommand.name()} $argumentsFromContext $argumentsFromCommand"
         }.toList()
 
         return Response(text = answer.text, actions = actions)
@@ -136,7 +138,7 @@ class CommandProcessor(
         val params = mutableMapOf<String, String>()
 
         while (args.hasNext()) {
-            var next = args.next()
+            val next = args.next()
 
             if (next.contains("=")) {
                 val arg = next.split("=")

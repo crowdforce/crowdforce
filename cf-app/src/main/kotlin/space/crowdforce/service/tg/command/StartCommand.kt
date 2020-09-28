@@ -7,9 +7,7 @@ import space.crowdforce.service.tg.*
 
 @Service
 class StartCommand : Command {
-    override fun name(): String {
-        return "start"
-    }
+    override fun name() = "start"
 
     override fun arguments(): List<Argument> {
         return emptyList()
@@ -20,9 +18,5 @@ class StartCommand : Command {
                 text = "Меню",
                 links = Navigation.mainMenu()
         )
-    }
-
-    companion object {
-        private val log = LoggerFactory.getLogger(StartCommand::class.java)
     }
 }

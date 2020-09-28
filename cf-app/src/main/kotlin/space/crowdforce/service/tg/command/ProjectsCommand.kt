@@ -10,7 +10,7 @@ import space.crowdforce.service.tg.Navigation.toOuterLink
 
 @Service
 class ProjectsCommand(
-        val projectRepository: ProjectRepository
+    private val projectRepository: ProjectRepository
 ) : Command {
 
     val requiredArguments = listOf(OWNED_PROJECT_ID)
@@ -36,9 +36,7 @@ class ProjectsCommand(
         """.trimIndent()
     }
 
-    override fun name(): String {
-        return NAME
-    }
+    override fun name() = NAME
 
     override fun arguments(): List<Argument> {
         return requiredArguments

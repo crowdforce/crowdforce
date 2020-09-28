@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 
 @Service
 class ProjectsGoalCommand(
-        val goalRepository: GoalRepository
+    private val goalRepository: GoalRepository
 ) : Command {
 
     val requiredArguments = listOf(OWNED_PROJECT_ID, GOAL_NAME, GOAL_DESCRIPTION)

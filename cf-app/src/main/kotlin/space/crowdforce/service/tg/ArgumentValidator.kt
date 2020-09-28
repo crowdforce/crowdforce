@@ -16,7 +16,7 @@ interface ArgumentValidator {
 }
 
 @Component
-class OwnedProjectId(val projectRepository: ProjectRepository) : ArgumentValidator {
+class OwnedProjectId(private val projectRepository: ProjectRepository) : ArgumentValidator {
     override fun validate(user: User, context: UserContext): CommandAnswer? {
         val value = context.value(argument())
                 ?: return validationFail(user)
@@ -36,13 +36,13 @@ class OwnedProjectId(val projectRepository: ProjectRepository) : ArgumentValidat
         )
     }
 
-    fun projectList(projects: List<Project>): List<Link> {
+    private fun projectList(projects: List<Project>): List<Link> {
         return projects
                 .map { toInnerLink(it.name, listOf(argument() to it.id.toString())) }
                 .toList()
     }
 
-    override fun argument(): Argument = OWNED_PROJECT_ID
+    override fun argument() = OWNED_PROJECT_ID
 }
 
 @Component
@@ -58,14 +58,14 @@ class GoalName : ArgumentValidator {
 
         val text: String? = context.valueByLink(argument())
 
-        if (text == null || text.isBlank()) {
+        if (text.isNullOrBlank()) {
             return CommandAnswer.inProgress("Введите имя цели")
         }
 
         return null
     }
 
-    override fun argument(): Argument = GOAL_NAME
+    override fun argument() = GOAL_NAME
 }
 
 @Component
@@ -88,13 +88,13 @@ class GoalDescription : ArgumentValidator {
         return null
     }
 
-    override fun argument(): Argument = GOAL_DESCRIPTION
+    override fun argument() = GOAL_DESCRIPTION
 }
 
 @Component
-class ArgumentsValidator(final val argumentValidators: List<ArgumentValidator>) {
+class ArgumentsValidator(argumentValidators: List<ArgumentValidator>) {
 
-    final val map: Map<Argument, ArgumentValidator> = argumentValidators.map { it.argument() to it }.toMap();
+    private final val map: Map<Argument, ArgumentValidator> = argumentValidators.associateBy { it.argument() }.toMap();
 
     fun validate(user: User, expectedArguments: List<Argument>, context: UserContext): CommandAnswer? {
         return expectedArguments.map { map[it]?.validate(user, context) }.filterNotNull().firstOrNull()

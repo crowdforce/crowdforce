@@ -1,12 +1,12 @@
 package space.crowdforce.service.tg
 
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.bots.DefaultBotOptions
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
-import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
@@ -14,10 +14,13 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 @Component
 class CustomTelegramBot(
-        val tgCommandProcessor: CommandProcessor,
-        @Value("\${telegram.bot.token}") val customBotToken: String,
-        @Value("\${telegram.bot.username}") val customBotUsername: String
+        private val tgCommandProcessor: CommandProcessor,
+        private @Value("\${telegram.bot.token}") val customBotToken: String,
+        private @Value("\${telegram.bot.username}") val customBotUsername: String
 ) : TelegramLongPollingBot(DefaultBotOptions()) {
+    companion object {
+        private val log = LoggerFactory.getLogger(CustomTelegramBot::class.java)
+    }
 
     override fun getBotUsername(): String {
         return customBotUsername
@@ -27,29 +30,31 @@ class CustomTelegramBot(
         return customBotToken
     }
 
-    fun sendMsg(targeId: String, msg: String, actions: List<Pair<String, String>> = listOf()) {
+    fun sendMsg(targetId: String, msg: String, actions: List<Pair<String, String>> = emptyList()) {
 
         val message = SendMessage() // Create a SendMessage object with mandatory fields
-                .setChatId(targeId)
+                .setChatId(targetId)
                 .setReplyMarkup(inlineKeyboardMarkup(actions))
                 .setText(msg)
 
         try {
-            execute<Message, SendMessage>(message) // Call method to send the message
+            execute(message) // Call method to send the message
         } catch (e: TelegramApiException) {
-            e.printStackTrace()
+            log.error("Replacing message failed : chatId=$targetId, message=$msg, actions=$actions", e)
         }
     }
 
-    fun replaceMsg(targeId: String, messageId: Int, msg: String, actions: List<Pair<String, String>> = listOf()) {
-        val message = EditMessageText().setChatId(targeId)
+    fun replaceMsg(targetId: String, messageId: Int, msg: String, actions: List<Pair<String, String>> = emptyList()) {
+        val message = EditMessageText().setChatId(targetId)
                 .setMessageId(messageId)
                 .setText(msg)
                 .setReplyMarkup(inlineKeyboardMarkup(actions))
         try {
             execute(message) // Call method to send the message
         } catch (e: TelegramApiException) {
-            e.printStackTrace()
+            log.error(
+                "Replacing message failed : chatId=$targetId, messageId=$messageId, message=$msg, actions=$actions", e
+            )
         }
     }
 
@@ -57,9 +62,6 @@ class CustomTelegramBot(
         val inlineKeyboardMarkup = InlineKeyboardMarkup()
 
         val chunkedSize = 1
-//                if (actions.isNotEmpty()) {
-//            if (actions[0].first.length < 6) 4 else 2
-//        } else 2
 
         inlineKeyboardMarkup.keyboard = actions.map {
             val button = InlineKeyboardButton(it.first)
@@ -71,15 +73,15 @@ class CustomTelegramBot(
     }
 
 
-    override fun onUpdateReceived(update: Update?) {
+    override fun onUpdateReceived(update: Update) {
         // We check if the update has a message and the message has text
-        if (update!!.hasEditedMessage() && update.getEditedMessage().hasText()) {
+        if (update.hasEditedMessage() && update.editedMessage.hasText()) {
             tgCommandProcessor.executeEditedText(
                     update.editedMessage.chatId.toString(),
                     update.editedMessage.messageId.toString(),
                     update.editedMessage.text
             )
-        } else if (update!!.hasMessage() && update.getMessage().hasText()) {
+        } else if (update.hasMessage() && update.message.hasText()) {
             val answer = tgCommandProcessor.executeText(
                     update.message.chatId.toString(),
                     update.message.messageId.toString(),
@@ -97,7 +99,5 @@ class CustomTelegramBot(
             sendMsg(message.chatId.toString(), answer.text, answer.actions)
 //                replaceMsg(message.chatId.toString(), message.messageId, answer.text, answer.actions)
         }
-
-
     }
 }

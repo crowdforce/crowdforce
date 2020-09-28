@@ -4,14 +4,14 @@ import org.springframework.stereotype.Component
 
 @Component
 class CommandContext {
-    val map: MutableMap<Long, UserContext> = mutableMapOf()
+    private val map: MutableMap<Long, UserContext> = mutableMapOf()
 
     fun getOrCreate(userId: Long): UserContext = map.computeIfAbsent(userId) { k -> UserContext() }
 }
 
 class UserContext {
-    val values: MutableMap<String, String> = mutableMapOf();
-    var lastTextId: String? = null
+    private val values: MutableMap<String, String> = mutableMapOf();
+    private var lastTextId: String? = null
     var lastCommand: String? = null
 
     fun applyContext(inputData: Map<String, String>) {
@@ -55,5 +55,9 @@ class UserContext {
         values.clear()
         lastTextId = null
         lastCommand = null
+    }
+
+    override fun toString(): String {
+        return "UserContext(values=$values, lastTextId=$lastTextId, lastCommand=$lastCommand)"
     }
 }

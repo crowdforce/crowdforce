@@ -8,7 +8,7 @@ import space.crowdforce.service.tg.*
 
 @Service
 class ProjectsGoalListCommand(
-        val goalRepository: GoalRepository
+    private val goalRepository: GoalRepository
 ) : Command {
 
     val requiredArguments = listOf(Argument.OWNED_PROJECT_ID)
@@ -28,9 +28,7 @@ class ProjectsGoalListCommand(
         }.joinToString(separator="\n")
     }
 
-    override fun name(): String {
-        return NAME
-    }
+    override fun name() = NAME
 
     override fun arguments(): List<Argument> {
         return requiredArguments
