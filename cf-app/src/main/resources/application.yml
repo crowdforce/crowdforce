@@ -12,6 +12,7 @@ management:
 telegram:
   bot:
     token: ${TOKEN} #"your_telegram_bot_token"
+    username: ${BOT_USERNAME}
 
 spring:
   datasource:

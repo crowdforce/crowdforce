@@ -86,6 +86,11 @@ class ProjectRepository(
                 .fetch(PROJECT_WITH_SUBSCRIBER_MAPPER)
     }
 
+    fun findOwned(ownerId: Int): List<Project> =
+            dslContext.selectFrom(PROJECTS)
+                    .where(PROJECTS.OWNER_ID.eq(ownerId))
+                    .fetch(PROJECT_MAPPER)
+
     fun update(projectId: Int, name: String, description: String, location: Location) = dslContext.update(PROJECTS)
         .set(PROJECTS.NAME, name)
         .set(PROJECTS.DESCRIPTION, description)
