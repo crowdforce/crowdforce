@@ -10,3 +10,4 @@ spring:
 telegram:
   bot:
     token: test-token #"your_telegram_bot_token"
+    username: test

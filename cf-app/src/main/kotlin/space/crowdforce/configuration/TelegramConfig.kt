@@ -15,11 +15,11 @@ class TelegramConfig {
     private val log = LoggerFactory.getLogger(TelegramConfig::class.java)
 
     @Autowired
-    lateinit var crowdforce: CustomTelegramBot;
+    lateinit var crowdforce: CustomTelegramBot
 
     @EventListener(ApplicationReadyEvent::class)
     fun botInit() {
-        ApiContextInitializer.init();
+        ApiContextInitializer.init()
 
         val botsApi = TelegramBotsApi()
 

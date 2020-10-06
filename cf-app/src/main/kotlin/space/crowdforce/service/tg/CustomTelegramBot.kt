@@ -14,9 +14,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 @Component
 class CustomTelegramBot(
-        private val tgCommandProcessor: CommandProcessor,
-        private @Value("\${telegram.bot.token}") val customBotToken: String,
-        private @Value("\${telegram.bot.username}") val customBotUsername: String
+    private val tgCommandProcessor: CommandProcessor,
+    @Value("\${telegram.bot.token}") private val customBotToken: String,
+    @Value("\${telegram.bot.username}") private val customBotUsername: String
 ) : TelegramLongPollingBot(DefaultBotOptions()) {
     companion object {
         private val log = LoggerFactory.getLogger(CustomTelegramBot::class.java)
@@ -33,9 +33,9 @@ class CustomTelegramBot(
     fun sendMsg(targetId: String, msg: String, actions: List<Pair<String, String>> = emptyList()) {
 
         val message = SendMessage() // Create a SendMessage object with mandatory fields
-                .setChatId(targetId)
-                .setReplyMarkup(inlineKeyboardMarkup(actions))
-                .setText(msg)
+            .setChatId(targetId)
+            .setReplyMarkup(inlineKeyboardMarkup(actions))
+            .setText(msg)
 
         try {
             execute(message) // Call method to send the message
@@ -46,9 +46,9 @@ class CustomTelegramBot(
 
     fun replaceMsg(targetId: String, messageId: Int, msg: String, actions: List<Pair<String, String>> = emptyList()) {
         val message = EditMessageText().setChatId(targetId)
-                .setMessageId(messageId)
-                .setText(msg)
-                .setReplyMarkup(inlineKeyboardMarkup(actions))
+            .setMessageId(messageId)
+            .setText(msg)
+            .setReplyMarkup(inlineKeyboardMarkup(actions))
         try {
             execute(message) // Call method to send the message
         } catch (e: TelegramApiException) {
@@ -72,28 +72,27 @@ class CustomTelegramBot(
         return inlineKeyboardMarkup
     }
 
-
     override fun onUpdateReceived(update: Update) {
         // We check if the update has a message and the message has text
         if (update.hasEditedMessage() && update.editedMessage.hasText()) {
             tgCommandProcessor.executeEditedText(
-                    update.editedMessage.chatId.toString(),
-                    update.editedMessage.messageId.toString(),
-                    update.editedMessage.text
+                update.editedMessage.chatId.toString(),
+                update.editedMessage.messageId.toString(),
+                update.editedMessage.text
             )
         } else if (update.hasMessage() && update.message.hasText()) {
             val answer = tgCommandProcessor.executeText(
-                    update.message.chatId.toString(),
-                    update.message.messageId.toString(),
-                    update.message.text
+                update.message.chatId.toString(),
+                update.message.messageId.toString(),
+                update.message.text
             )
 
             sendMsg(update.message.chatId.toString(), answer.text, answer.actions)
         } else if (update.hasCallbackQuery()) {
             val message = update.callbackQuery.message
             val answer = tgCommandProcessor.execute(
-                    message.chatId.toString(),
-                    update.callbackQuery.data
+                message.chatId.toString(),
+                update.callbackQuery.data
             )
 
             sendMsg(message.chatId.toString(), answer.text, answer.actions)

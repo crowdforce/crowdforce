@@ -1,9 +1,10 @@
 package space.crowdforce.service.tg.command
 
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import space.crowdforce.domain.User
-import space.crowdforce.service.tg.*
+import space.crowdforce.service.tg.Argument
+import space.crowdforce.service.tg.Navigation
+import space.crowdforce.service.tg.UserContext
 
 @Service
 class StartCommand : Command {

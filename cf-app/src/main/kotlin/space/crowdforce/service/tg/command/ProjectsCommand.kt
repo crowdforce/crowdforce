@@ -4,9 +4,10 @@ import org.springframework.stereotype.Service
 import space.crowdforce.domain.Project
 import space.crowdforce.domain.User
 import space.crowdforce.repository.ProjectRepository
-import space.crowdforce.service.tg.*
+import space.crowdforce.service.tg.Argument
 import space.crowdforce.service.tg.Argument.OWNED_PROJECT_ID
 import space.crowdforce.service.tg.Navigation.toOuterLink
+import space.crowdforce.service.tg.UserContext
 
 @Service
 class ProjectsCommand(
@@ -21,12 +22,12 @@ class ProjectsCommand(
         val project = projectRepository.findById(projectId)
 
         return CommandAnswer(
-                text = projectView(project!!),
-                links = listOf(toOuterLink(ProjectsGoalCommand.NAME, listOf(OWNED_PROJECT_ID to projectId)))
+            text = projectView(project!!),
+            links = listOf(toOuterLink(ProjectsGoalCommand.NAME, listOf(OWNED_PROJECT_ID to projectId)))
         )
     }
 
-    fun projectView(project: Project) : String {
+    fun projectView(project: Project): String {
         return """
             Проект № ${project.id}
             Имя: ${project.name}

@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component
 import space.crowdforce.domain.Project
 import space.crowdforce.domain.User
 import space.crowdforce.repository.ProjectRepository
-import space.crowdforce.service.tg.Argument.*
 import space.crowdforce.service.tg.Navigation.toInnerLink
 import space.crowdforce.service.tg.command.CommandAnswer
 import space.crowdforce.service.tg.command.Link
@@ -42,7 +41,7 @@ class OwnedProjectId(private val projectRepository: ProjectRepository) : Argumen
                 .toList()
     }
 
-    override fun argument() = OWNED_PROJECT_ID
+    override fun argument() = Argument.OWNED_PROJECT_ID
 }
 
 @Component
@@ -65,7 +64,7 @@ class GoalName : ArgumentValidator {
         return null
     }
 
-    override fun argument() = GOAL_NAME
+    override fun argument() = Argument.GOAL_NAME
 }
 
 @Component
@@ -88,13 +87,13 @@ class GoalDescription : ArgumentValidator {
         return null
     }
 
-    override fun argument() = GOAL_DESCRIPTION
+    override fun argument() = Argument.GOAL_DESCRIPTION
 }
 
 @Component
 class ArgumentsValidator(argumentValidators: List<ArgumentValidator>) {
 
-    private final val map: Map<Argument, ArgumentValidator> = argumentValidators.associateBy { it.argument() }.toMap();
+    private final val map: Map<Argument, ArgumentValidator> = argumentValidators.associateBy { it.argument() }.toMap()
 
     fun validate(user: User, expectedArguments: List<Argument>, context: UserContext): CommandAnswer? {
         return expectedArguments.map { map[it]?.validate(user, context) }.filterNotNull().firstOrNull()

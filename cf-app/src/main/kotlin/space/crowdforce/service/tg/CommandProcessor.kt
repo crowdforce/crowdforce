@@ -5,14 +5,20 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import space.crowdforce.domain.User.Companion.NULL_USER
 import space.crowdforce.repository.UserRepository
-import space.crowdforce.service.tg.command.*
+import space.crowdforce.service.tg.command.AnswerStatus
+import space.crowdforce.service.tg.command.Command
+import space.crowdforce.service.tg.command.CommandAnswer
+import space.crowdforce.service.tg.command.ProjectsCommand
+import space.crowdforce.service.tg.command.ProjectsGoalCommand
+import space.crowdforce.service.tg.command.ProjectsGoalListCommand
+import space.crowdforce.service.tg.command.Response
 
 @Component
 class CommandProcessor(
-        private val commandContext: CommandContext,
-        private val userRepository: UserRepository,
-        private val argumentsValidator: ArgumentsValidator,
-        commandList: List<Command>
+    private val commandContext: CommandContext,
+    private val userRepository: UserRepository,
+    private val argumentsValidator: ArgumentsValidator,
+    commandList: List<Command>
 ) {
     companion object {
         val COMMAND_PREFIX = "/"
@@ -23,10 +29,10 @@ class CommandProcessor(
     private val commands: Map<String, Command> = commandList.associateBy { it.name() }.toMap()
 
     private val nameMapper: Map<String, String> = mapOf(
-            ProjectsGoalCommand.NAME to "Добавления цели проекта",
-            ProjectsCommand.NAME to "Просмотр проекта",
-            ProjectsGoalListCommand.NAME to "Список целей"
-    )    
+        ProjectsGoalCommand.NAME to "Добавления цели проекта",
+        ProjectsCommand.NAME to "Просмотр проекта",
+        ProjectsGoalListCommand.NAME to "Список целей"
+    )
 
     @Transactional
     fun execute(userTgId: String, args: String): Response {
@@ -51,7 +57,7 @@ class CommandProcessor(
             return Response("Args is blank. Execution is skipped")
         }
 
-        if(args.startsWith(COMMAND_PREFIX))
+        if (args.startsWith(COMMAND_PREFIX))
             return execute(userTgId, args)
 
         val context = commandContext.getOrCreate(userTgId.toLong())
@@ -72,7 +78,7 @@ class CommandProcessor(
     private fun extractCommand(args: String, userContext: UserContext): Command? {
         val argsList = args.trim().split(" ").toMutableList()
 
-        if(argsList.isEmpty())
+        if (argsList.isEmpty())
             return null
 
         var commandStr = argsList[0]
@@ -81,7 +87,7 @@ class CommandProcessor(
             commandStr.substring(COMMAND_PREFIX.length)
         else commandStr
 
-        if(!commandStr.equals(userContext.lastCommand))
+        if (!commandStr.equals(userContext.lastCommand))
             userContext.invalidate()
 
         userContext.applyContext(parseParams(argsList.subList(1, argsList.size)))
@@ -102,7 +108,7 @@ class CommandProcessor(
 
             return prepareResponse(answer, context, command)
         } catch (e: Exception) {
-            log.error("Command execution failed: command=${command.name()}, userTgId=$userTgId, context=${context}", e)
+            log.error("Command execution failed: command=${command.name()}, userTgId=$userTgId, context=$context", e)
 
             return Response("В момент выполнения произошла ошибка, попробуйте изменить параметры ввода")
         }
@@ -116,13 +122,13 @@ class CommandProcessor(
             val linkCommand = commands[it.commandName] ?: command
 
             val argumentsFromContext = linkCommand.arguments()
-                    .filter { context.value(it) != null }
-                    .map { "${it.argName}=${context.value(it)}" }
-                    .joinToString(separator = " ")
+                .filter { context.value(it) != null }
+                .map { "${it.argName}=${context.value(it)}" }
+                .joinToString(separator = " ")
 
             val argumentsFromCommand = it.attributes
-                    .map { "${it.first}=${it.second}" }
-                    .joinToString(separator = " ")
+                .map { "${it.first}=${it.second}" }
+                .joinToString(separator = " ")
 
             val viewName = it.viewName ?: nameMapper[linkCommand.name()] ?: linkCommand.name()
 
@@ -150,4 +156,3 @@ class CommandProcessor(
         return params
     }
 }
-

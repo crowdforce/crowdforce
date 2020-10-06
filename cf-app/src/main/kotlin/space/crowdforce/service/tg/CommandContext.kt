@@ -10,7 +10,7 @@ class CommandContext {
 }
 
 class UserContext {
-    private val values: MutableMap<String, String> = mutableMapOf();
+    private val values: MutableMap<String, String> = mutableMapOf()
     private var lastTextId: String? = null
     var lastCommand: String? = null
 
@@ -34,7 +34,7 @@ class UserContext {
     fun pollTextId(): String? {
         val text = lastTextId
 
-        lastTextId = null;
+        lastTextId = null
 
         return text
     }
@@ -51,7 +51,7 @@ class UserContext {
         return arg.rawFrom(values)?.let { values[it] }
     }
 
-    fun invalidate(){
+    fun invalidate() {
         values.clear()
         lastTextId = null
         lastCommand = null
