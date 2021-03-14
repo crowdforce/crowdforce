@@ -11,6 +11,7 @@ import org.springframework.security.web.server.context.ServerSecurityContextRepo
 import org.springframework.stereotype.Component
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
+import space.crowdforce.domain.UserIdentity
 import space.crowdforce.service.user.UserService
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
@@ -36,10 +37,10 @@ class TelegramSecurityService(
         val validToken = buildToken(queryParams)
 
         if (validToken == hash) {
-            userService.getOrCreateUser(telegramId, username(queryParams))
+            val user = userService.getOrCreateUser(UserIdentity.TG.identityKey(telegramId.toString()), username(queryParams))
 
             val token = UsernamePasswordAuthenticationToken(
-                BasicUserPrincipal(telegramId.toString()),
+                BasicUserPrincipal(user.id.toString()),
                 Object()
             )
 

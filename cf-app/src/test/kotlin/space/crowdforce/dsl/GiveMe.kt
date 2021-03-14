@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.jooq.DSLContext
 import org.springframework.stereotype.Component
 import space.crowdforce.domain.Goal
+import space.crowdforce.domain.UserIdentityKey
 import space.crowdforce.model.Tables.PROJECTS
 import space.crowdforce.model.Tables.USERS
 import space.crowdforce.service.goal.GoalService
@@ -25,9 +26,9 @@ class GiveMe(
         dslContext.delete(PROJECTS).execute()
     }
 
-    fun user(telegramId: Int): UserBuilder = UserBuilder(telegramId, userService, objectMapper)
+    fun user(identityKey: UserIdentityKey): UserBuilder = UserBuilder(identityKey, userService, objectMapper)
     fun unauthorized() = GiveMeContext(null, userService, projectService, goalService, objectMapper)
-    fun authorized(authorizedUserTelegramId: Int) = GiveMeContext(authorizedUserTelegramId, userService, projectService, goalService, objectMapper)
+    fun authorized(authorizedUserId: Int) = GiveMeContext(authorizedUserId, userService, projectService, goalService, objectMapper)
 
     fun json(obj: Any): String {
         if (obj is List<*>)
@@ -44,11 +45,11 @@ class GiveMe(
 }
 
 class GiveMeContext(
-    private var authorizedUserName: Int?,
+    private var authorizedUserId: Int?,
     private var userService: UserService,
     private var projectService: ProjectService,
     private var goalService: GoalService,
     private var objectMapper: ObjectMapper
 ) {
-    fun project(ownerTelegramId: Int): ProjectBuilder = ProjectBuilder(authorizedUserName, ownerTelegramId, userService, projectService, goalService, objectMapper)
+    fun project(ownerId: Int): ProjectBuilder = ProjectBuilder(authorizedUserId, ownerId, userService, projectService, goalService, objectMapper)
 }

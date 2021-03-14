@@ -18,6 +18,7 @@ import space.crowdforce.model.tables.FlywaySchemaHistory;
 import space.crowdforce.model.tables.Goals;
 import space.crowdforce.model.tables.ProjectSubscribers;
 import space.crowdforce.model.tables.Projects;
+import space.crowdforce.model.tables.UserIdentities;
 import space.crowdforce.model.tables.Users;
 
 
@@ -27,7 +28,7 @@ import space.crowdforce.model.tables.Users;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -587601609;
+    private static final long serialVersionUID = -844966811;
 
     /**
      * The reference instance of <code>public</code>
@@ -65,6 +66,11 @@ public class Public extends SchemaImpl {
     public final Projects PROJECTS = Projects.PROJECTS;
 
     /**
+     * The table <code>public.user_identities</code>.
+     */
+    public final UserIdentities USER_IDENTITIES = UserIdentities.USER_IDENTITIES;
+
+    /**
      * The table <code>public.users</code>.
      */
     public final Users USERS = Users.USERS;
@@ -100,6 +106,7 @@ public class Public extends SchemaImpl {
             Goals.GOALS,
             ProjectSubscribers.PROJECT_SUBSCRIBERS,
             Projects.PROJECTS,
+            UserIdentities.USER_IDENTITIES,
             Users.USERS);
     }
 }

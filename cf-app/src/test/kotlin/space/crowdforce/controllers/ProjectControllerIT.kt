@@ -2,13 +2,14 @@ package space.crowdforce.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
-import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.reactive.server.WebTestClient
 import space.crowdforce.AbstractIT
+import space.crowdforce.WithMockUserIdentity
 import space.crowdforce.controllers.model.ProjectFormUI
+import space.crowdforce.domain.UserIdentity
 import space.crowdforce.dsl.GiveMe
 import space.crowdforce.service.project.ProjectService
 import javax.inject.Inject
@@ -26,19 +27,18 @@ class ProjectControllerIT : AbstractIT() {
     @Inject
     private lateinit var objectMapper: ObjectMapper
 
-    @BeforeEach
-    internal fun setUp() = giveMe.emptyDatabase()
+    @AfterEach
+    internal fun cleanUp() = giveMe.emptyDatabase()
 
-    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
+    @WithMockUserIdentity(userIdentity = UserIdentity.TG, userIdentityId = TEST_TELEGRAM_USER_ID, username = "test")
     @Test
     fun `Should return list of projects with auth user`() {
         // given:
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+        val userId = giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please().id
 
-        val expected = giveMe.authorized(TEST_TELEGRAM_USER_ID.toInt())
-            .project(ownerTelegramId = TEST_TELEGRAM_USER_ID.toInt())
-            .and()
-            .project(ownerName = TEST_TELEGRAM_USER_ID.toInt()).witSubscriber(TEST_TELEGRAM_USER_ID.toInt())
+        val expected = giveMe.authorized(userId)
+            .project(ownerId = userId)
+            .witSubscriber(userId)
             .pleaseJson()
 
         // act and check:
@@ -53,12 +53,11 @@ class ProjectControllerIT : AbstractIT() {
     @Test
     fun `Should return list of projects`() {
         // given:
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+        val userId = giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please().id
 
         val expected = giveMe.unauthorized()
-            .project(ownerTelegramId = TEST_TELEGRAM_USER_ID.toInt())
-            .and()
-            .project(ownerName = TEST_TELEGRAM_USER_ID.toInt()).witSubscriber(TEST_TELEGRAM_USER_ID.toInt())
+            .project(ownerId = userId)
+            .witSubscriber(userId)
             .pleaseJson()
 
         // act and check:
@@ -74,7 +73,7 @@ class ProjectControllerIT : AbstractIT() {
     @Test
     fun `Should add a project unauthorized user`() {
         // given:
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+        giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please()
 
         // act and check:
         webTestClient.post()
@@ -86,11 +85,11 @@ class ProjectControllerIT : AbstractIT() {
             .expectStatus().is5xxServerError
     }
 
-    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
+    @WithMockUserIdentity(userIdentity = UserIdentity.TG, userIdentityId = TEST_TELEGRAM_USER_ID, username = "test")
     @Test
     fun `Should add a project`() {
         // given:
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+        giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please()
 
         val projectForm = ProjectFormUI("test", "test", 123.123, 321.321)
 
@@ -113,10 +112,10 @@ class ProjectControllerIT : AbstractIT() {
     @Test
     fun `Should get project`() {
         // given:
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+        val ownerId = giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please().id
 
         val project = giveMe.unauthorized()
-            .project(ownerTelegramId = TEST_TELEGRAM_USER_ID.toInt())
+            .project(ownerId = ownerId)
             .please()[0]
 
         val projectJson = objectMapper.writeValueAsString(project)
@@ -131,14 +130,15 @@ class ProjectControllerIT : AbstractIT() {
             .expectBody().json(projectJson)
     }
 
-    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
+    @WithMockUserIdentity(userIdentity = UserIdentity.TG, userIdentityId = TEST_TELEGRAM_USER_ID, username = "test")
     @Test
     fun `Should get project with subscription`() {
         // given:
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+        val userId = giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please().id
 
-        val project = giveMe.authorized(TEST_TELEGRAM_USER_ID.toInt())
-            .project(ownerTelegramId = TEST_TELEGRAM_USER_ID.toInt()).witSubscriber(TEST_TELEGRAM_USER_ID.toInt())
+        val project = giveMe.authorized(userId)
+            .project(ownerId = userId)
+            .witSubscriber(userId)
             .please()[0]
 
         val projectJson = objectMapper.writeValueAsString(project)
@@ -153,12 +153,12 @@ class ProjectControllerIT : AbstractIT() {
             .expectBody().json(projectJson)
     }
 
-    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
+    @WithMockUserIdentity(userIdentity = UserIdentity.TG, userIdentityId = TEST_TELEGRAM_USER_ID, username = "test")
     @Test
     fun `Should update project fields`() {
         // given:
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
-        val project = giveMe.authorized(TEST_TELEGRAM_USER_ID.toInt()).project(TEST_TELEGRAM_USER_ID.toInt()).please()[0]
+        val userId = giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please().id
+        val project = giveMe.authorized(userId).project(userId).please()[0]
 
         val projectForm = ProjectFormUI("updated", "updated", 123.123, 321.321)
 
@@ -183,7 +183,7 @@ class ProjectControllerIT : AbstractIT() {
     @Test
     fun `Should update project fields unauthorized user`() {
         // given:
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+        giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please()
 
         val projectForm = ProjectFormUI("test", "test", 123.123, 321.321)
 
@@ -197,14 +197,13 @@ class ProjectControllerIT : AbstractIT() {
             .expectStatus().is5xxServerError
     }
 
-    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
+    @WithMockUserIdentity(userIdentity = UserIdentity.TG, userIdentityId = TEST_TELEGRAM_USER_ID, username = "test")
     @Test
     fun `Should update project fields not owner`() {
         // given:
-        val telegramId = 4343
-        giveMe.user(telegramId).please()
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
-        val project = giveMe.authorized(TEST_TELEGRAM_USER_ID.toInt()).project(telegramId).please()[0]
+        val ownerId = giveMe.user(UserIdentity.TG.identityKey("4343")).please().id
+        val userId = giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please().id
+        val project = giveMe.authorized(userId).project(ownerId).please()[0]
 
         val projectForm = ProjectFormUI("updated", "updated", 123.123, 321.321)
 
@@ -218,13 +217,13 @@ class ProjectControllerIT : AbstractIT() {
             .expectStatus().is5xxServerError // TODO rest statuses evrywhere
     }
 
-    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
+    @WithMockUserIdentity(userIdentity = UserIdentity.TG, userIdentityId = TEST_TELEGRAM_USER_ID, username = "test")
     @Test
     fun `Should delete project`() {
         // given:
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+        val userId = giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please().id
 
-        val project = giveMe.authorized(TEST_TELEGRAM_USER_ID.toInt()).project(TEST_TELEGRAM_USER_ID.toInt()).please()[0]
+        val project = giveMe.authorized(userId).project(userId).please()[0]
 
         // act and check:
         webTestClient.delete()
@@ -241,8 +240,8 @@ class ProjectControllerIT : AbstractIT() {
     @Test
     fun `Should delete project unauthorized user`() {
         // given:
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
-        val project = giveMe.unauthorized().project(TEST_TELEGRAM_USER_ID.toInt()).please()[0]
+        val ownerId = giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please().id
+        val project = giveMe.unauthorized().project(ownerId).please()[0]
 
         // act:
         webTestClient.delete()
@@ -253,14 +252,12 @@ class ProjectControllerIT : AbstractIT() {
             .expectStatus().is5xxServerError
     }
 
-    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
+    @WithMockUserIdentity(userIdentity = UserIdentity.TG, userIdentityId = TEST_TELEGRAM_USER_ID, username = "test")
     @Test
     fun `Should delete project not owner`() {
-        // given:
-        val anotherTelegramId = 353
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
-        giveMe.user(anotherTelegramId).please()
-        val project = giveMe.authorized(anotherTelegramId).project(anotherTelegramId).please()[0]
+        val userId = giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please().id
+        val ownerId = giveMe.user(UserIdentity.TG.identityKey("353")).please().id
+        val project = giveMe.authorized(userId).project(ownerId).please()[0]
 
         // act:
         webTestClient.delete()

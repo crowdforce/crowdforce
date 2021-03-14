@@ -8,6 +8,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import space.crowdforce.AbstractIT
+import space.crowdforce.domain.UserIdentity
 import space.crowdforce.model.Tables
 import java.time.LocalDateTime.now
 
@@ -27,29 +28,44 @@ internal class UserRepositoryIT : AbstractIT() {
 
     @Test
     fun `should insert user when it doesn't exist`() {
-        val user = userRepository.insert(234, TEST_TELEGRAM_USER_ID, now())
+        val userIdentityKey = UserIdentity.TG.identityKey("123")
+        val user = userRepository.insert(userIdentityKey, "234", now())
         assertThat(user.id).isNotNull()
-        assertThat(user.telegramId).isEqualTo(234)
+        assertThat(user.name).isEqualTo("234")
     }
 
     @Test
-    fun `should throw exception when user exists`() {
-        val user = userRepository.insert(342, TEST_TELEGRAM_USER_ID, now())
+    fun `should throw exception when user exists for the identity key`() {
+        val userIdentityKey = UserIdentity.TG.identityKey("123")
+        val user = userRepository.insert(userIdentityKey, "342", now())
         assertThat(user.id).isNotNull()
-        assertThat(user.telegramId).isEqualTo(342)
+        assertThat(user.name).isEqualTo("342")
 
         assertThrows<RuntimeException> {
-            userRepository.insert(342, TEST_TELEGRAM_USER_ID, now())
+            userRepository.insert(userIdentityKey, "342", now())
         }
     }
 
     @Test
-    fun `should find user by userName`() {
-        val user = userRepository.insert(3232, TEST_TELEGRAM_USER_ID, now())
+    fun `should find user by id`() {
+        val userIdentityKey = UserIdentity.TG.identityKey("123")
+        val user = userRepository.insert(userIdentityKey, "3232", now())
         assertThat(user.id).isNotNull()
-        assertThat(user.telegramId).isEqualTo(3232)
+        assertThat(user.name).isEqualTo("3232")
 
-        val byUserName = userRepository.findByTelegramId(3232)
+        val byUserName = userRepository.findByUserId(user.id)
         assertThat(user).isEqualTo(byUserName)
+    }
+
+    @Test
+    fun `should find user by identity key`() {
+        val userIdentityKey = UserIdentity.TG.identityKey("123")
+        val user = userRepository.insert(userIdentityKey, "3232", now())
+
+        val byIdentity = userRepository.findByIdentityKey(UserIdentity.TG.identityKey("123"))
+        assertThat(byIdentity).isEqualTo(user)
+
+        assertThat(userRepository.findByIdentityKey(UserIdentity.ANON.identityKey("123"))).isNull()
+        assertThat(userRepository.findByIdentityKey(UserIdentity.TG.identityKey("789"))).isNull()
     }
 }
