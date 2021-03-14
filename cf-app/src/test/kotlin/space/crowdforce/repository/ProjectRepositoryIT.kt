@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.transaction.annotation.Transactional
 import space.crowdforce.AbstractIT
+import space.crowdforce.domain.UserIdentity
 import space.crowdforce.domain.geo.Location
 import space.crowdforce.model.Tables
 import java.time.LocalDateTime
@@ -38,7 +39,7 @@ internal class ProjectRepositoryIT : AbstractIT() {
 
     @Test
     fun `Should save project`() {
-        val user = userRepository.insert(TEST_TELEGRAM_USER_ID.toInt(), TEST_TELEGRAM_USER_ID, now())
+        val user = userRepository.insert(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID), TEST_TELEGRAM_USER_ID, now())
 
         val project = projectRepository.insert(
             user.id,

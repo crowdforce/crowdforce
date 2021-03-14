@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import space.crowdforce.domain.User.Companion.NULL_USER
+import space.crowdforce.domain.UserIdentity
 import space.crowdforce.repository.UserRepository
 import space.crowdforce.service.tg.command.AnswerStatus
 import space.crowdforce.service.tg.command.Command
@@ -97,7 +98,7 @@ class CommandProcessor(
 
     private fun executeCommand(command: Command, context: UserContext, userTgId: Int): Response {
         try {
-            val user = userRepository.findByTelegramId(userTgId) ?: NULL_USER
+            val user = userRepository.findByIdentityKey(UserIdentity.TG.identityKey(userTgId.toString())) ?: NULL_USER
 
             val validate = argumentsValidator.validate(user, command.arguments(), context)
 

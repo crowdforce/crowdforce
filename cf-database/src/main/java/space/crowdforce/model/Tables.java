@@ -10,6 +10,7 @@ import space.crowdforce.model.tables.FlywaySchemaHistory;
 import space.crowdforce.model.tables.Goals;
 import space.crowdforce.model.tables.ProjectSubscribers;
 import space.crowdforce.model.tables.Projects;
+import space.crowdforce.model.tables.UserIdentities;
 import space.crowdforce.model.tables.Users;
 
 
@@ -48,6 +49,11 @@ public class Tables {
      * The table <code>public.projects</code>.
      */
     public static final Projects PROJECTS = Projects.PROJECTS;
+
+    /**
+     * The table <code>public.user_identities</code>.
+     */
+    public static final UserIdentities USER_IDENTITIES = UserIdentities.USER_IDENTITIES;
 
     /**
      * The table <code>public.users</code>.

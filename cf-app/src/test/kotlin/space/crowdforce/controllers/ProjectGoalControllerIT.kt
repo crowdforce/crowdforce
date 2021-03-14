@@ -1,13 +1,14 @@
 package space.crowdforce.controllers
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
-import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.reactive.server.WebTestClient
 import space.crowdforce.AbstractIT
+import space.crowdforce.WithMockUserIdentity
 import space.crowdforce.controllers.model.GoalFormUI
+import space.crowdforce.domain.UserIdentity
 import space.crowdforce.dsl.GiveMe
 import space.crowdforce.service.goal.GoalService
 import space.crowdforce.service.project.ProjectService
@@ -26,16 +27,16 @@ class ProjectGoalControllerIT : AbstractIT() {
     @Inject
     private lateinit var projectService: ProjectService
 
-    @BeforeEach
-    internal fun setUp() = giveMe.emptyDatabase()
+    @AfterEach
+    internal fun cleanUp() = giveMe.emptyDatabase()
 
     @Test
     fun `Should get goal`() {
         // given:
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+        val userId = giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please().id
 
-        val projectId = giveMe.authorized(TEST_TELEGRAM_USER_ID.toInt())
-            .project(ownerTelegramId = TEST_TELEGRAM_USER_ID.toInt()).withGoal(GoalFormUI(
+        val projectId = giveMe.authorized(userId)
+            .project(ownerId = userId).withGoal(GoalFormUI(
                 "test goal 1",
                 "test description 1",
                 20
@@ -54,13 +55,13 @@ class ProjectGoalControllerIT : AbstractIT() {
             .expectBody().json(giveMe.json(goalService.findGoals(projectId)))
     }
 
-    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
+    @WithMockUserIdentity(userIdentity = UserIdentity.TG, userIdentityId = TEST_TELEGRAM_USER_ID, username = "test")
     @Test
     fun `Should add a project goal`() {
         // given:
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+        val userId = giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please().id
 
-        val project = giveMe.authorized(TEST_TELEGRAM_USER_ID.toInt()).project(TEST_TELEGRAM_USER_ID.toInt()).please()[0]
+        val project = giveMe.authorized(userId).project(userId).please()[0]
 
         val updatedGoal = GoalFormUI("test3", "test2", 66)
 
@@ -79,15 +80,14 @@ class ProjectGoalControllerIT : AbstractIT() {
             .jsonPath("$.progress").isEqualTo(updatedGoal.progress)
     }
 
-    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
+    @WithMockUserIdentity(userIdentity = UserIdentity.TG, userIdentityId = TEST_TELEGRAM_USER_ID, username = "test")
     @Test
     fun `Should add a project goal not owner`() {
-        // given:
-        val userName = 432
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
-        giveMe.user(userName).please()
 
-        val project = giveMe.authorized(userName).project(userName).please()[0]
+        giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please().id
+        val ownerId = giveMe.user(UserIdentity.TG.identityKey("432")).please().id
+
+        val project = giveMe.authorized(ownerId).project(ownerId).please()[0]
 
         val updatedGoal = GoalFormUI("test3", "test2", 66)
 
@@ -101,13 +101,16 @@ class ProjectGoalControllerIT : AbstractIT() {
             .expectStatus().isForbidden
     }
 
-    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
+    @WithMockUserIdentity(userIdentity = UserIdentity.TG, userIdentityId = TEST_TELEGRAM_USER_ID, username = "test")
     @Test
     fun `Should update a project goal`() {
         // given:
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+        val userId = giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please().id
 
-        val project = giveMe.authorized(TEST_TELEGRAM_USER_ID.toInt()).project(TEST_TELEGRAM_USER_ID.toInt()).withGoal(GoalFormUI("test1", "test1", 31)).please()[0]
+        val project = giveMe.authorized(userId)
+            .project(userId)
+            .withGoal(GoalFormUI("test1", "test1", 31))
+            .please()[0]
         val goal = goalService.findGoals(project.id)[0]
 
         val updatedGoal = GoalFormUI("test2", "test2", 55)
@@ -128,15 +131,18 @@ class ProjectGoalControllerIT : AbstractIT() {
         }
     }
 
-    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
+    @WithMockUserIdentity(userIdentity = UserIdentity.TG, userIdentityId = TEST_TELEGRAM_USER_ID, username = "test")
     @Test
     fun `Should update a project goal not owner`() {
         // given:
-        val userName = 4324
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
-        giveMe.user(userName).please()
+        giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please().id
+        val ownerId = giveMe.user(UserIdentity.TG.identityKey("4324")).please().id
 
-        val project = giveMe.authorized(userName).project(userName).withGoal(GoalFormUI("test1", "test1", 31)).please()[0]
+        val project = giveMe.authorized(ownerId)
+            .project(ownerId)
+            .withGoal(GoalFormUI("test1", "test1", 31))
+            .please()[0]
+
         val goal = goalService.findGoals(project.id)[0]
 
         val updatedGoal = GoalFormUI("test2", "test2", 55)
@@ -151,13 +157,13 @@ class ProjectGoalControllerIT : AbstractIT() {
             .expectStatus().isForbidden
     }
 
-    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
+    @WithMockUserIdentity(userIdentity = UserIdentity.TG, userIdentityId = TEST_TELEGRAM_USER_ID, username = "test")
     @Test
     fun `Should delete a project goal`() {
         // given:
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
+        val userId = giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please().id
 
-        val project = projectService.findProject(giveMe.authorized(TEST_TELEGRAM_USER_ID.toInt()).project(TEST_TELEGRAM_USER_ID.toInt()).please()[0].id)
+        val project = projectService.findProject(giveMe.authorized(userId).project(userId).please()[0].id)
             ?: throw RuntimeException("Not found")
         val goal = goalService.addGoal(project.id, project.ownerId, "test", "test", 55)
 
@@ -173,15 +179,14 @@ class ProjectGoalControllerIT : AbstractIT() {
             .isNull()
     }
 
-    @WithMockUser(username = TEST_TELEGRAM_USER_ID)
+    @WithMockUserIdentity(userIdentity = UserIdentity.TG, userIdentityId = TEST_TELEGRAM_USER_ID, username = "test")
     @Test
     fun `Should delete a project goal not owner`() {
         // given:
-        val userName = 4323
-        giveMe.user(TEST_TELEGRAM_USER_ID.toInt()).please()
-        giveMe.user(userName).please()
+        giveMe.user(UserIdentity.TG.identityKey(TEST_TELEGRAM_USER_ID)).please().id
+        val ownerId = giveMe.user(UserIdentity.TG.identityKey("4323")).please().id
 
-        val project = projectService.findProject(giveMe.authorized(userName).project(userName).please()[0].id)
+        val project = projectService.findProject(giveMe.authorized(ownerId).project(ownerId).please()[0].id)
             ?: throw RuntimeException("Not found")
         val goal = goalService.addGoal(project.id, project.ownerId, "test", "test", 55)
 
