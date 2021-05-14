@@ -16,6 +16,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.CF_PROD_SERVER_IP }}
+          port: ${{ secrets.CF_PROD_SERVER_PORT }}
           username: ${{ secrets.CF_PROD_SERVER_USER }}
           key: ${{ secrets.CF_PROD_SERVER_KEY }}
           script: |
