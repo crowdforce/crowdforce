@@ -19,7 +19,7 @@ jobs:
           username: ${{ secrets.CF_PROD_SERVER_USER }}
           key: ${{ secrets.CF_PROD_SERVER_KEY }}
           script: |
-            pg_dump -Fc -v -Z6 -f ./dump/$(date +%Y-%m-%d-%H-%M).gz
+            /usr/bin/pg_dump -Fc -v -Z6 -f /opt/crowdforce/dump/$(date +%Y-%m-%d-%H-%M).gz
 
       - name: Dump old app
         uses: appleboy/ssh-action@master
