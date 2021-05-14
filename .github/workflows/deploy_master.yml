@@ -6,16 +6,40 @@ on:
       - develop
 
 jobs:
+  dump:
+    runs-on: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Backup DB
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.CF_PROD_SERVER_IP }}
+          username: ${{ secrets.CF_PROD_SERVER_USER }}
+          key: ${{ secrets.CF_PROD_SERVER_KEY }}
+          script: |
+            pg_dump -Fc -v -Z6 -f ./dump/$(date +%Y-%m-%d-%H-%M).gz
+
+      - name: Dump old app
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.CF_PROD_SERVER_IP }}
+          username: ${{ secrets.CF_PROD_SERVER_USER }}
+          key: ${{ secrets.CF_PROD_SERVER_KEY }}
+          script: |
+            cp app/app.jar apps_archive/$(date +%Y-%m-%d-%H-%M).app.jar
+
   build_and_deploy:
     runs-on: [ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up JDK 8
+      - name: Install Java and Maven
         uses: actions/setup-java@v1
         with:
-          java-version: 1.11
+          java-version: 11
 
       - name: Build project package
         run: mvn -B clean package --file pom.xml
@@ -34,7 +58,7 @@ jobs:
         with:
           host: ${{ secrets.CF_PROD_SERVER_IP }}
           username: ${{ secrets.CF_PROD_SERVER_USER }}
-          password: ${{ secrets.CF_PROD_SERVER_PASS }}
+          key: ${{ secrets.CF_PROD_SERVER_KEY }}
           source: "artifacts/app.jar"
           target: "/opt/crowdforce/"
 
@@ -43,7 +67,7 @@ jobs:
         with:
           host: ${{ secrets.CF_PROD_SERVER_IP }}
           username: ${{ secrets.CF_PROD_SERVER_USER }}
-          password: ${{ secrets.CF_PROD_SERVER_PASS }}
+          key: ${{ secrets.CF_PROD_SERVER_KEY }}
           script: |
             sudo systemctl restart crowdforce-app.service
             sudo systemctl status crowdforce-app.service
