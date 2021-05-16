@@ -46,8 +46,8 @@ jobs:
       - name: Build project package
         run: mvn -B clean package --file pom.xml
 
-      - name: Verify artifacts
-        run: mvn -B clean verify --file pom.xml
+#      - name: Verify artifacts
+#        run: mvn -B clean verify --file pom.xml
 
       - name: Move JAR to TEMP dir
         run: mkdir artifacts && mv cf-app/target/*.jar artifacts/app.jar
