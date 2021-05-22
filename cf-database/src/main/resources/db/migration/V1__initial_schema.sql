@@ -37,7 +37,7 @@ CREATE TABLE activities (
 );
 
 CREATE TABLE activity_participants (
-  activity_id              INT REFERENCES activities (id) ON DELETE CASCADE NOT NULL,
+   activity_id             INT REFERENCES activities (id) ON DELETE CASCADE NOT NULL,
    user_id                 INT REFERENCES users (id) ON DELETE CASCADE NOT NULL,
    UNIQUE (user_id, activity_id)
 );
@@ -49,4 +49,33 @@ CREATE TABLE goals (
   creation_time            TIMESTAMP NOT NULL,
   project_id               INT REFERENCES projects (id) ON DELETE CASCADE NOT NULL,
   progress_bar             INT DEFAULT 0
+);
+
+CREATE TABLE trackable_item (
+ id                       SERIAL PRIMARY KEY,
+ name                     VARCHAR(255) NOT NULL,
+ activity_id               INT REFERENCES activities (id) ON DELETE CASCADE NOT NULL
+);
+
+CREATE TABLE trackable_item_participants (
+   trackable_item_id          INT REFERENCES trackable_item (id) ON DELETE CASCADE NOT NULL,
+   user_id                 INT REFERENCES users (id) ON DELETE CASCADE NOT NULL
+);
+
+CREATE TABLE trackable_item_event_prototype (
+ id                       SERIAL PRIMARY KEY,
+ message                  VARCHAR(255) NOT NULL,
+ start_time               TIMESTAMP  NOT NULL,
+ recurring                VARCHAR(255) NOT NULL,
+ trackable_item_id        INT REFERENCES trackable_item (id) ON DELETE CASCADE NOT NULL
+);
+
+CREATE TABLE trackable_item_event (
+ id                       SERIAL PRIMARY KEY,
+ message                  VARCHAR(255) NOT NULL,
+ trackable_item_id        INT REFERENCES trackable_item (id) ON DELETE CASCADE NOT NULL,
+ user_id                  INT REFERENCES users (id) ON DELETE CASCADE NOT NULL,
+ event_time TIMESTAMP  NOT NULL,
+ confirmation_time TIMESTAMP  NOT NULL,
+ confirmed         INT DEFAULT 0 NOT NULL
 );

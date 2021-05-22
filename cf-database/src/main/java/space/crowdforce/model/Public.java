@@ -18,6 +18,10 @@ import space.crowdforce.model.tables.FlywaySchemaHistory;
 import space.crowdforce.model.tables.Goals;
 import space.crowdforce.model.tables.ProjectSubscribers;
 import space.crowdforce.model.tables.Projects;
+import space.crowdforce.model.tables.TrackableItem;
+import space.crowdforce.model.tables.TrackableItemEvent;
+import space.crowdforce.model.tables.TrackableItemEventPrototype;
+import space.crowdforce.model.tables.TrackableItemParticipants;
 import space.crowdforce.model.tables.Users;
 
 
@@ -27,7 +31,7 @@ import space.crowdforce.model.tables.Users;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -587601609;
+    private static final long serialVersionUID = 1131756681;
 
     /**
      * The reference instance of <code>public</code>
@@ -65,6 +69,26 @@ public class Public extends SchemaImpl {
     public final Projects PROJECTS = Projects.PROJECTS;
 
     /**
+     * The table <code>public.trackable_item</code>.
+     */
+    public final TrackableItem TRACKABLE_ITEM = TrackableItem.TRACKABLE_ITEM;
+
+    /**
+     * The table <code>public.trackable_item_event</code>.
+     */
+    public final TrackableItemEvent TRACKABLE_ITEM_EVENT = TrackableItemEvent.TRACKABLE_ITEM_EVENT;
+
+    /**
+     * The table <code>public.trackable_item_event_prototype</code>.
+     */
+    public final TrackableItemEventPrototype TRACKABLE_ITEM_EVENT_PROTOTYPE = TrackableItemEventPrototype.TRACKABLE_ITEM_EVENT_PROTOTYPE;
+
+    /**
+     * The table <code>public.trackable_item_participants</code>.
+     */
+    public final TrackableItemParticipants TRACKABLE_ITEM_PARTICIPANTS = TrackableItemParticipants.TRACKABLE_ITEM_PARTICIPANTS;
+
+    /**
      * The table <code>public.users</code>.
      */
     public final Users USERS = Users.USERS;
@@ -88,6 +112,9 @@ public class Public extends SchemaImpl {
             Sequences.ACTIVITIES_ID_SEQ,
             Sequences.GOALS_ID_SEQ,
             Sequences.PROJECTS_ID_SEQ,
+            Sequences.TRACKABLE_ITEM_EVENT_ID_SEQ,
+            Sequences.TRACKABLE_ITEM_EVENT_PROTOTYPE_ID_SEQ,
+            Sequences.TRACKABLE_ITEM_ID_SEQ,
             Sequences.USERS_ID_SEQ);
     }
 
@@ -100,6 +127,10 @@ public class Public extends SchemaImpl {
             Goals.GOALS,
             ProjectSubscribers.PROJECT_SUBSCRIBERS,
             Projects.PROJECTS,
+            TrackableItem.TRACKABLE_ITEM,
+            TrackableItemEvent.TRACKABLE_ITEM_EVENT,
+            TrackableItemEventPrototype.TRACKABLE_ITEM_EVENT_PROTOTYPE,
+            TrackableItemParticipants.TRACKABLE_ITEM_PARTICIPANTS,
             Users.USERS);
     }
 }

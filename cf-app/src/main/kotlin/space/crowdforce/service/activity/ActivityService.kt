@@ -80,4 +80,8 @@ class ActivityService(
     fun deleteParticipant(userId: Int, activityId: Int) {
         participantRepository.delete(userId, activityId)
     }
+
+    @Transactional
+    fun findActivity(activityId: Int): Activity? =
+        activityRepository.findAllById(activityId)
 }

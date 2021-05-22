@@ -11,11 +11,11 @@ management:
 
 telegram:
   bot:
-    token: ${TOKEN} #"your_telegram_bot_token"
-    username: ${BOT_USERNAME}
+    token: "1319279698:AAFZzsg5gF1m7wMGAklD4ZtGbEouCQptfkw" #"your_telegram_bot_token"
+    username: "crowdforce_bot"
 
 spring:
   datasource:
-    url: jdbc:postgresql://${DB_HOST}:5432/crowdforce
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/crowdforce
+    username: crowdforce
+    password: crowdforce
