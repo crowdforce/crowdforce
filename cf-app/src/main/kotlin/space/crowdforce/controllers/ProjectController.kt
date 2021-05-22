@@ -20,6 +20,10 @@ import space.crowdforce.controllers.model.ActivityUI
 import space.crowdforce.controllers.model.ActivityFormUI
 import space.crowdforce.controllers.model.GoalUI
 import space.crowdforce.controllers.model.GoalFormUI
+import space.crowdforce.controllers.model.TrackableItemEventFormUI
+import space.crowdforce.controllers.model.TrackableItemEventPrototypeUI
+import space.crowdforce.controllers.model.TrackableItemFormUI
+import space.crowdforce.controllers.model.TrackableItemUI
 import space.crowdforce.domain.Activity
 import space.crowdforce.domain.Project
 import space.crowdforce.domain.User
@@ -30,6 +34,7 @@ import space.crowdforce.service.activity.ActivityService
 import space.crowdforce.service.goal.GoalService
 import space.crowdforce.service.mapper.MapperService
 import space.crowdforce.service.project.ProjectService
+import space.crowdforce.service.ti.TrackableItemService
 import space.crowdforce.service.user.UserService
 import java.security.Principal
 
@@ -41,7 +46,8 @@ class ProjectController(
     private val activityService: ActivityService,
     private val userService: UserService,
     private val goalService: GoalService,
-    private val mapperService: MapperService
+    private val mapperService: MapperService,
+    private val trackableItemService: TrackableItemService
 ) {
     @GetMapping
     @ApiOperation(value = "")
@@ -253,6 +259,131 @@ class ProjectController(
         val goal = mapperService.map(goalService.addGoal(projectId, userId, goalFormUI.name, goalFormUI.description, goalFormUI.progress))
 
         return ResponseEntity.ok().body(goal)
+    }
+
+    @GetMapping("/{projectId}/activities/{activityId}/items")
+    suspend fun getTrackableItems(
+        @PathVariable("projectId") projectId: Int,
+        @PathVariable("activityId") activityId: Int
+    ): List<TrackableItemUI> =
+        trackableItemService.getTrackableItems(projectId, activityId).map { mapperService.map(it) }
+
+    @PostMapping("/{projectId}/activities/{activityId}/items")
+    suspend fun addTrackableItem(
+        @PathVariable("projectId") projectId: Int,
+        @PathVariable("activityId") activityId: Int,
+        @RequestBody trackableItemFormUI: TrackableItemFormUI,
+        principal: Principal?
+    ): ResponseEntity<Any> {
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw UnauthorizedAccessException()
+
+        val trackableItem = mapperService.map(trackableItemService.createTrackableItem(userId, projectId, activityId, trackableItemFormUI.name))
+
+        return ResponseEntity.ok().body(trackableItem)
+    }
+
+    @PutMapping("/{projectId}/activities/{activityId}/items/{trackableItemId}")
+    suspend fun updateTrackableItem(
+        @PathVariable("projectId") projectId: Int,
+        @PathVariable("activityId") activityId: Int,
+        @PathVariable("trackableItemId") trackableItemId: Int,
+        @RequestBody trackableItemFormUI: TrackableItemFormUI,
+        principal: Principal?
+    ) {
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw RuntimeException("Unauthorized")
+
+        trackableItemService.updateTrackableItem(userId, projectId, activityId, trackableItemId, trackableItemFormUI.name)
+    }
+
+    @DeleteMapping("/{projectId}/activities/{activityId}/items/{trackableItemId}")
+    suspend fun deleteTrackableItem(
+        @PathVariable("projectId") projectId: Int,
+        @PathVariable("activityId") activityId: Int,
+        @PathVariable("trackableItemId") trackableItemId: Int,
+        principal: Principal?
+    ) {
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw RuntimeException("Unauthorized")
+
+        trackableItemService.deleteTrackableItem(userId, projectId, activityId, trackableItemId)
+    }
+
+    @GetMapping("/{projectId}/activities/{activityId}/items/{trackableItemId}/events")
+    suspend fun getTrackableItemEventPrototypes(
+        @PathVariable("projectId") projectId: Int,
+        @PathVariable("activityId") activityId: Int,
+        @PathVariable("trackableItemId") trackableItemId: Int,
+        principal: Principal?
+    ): List<TrackableItemEventPrototypeUI> {
+        return trackableItemService.getEventPrototypes(trackableItemId).map { mapperService.map(it) }
+    }
+
+    @PostMapping("/{projectId}/activities/{activityId}/items/{trackableItemId}/events")
+    suspend fun addTrackableItemEventPrototype(
+        @PathVariable("projectId") projectId: Int,
+        @PathVariable("activityId") activityId: Int,
+        @PathVariable("trackableItemId") trackableItemId: Int,
+        @RequestBody trackableItemFormEventUI: TrackableItemEventFormUI,
+        principal: Principal?
+    ): ResponseEntity<Any> {
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw UnauthorizedAccessException()
+
+        val trackableItem = trackableItemService.createEventPrototype(
+            userId,
+            projectId,
+            activityId,
+            trackableItemId,
+            trackableItemFormEventUI.message,
+            trackableItemFormEventUI.startDate,
+            trackableItemFormEventUI.recurring
+        )
+
+        return ResponseEntity.ok().body(trackableItem)
+    }
+
+    @PutMapping("/{projectId}/activities/{activityId}/items/{trackableItemId}/events/{prototypeEventId}")
+    suspend fun updateTrackableItemEventPrototype(
+        @PathVariable("projectId") projectId: Int,
+        @PathVariable("activityId") activityId: Int,
+        @PathVariable("trackableItemId") trackableItemId: Int,
+        @PathVariable("prototypeEventId") prototypeEventId: Int,
+        @RequestBody trackableItemFormEventUI: TrackableItemEventFormUI,
+        principal: Principal?
+    ) {
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw UnauthorizedAccessException()
+
+        trackableItemService.updateEventPrototype(
+            userId,
+            projectId,
+            activityId,
+            prototypeEventId,
+            trackableItemFormEventUI.message,
+            trackableItemFormEventUI.startDate,
+            trackableItemFormEventUI.recurring
+        )
+    }
+
+    @DeleteMapping("/{projectId}/activities/{activityId}/items/{trackableItemId}/events/{prototypeEventId}")
+    suspend fun deleteTrackableItemEventPrototype(
+        @PathVariable("projectId") projectId: Int,
+        @PathVariable("activityId") activityId: Int,
+        @PathVariable("trackableItemId") trackableItemId: Int,
+        @PathVariable("prototypeEventId") prototypeEventId: Int,
+        principal: Principal?
+    ) {
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw UnauthorizedAccessException()
+
+        trackableItemService.deleteEventPrototype(
+            userId,
+            projectId,
+            activityId,
+            prototypeEventId
+        )
     }
 
     fun map(user: User): SubscriberUI =

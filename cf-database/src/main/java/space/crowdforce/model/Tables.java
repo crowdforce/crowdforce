@@ -10,6 +10,10 @@ import space.crowdforce.model.tables.FlywaySchemaHistory;
 import space.crowdforce.model.tables.Goals;
 import space.crowdforce.model.tables.ProjectSubscribers;
 import space.crowdforce.model.tables.Projects;
+import space.crowdforce.model.tables.TrackableItem;
+import space.crowdforce.model.tables.TrackableItemEvent;
+import space.crowdforce.model.tables.TrackableItemEventPrototype;
+import space.crowdforce.model.tables.TrackableItemParticipants;
 import space.crowdforce.model.tables.Users;
 
 
@@ -48,6 +52,26 @@ public class Tables {
      * The table <code>public.projects</code>.
      */
     public static final Projects PROJECTS = Projects.PROJECTS;
+
+    /**
+     * The table <code>public.trackable_item</code>.
+     */
+    public static final TrackableItem TRACKABLE_ITEM = TrackableItem.TRACKABLE_ITEM;
+
+    /**
+     * The table <code>public.trackable_item_event</code>.
+     */
+    public static final TrackableItemEvent TRACKABLE_ITEM_EVENT = TrackableItemEvent.TRACKABLE_ITEM_EVENT;
+
+    /**
+     * The table <code>public.trackable_item_event_prototype</code>.
+     */
+    public static final TrackableItemEventPrototype TRACKABLE_ITEM_EVENT_PROTOTYPE = TrackableItemEventPrototype.TRACKABLE_ITEM_EVENT_PROTOTYPE;
+
+    /**
+     * The table <code>public.trackable_item_participants</code>.
+     */
+    public static final TrackableItemParticipants TRACKABLE_ITEM_PARTICIPANTS = TrackableItemParticipants.TRACKABLE_ITEM_PARTICIPANTS;
 
     /**
      * The table <code>public.users</code>.
