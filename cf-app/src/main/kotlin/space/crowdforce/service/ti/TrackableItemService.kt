@@ -1,6 +1,7 @@
 package space.crowdforce.service.ti
 
-import org.jvnet.hk2.annotations.Service
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import space.crowdforce.domain.item.Period
 import space.crowdforce.domain.item.TrackableItem
 import space.crowdforce.domain.item.TrackableItemEventPrototype
@@ -22,18 +23,21 @@ class TrackableItemService(
     private val activityService: ActivityService
 ) {
 
+    @Transactional
     fun createTrackableItem(userId: Int, projectId: Int, activityId: Int, name: String): TrackableItem {
         check(userId, projectId, activityId)
 
         return trackableItemRepository.insert(activityId, name)
     }
 
+    @Transactional
     fun updateTrackableItem(userId: Int, projectId: Int, activityId: Int, trackableItemId: Int, name: String) {
         check(userId, projectId, activityId)
 
         trackableItemRepository.update(activityId, trackableItemId, name)
     }
 
+    @Transactional
     fun getTrackableItems(projectId: Int, activityId: Int): List<TrackableItem> {
         return trackableItemRepository.findAllByActivityId(activityId)
     }
@@ -96,6 +100,7 @@ class TrackableItemService(
             throw UnauthorizedAccessException("Invalid activity owner [ownerId=$userId].")
     }
 
+    @Transactional
     fun createEventPrototype(
         userId: Int,
         projectId: Int,
@@ -110,6 +115,7 @@ class TrackableItemService(
         return trackableItemEventPrototypeRepository.insert(trackableItemId, message, startDate, recurring)
     }
 
+    @Transactional
     fun updateEventPrototype(
         userId: Int,
         projectId: Int,
@@ -124,18 +130,21 @@ class TrackableItemService(
         return trackableItemEventPrototypeRepository.update(prototypeEventId, message, startDate, recurring)
     }
 
+    @Transactional
     fun deleteTrackableItem(userId: Int, projectId: Int, activityId: Int, trackableItemId: Int) {
         check(userId, projectId, activityId)
 
         trackableItemEventPrototypeRepository.delete(trackableItemId)
     }
 
+    @Transactional
     fun deleteEventPrototype(userId: Int, projectId: Int, activityId: Int, prototypeEventId: Int) {
         check(userId, projectId, activityId)
 
         trackableItemEventPrototypeRepository.delete(prototypeEventId)
     }
 
+    @Transactional
     fun getEventPrototypes(trackableItemId: Int): List<TrackableItemEventPrototype> =
         trackableItemEventPrototypeRepository.findAllByTrackableItemId(trackableItemId)
 }
