@@ -2,6 +2,7 @@ package space.crowdforce.dsl
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import space.crowdforce.controllers.model.GoalFormUI
+import space.crowdforce.controllers.model.Privilege
 import space.crowdforce.controllers.model.ProjectUI
 import space.crowdforce.domain.geo.Location
 import space.crowdforce.service.goal.GoalService
@@ -74,7 +75,8 @@ class ProjectBuilder(
             project.description,
             project.location.longitude,
             project.location.latitude,
-            if (authorizedTelegramId != null) subscribers.contains(authorizedTelegramId!!) else false
+            if (authorizedTelegramId != null) subscribers.contains(authorizedTelegramId!!) else false,
+            Privilege.READER
         ))
 
         return results

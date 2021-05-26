@@ -20,6 +20,7 @@ import space.crowdforce.controllers.model.ActivityUI
 import space.crowdforce.controllers.model.ActivityFormUI
 import space.crowdforce.controllers.model.GoalUI
 import space.crowdforce.controllers.model.GoalFormUI
+import space.crowdforce.controllers.model.Privilege
 import space.crowdforce.controllers.model.TrackableItemEventFormUI
 import space.crowdforce.controllers.model.TrackableItemEventPrototypeUI
 import space.crowdforce.controllers.model.TrackableItemFormUI
@@ -54,7 +55,7 @@ class ProjectController(
     fun getProjects(principal: Principal?): List<ProjectUI> {
         val userId = principal?.let { userService.getUserIdByTelegramId(principal.name.toInt()) }
 
-        return projectService.getAllProjectAggregation(userId).map { map(it) }
+        return projectService.getAllProjectAggregation(userId).map { map(it, userId == it.ownerId) }
     }
 
     @PostMapping
@@ -65,20 +66,27 @@ class ProjectController(
         val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
             ?: throw RuntimeException("Unauthorized")
 
-        return map(projectService.createProject(userId, project.name, project.description, Location(project.lng, project.lat)))
+        return map(
+            projectService.createProject(userId, project.name, project.description, Location(project.lng, project.lat)),
+            true
+        )
     }
 
     @GetMapping("/{projectId}")
     suspend fun getProject(
         @PathVariable("projectId") projectId: Int,
         principal: Principal?
-    ): ProjectUI = map(if (principal == null) {
-        projectService.findProject(projectId) ?: throw ResourceNotFoundException()
-    } else {
-        val userId = userService.getUserIdByTelegramId(principal.name.toInt()) ?: throw UnauthorizedAccessException()
+    ): ProjectUI {
+        if (principal == null) {
+            return map(projectService.findProject(projectId) ?: throw ResourceNotFoundException(), false)
+        } else {
+            val userId = userService.getUserIdByTelegramId(principal.name.toInt())
+                ?: throw UnauthorizedAccessException()
+            val project = projectService.findProjectAggregation(projectId, userId) ?: throw ResourceNotFoundException()
 
-        projectService.findProjectAggregation(projectId, userId) ?: throw ResourceNotFoundException()
-    })
+            return map(project, project.ownerId == userId)
+        }
+    }
 
     @PutMapping("/{projectId}")
     suspend fun updateProject(
@@ -400,14 +408,15 @@ class ProjectController(
         )
     }
 
-    fun map(project: Project): ProjectUI {
+    fun map(project: Project, owner: Boolean): ProjectUI {
         return ProjectUI(
             project.id,
             project.name,
             project.description,
             project.location.longitude,
             project.location.latitude,
-            project.subscribed
+            project.subscribed,
+            if (owner) Privilege.OWNER else Privilege.READER
         )
     }
 }

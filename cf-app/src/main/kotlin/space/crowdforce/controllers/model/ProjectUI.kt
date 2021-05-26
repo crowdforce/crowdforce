@@ -6,5 +6,6 @@ data class ProjectUI(
     val description: String,
     val lng: Double,
     val lat: Double,
-    val subscribed: Boolean
+    val subscribed: Boolean,
+    val privilege: Privilege
 )

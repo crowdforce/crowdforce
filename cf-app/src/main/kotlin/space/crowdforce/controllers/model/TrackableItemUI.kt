@@ -4,9 +4,9 @@ data class TrackableItemUI(
     val id: Int,
     val activityId: Int,
     val name: String,
-    val status: ItemStatus = ItemStatus.GREED
+    val status: ItemStatus = ItemStatus.GREEN
 )
 
 enum class ItemStatus {
-    RED, GREED, YELLOW
+    RED, GREEN, YELLOW
 }
