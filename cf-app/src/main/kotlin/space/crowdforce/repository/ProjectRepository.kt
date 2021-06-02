@@ -70,6 +70,7 @@ class ProjectRepository(
         )
         .where(PROJECT_SUBSCRIBERS.USER_ID.eq(userId))
         .or(PROJECT_SUBSCRIBERS.USER_ID.isNull)
+        .and(PROJECTS.ID.eq(projectId))
         .fetchOne(PROJECT_WITH_SUBSCRIBER_MAPPER)
 
     fun findAll(userId: Int? = null): List<Project> {

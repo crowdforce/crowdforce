@@ -16,6 +16,7 @@ import java.io.File
 class AbstractIT {
     companion object {
         const val TEST_TELEGRAM_USER_ID = "321"
+        const val TEST_TELEGRAM_USER_2_ID = "322"
 
         private val dockerContainers = KDockerComposeContainer(File("src/test/resources/docker-compose-test.yml"))
             .withLocalCompose(true)

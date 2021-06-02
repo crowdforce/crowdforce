@@ -28,6 +28,9 @@ internal class ProjectRepositoryIT : AbstractIT() {
     private lateinit var projectRepository: ProjectRepository
 
     @Inject
+    private lateinit var projectSubscriberRepository: ProjectSubscriberRepository
+
+    @Inject
     lateinit var dslContext: DSLContext
 
     @BeforeEach
@@ -57,6 +60,44 @@ internal class ProjectRepositoryIT : AbstractIT() {
                 assertThat(it?.description).isEqualTo(TEST_DESCRIPTION)
                 assertThat(it?.creationTime).isEqualTo(CURRENT_TIME)
                 assertThat(it?.location).isEqualTo(TEST_LOCATION)
+            }
+    }
+
+    @Test
+    fun `Should return aggregated project for user`() {
+        val user = userRepository.insert(TEST_TELEGRAM_USER_ID.toInt(), TEST_TELEGRAM_USER_ID, now())
+        val user2 = userRepository.insert(TEST_TELEGRAM_USER_2_ID.toInt(), TEST_TELEGRAM_USER_2_ID, now())
+
+        val project = projectRepository.insert(
+            user.id,
+            TEST_PROJECT_NAME,
+            TEST_DESCRIPTION,
+            TEST_LOCATION,
+            CURRENT_TIME
+        )
+
+        val project2 = projectRepository.insert(
+            user.id,
+            TEST_PROJECT_NAME + "1",
+            TEST_DESCRIPTION + "1",
+            TEST_LOCATION,
+            CURRENT_TIME
+        )
+
+        projectSubscriberRepository.insert(user.id, project.id)
+        projectSubscriberRepository.insert(user2.id, project.id)
+        projectSubscriberRepository.insert(user.id, project2.id)
+
+        assertThat(projectRepository.findById(project.id, user.id))
+            .isNotNull
+            .satisfies {
+                assertThat(it?.id).isEqualTo(project.id)
+                assertThat(it?.name).isEqualTo(TEST_PROJECT_NAME)
+                assertThat(it?.ownerId).isEqualTo(user.id)
+                assertThat(it?.description).isEqualTo(TEST_DESCRIPTION)
+                assertThat(it?.creationTime).isEqualTo(CURRENT_TIME)
+                assertThat(it?.location).isEqualTo(TEST_LOCATION)
+                assertThat(it?.subscribed).isTrue()
             }
     }
 }

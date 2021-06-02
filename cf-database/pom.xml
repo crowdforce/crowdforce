@@ -11,7 +11,7 @@
     <artifactId>cf-database</artifactId>
 
     <properties>
-        <testcontainers.version>1.14.3</testcontainers.version>
+        <testcontainers.version>1.15.3</testcontainers.version>
         <docker.plugin>0.33.0</docker.plugin>
         <postgres.user>crowdforce</postgres.user>
         <postgres.password>crowdforce</postgres.password>
