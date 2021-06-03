@@ -146,6 +146,14 @@ class ProjectController(
         return activityService.findActivities(userId, projectId).map { map(it) }
     }
 
+    @GetMapping("/{projectId}/activities/{activityId}")
+    suspend fun getActivity(
+        @PathVariable("projectId") projectId: Int,
+        @PathVariable("activityId") activityId: Int,
+    ): ResponseEntity<ActivityUI> =
+        activityService.findActivity(activityId)?.let { ResponseEntity.ok().body(map(it)) }
+            ?: ResponseEntity.notFound().build()
+
     @PutMapping("/{projectId}/activities/{activityId}")
     suspend fun updateActivity(
         @PathVariable("projectId") projectId: Int,
@@ -176,11 +184,11 @@ class ProjectController(
         @PathVariable("projectId") projectId: Int,
         principal: Principal?,
         @RequestBody activity: ActivityFormUI
-    ) {
+    ): ActivityUI {
         val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
             ?: throw RuntimeException("Unauthorized")
 
-        activityService.createActivity(userId, projectId, activity.name, activity.description, activity.startTime, activity.endTime)
+        return map(activityService.createActivity(userId, projectId, activity.name, activity.description, activity.startTime, activity.endTime))
     }
 
     @GetMapping("/{projectId}/activities/{activityId}/participants")
