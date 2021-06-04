@@ -69,9 +69,8 @@ class ActivityRepository(
                 .from(ACTIVITIES.leftJoin(ACTIVITY_PARTICIPANTS)
                     .on(ACTIVITY_PARTICIPANTS.ACTIVITY_ID.eq(ACTIVITIES.ID))
                 )
-                .where(ACTIVITY_PARTICIPANTS.USER_ID.eq(userId))
-                .and(ACTIVITIES.PROJECT_ID.eq(projectId))
-                .or(ACTIVITY_PARTICIPANTS.USER_ID.isNull)
+                .where(ACTIVITIES.PROJECT_ID.eq(projectId))
+                .and(ACTIVITY_PARTICIPANTS.USER_ID.eq(userId).or(ACTIVITY_PARTICIPANTS.USER_ID.isNull))
                 .fetch(ACTIVITY_WITH_PARTICIPANTS_MAPPER)
     }
 
