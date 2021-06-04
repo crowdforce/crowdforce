@@ -92,12 +92,6 @@ class TrackableItemService(
 
         if (project.ownerId != userId)
             throw UnauthorizedAccessException("Invalid project owner [ownerId=$userId].")
-
-        val activity = activityService.findActivity(activityId)
-            ?: throw OperationException("Activity [activityId=$activityId] not found.")
-
-        if (project.ownerId != activity.projectId)
-            throw UnauthorizedAccessException("Invalid activity owner [ownerId=$userId].")
     }
 
     @Transactional
