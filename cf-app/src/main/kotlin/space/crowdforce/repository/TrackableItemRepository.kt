@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import space.crowdforce.domain.item.TrackableItem
-import space.crowdforce.model.Tables
 import space.crowdforce.model.Tables.TRACKABLE_ITEM
 import space.crowdforce.model.tables.records.TrackableItemRecord
 
@@ -24,22 +23,22 @@ class TrackableItemRepository(
         }
     }
 
-    fun insert(activityId: Int, name: String) = TRACKABLE_ITEM_MAPPER.invoke(dslContext.insertInto(Tables.TRACKABLE_ITEM)
-        .columns(Tables.TRACKABLE_ITEM.ACTIVITY_ID, Tables.TRACKABLE_ITEM.NAME)
+    fun insert(activityId: Int, name: String) = TRACKABLE_ITEM_MAPPER.invoke(dslContext.insertInto(TRACKABLE_ITEM)
+        .columns(TRACKABLE_ITEM.ACTIVITY_ID, TRACKABLE_ITEM.NAME)
         .values(activityId, name)
         .returning()
         .fetchOne())
 
     fun findAllByActivityId(activityId: Int): List<TrackableItem> =
-        dslContext.selectFrom(Tables.TRACKABLE_ITEM)
-            .where(Tables.TRACKABLE_ITEM.ACTIVITY_ID.eq(activityId))
+        dslContext.selectFrom(TRACKABLE_ITEM)
+            .where(TRACKABLE_ITEM.ACTIVITY_ID.eq(activityId))
             .fetch(TRACKABLE_ITEM_MAPPER)
 
     fun update(activityId: Int, trackableItemId: Int, name: String) {
-        dslContext.update(Tables.TRACKABLE_ITEM)
-            .set(Tables.TRACKABLE_ITEM.NAME, name)
-            .where(Tables.TRACKABLE_ITEM.ID.eq(trackableItemId))
-            .and(Tables.TRACKABLE_ITEM.ACTIVITY_ID.eq(activityId))
+        dslContext.update(TRACKABLE_ITEM)
+            .set(TRACKABLE_ITEM.NAME, name)
+            .where(TRACKABLE_ITEM.ID.eq(trackableItemId))
+            .and(TRACKABLE_ITEM.ACTIVITY_ID.eq(activityId))
             .execute()
     }
 

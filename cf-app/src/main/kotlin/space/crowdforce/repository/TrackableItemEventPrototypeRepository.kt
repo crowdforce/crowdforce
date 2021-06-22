@@ -18,6 +18,7 @@ class TrackableItemEventPrototypeRepository(
     companion object {
         val TI_EVENT_PROTOTYPE_MAPPER: (TrackableItemEventPrototypeRecord) -> TrackableItemEventPrototype = { record: TrackableItemEventPrototypeRecord ->
             TrackableItemEventPrototype(
+                record.id,
                 record.message,
                 record.startTime,
                 Period.valueOf(record.recurring)

@@ -20,6 +20,7 @@ import space.crowdforce.model.tables.ProjectSubscribers;
 import space.crowdforce.model.tables.Projects;
 import space.crowdforce.model.tables.TrackableItem;
 import space.crowdforce.model.tables.TrackableItemEvent;
+import space.crowdforce.model.tables.TrackableItemEventParticipants;
 import space.crowdforce.model.tables.TrackableItemEventPrototype;
 import space.crowdforce.model.tables.TrackableItemParticipants;
 import space.crowdforce.model.tables.Users;
@@ -31,7 +32,7 @@ import space.crowdforce.model.tables.Users;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 1131756681;
+    private static final long serialVersionUID = -247199966;
 
     /**
      * The reference instance of <code>public</code>
@@ -79,6 +80,11 @@ public class Public extends SchemaImpl {
     public final TrackableItemEvent TRACKABLE_ITEM_EVENT = TrackableItemEvent.TRACKABLE_ITEM_EVENT;
 
     /**
+     * The table <code>public.trackable_item_event_participants</code>.
+     */
+    public final TrackableItemEventParticipants TRACKABLE_ITEM_EVENT_PARTICIPANTS = TrackableItemEventParticipants.TRACKABLE_ITEM_EVENT_PARTICIPANTS;
+
+    /**
      * The table <code>public.trackable_item_event_prototype</code>.
      */
     public final TrackableItemEventPrototype TRACKABLE_ITEM_EVENT_PROTOTYPE = TrackableItemEventPrototype.TRACKABLE_ITEM_EVENT_PROTOTYPE;
@@ -113,6 +119,7 @@ public class Public extends SchemaImpl {
             Sequences.GOALS_ID_SEQ,
             Sequences.PROJECTS_ID_SEQ,
             Sequences.TRACKABLE_ITEM_EVENT_ID_SEQ,
+            Sequences.TRACKABLE_ITEM_EVENT_PARTICIPANTS_ID_SEQ,
             Sequences.TRACKABLE_ITEM_EVENT_PROTOTYPE_ID_SEQ,
             Sequences.TRACKABLE_ITEM_ID_SEQ,
             Sequences.USERS_ID_SEQ);
@@ -129,6 +136,7 @@ public class Public extends SchemaImpl {
             Projects.PROJECTS,
             TrackableItem.TRACKABLE_ITEM,
             TrackableItemEvent.TRACKABLE_ITEM_EVENT,
+            TrackableItemEventParticipants.TRACKABLE_ITEM_EVENT_PARTICIPANTS,
             TrackableItemEventPrototype.TRACKABLE_ITEM_EVENT_PROTOTYPE,
             TrackableItemParticipants.TRACKABLE_ITEM_PARTICIPANTS,
             Users.USERS);

@@ -54,7 +54,7 @@ CREATE TABLE goals (
 CREATE TABLE trackable_item (
  id                       SERIAL PRIMARY KEY,
  name                     VARCHAR(255) NOT NULL,
- activity_id               INT REFERENCES activities (id) ON DELETE CASCADE NOT NULL
+ activity_id              INT REFERENCES activities (id) ON DELETE CASCADE NOT NULL
 );
 
 CREATE TABLE trackable_item_participants (
@@ -74,8 +74,14 @@ CREATE TABLE trackable_item_event (
  id                       SERIAL PRIMARY KEY,
  message                  VARCHAR(255) NOT NULL,
  trackable_item_id        INT REFERENCES trackable_item (id) ON DELETE CASCADE NOT NULL,
+ event_time               TIMESTAMP  NOT NULL
+);
+
+CREATE TABLE trackable_item_event_participants (
+ id                       SERIAL PRIMARY KEY,
+ trackable_item_event_id  INT REFERENCES trackable_item_event (id) ON DELETE CASCADE NOT NULL,
  user_id                  INT REFERENCES users (id) ON DELETE CASCADE NOT NULL,
- event_time TIMESTAMP  NOT NULL,
- confirmation_time TIMESTAMP  NOT NULL,
- confirmed         INT DEFAULT 0 NOT NULL
+ creation_time            TIMESTAMP  NOT NULL,
+ last_update_time         TIMESTAMP  NOT NULL,
+ confirmed                INT DEFAULT 0 NOT NULL
 );

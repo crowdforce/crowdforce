@@ -326,6 +326,32 @@ class ProjectController(
         trackableItemService.deleteTrackableItem(userId, projectId, activityId, trackableItemId)
     }
 
+    @PutMapping("/{projectId}/activities/{activityId}/items/{trackableItemId}/participants")
+    suspend fun addTrackableItemParticipant(
+        @PathVariable("projectId") projectId: Int,
+        @PathVariable("activityId") activityId: Int,
+        @PathVariable("trackableItemId") trackableItemId: Int,
+        principal: Principal?
+    ) {
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw RuntimeException("Unauthorized")
+
+        trackableItemService.addParticipant(userId, projectId, activityId, trackableItemId)
+    }
+
+    @DeleteMapping("/{projectId}/activities/{activityId}/items/{trackableItemId}/participants")
+    suspend fun deleteTrackableItemParticipant(
+        @PathVariable("projectId") projectId: Int,
+        @PathVariable("activityId") activityId: Int,
+        @PathVariable("trackableItemId") trackableItemId: Int,
+        principal: Principal?
+    ) {
+        val userId = principal?.let { userService.getUserIdByTelegramId(it.name.toInt()) }
+            ?: throw RuntimeException("Unauthorized")
+
+        trackableItemService.deleteParticipant(userId, projectId, activityId, trackableItemId)
+    }
+
     @GetMapping("/{projectId}/activities/{activityId}/items/{trackableItemId}/events")
     suspend fun getTrackableItemEventPrototypes(
         @PathVariable("projectId") projectId: Int,

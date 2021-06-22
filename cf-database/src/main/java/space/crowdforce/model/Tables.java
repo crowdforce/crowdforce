@@ -12,6 +12,7 @@ import space.crowdforce.model.tables.ProjectSubscribers;
 import space.crowdforce.model.tables.Projects;
 import space.crowdforce.model.tables.TrackableItem;
 import space.crowdforce.model.tables.TrackableItemEvent;
+import space.crowdforce.model.tables.TrackableItemEventParticipants;
 import space.crowdforce.model.tables.TrackableItemEventPrototype;
 import space.crowdforce.model.tables.TrackableItemParticipants;
 import space.crowdforce.model.tables.Users;
@@ -62,6 +63,11 @@ public class Tables {
      * The table <code>public.trackable_item_event</code>.
      */
     public static final TrackableItemEvent TRACKABLE_ITEM_EVENT = TrackableItemEvent.TRACKABLE_ITEM_EVENT;
+
+    /**
+     * The table <code>public.trackable_item_event_participants</code>.
+     */
+    public static final TrackableItemEventParticipants TRACKABLE_ITEM_EVENT_PARTICIPANTS = TrackableItemEventParticipants.TRACKABLE_ITEM_EVENT_PARTICIPANTS;
 
     /**
      * The table <code>public.trackable_item_event_prototype</code>.

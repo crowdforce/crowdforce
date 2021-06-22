@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row7;
+import org.jooq.Row4;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -33,7 +33,7 @@ import space.crowdforce.model.tables.records.TrackableItemEventRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TrackableItemEvent extends TableImpl<TrackableItemEventRecord> {
 
-    private static final long serialVersionUID = -1128393294;
+    private static final long serialVersionUID = -1397834417;
 
     /**
      * The reference instance of <code>public.trackable_item_event</code>
@@ -64,24 +64,9 @@ public class TrackableItemEvent extends TableImpl<TrackableItemEventRecord> {
     public final TableField<TrackableItemEventRecord, Integer> TRACKABLE_ITEM_ID = createField(DSL.name("trackable_item_id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>public.trackable_item_event.user_id</code>.
-     */
-    public final TableField<TrackableItemEventRecord, Integer> USER_ID = createField(DSL.name("user_id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
-
-    /**
      * The column <code>public.trackable_item_event.event_time</code>.
      */
     public final TableField<TrackableItemEventRecord, LocalDateTime> EVENT_TIME = createField(DSL.name("event_time"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "");
-
-    /**
-     * The column <code>public.trackable_item_event.confirmation_time</code>.
-     */
-    public final TableField<TrackableItemEventRecord, LocalDateTime> CONFIRMATION_TIME = createField(DSL.name("confirmation_time"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "");
-
-    /**
-     * The column <code>public.trackable_item_event.confirmed</code>.
-     */
-    public final TableField<TrackableItemEventRecord, Integer> CONFIRMED = createField(DSL.name("confirmed"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * Create a <code>public.trackable_item_event</code> table reference
@@ -138,15 +123,11 @@ public class TrackableItemEvent extends TableImpl<TrackableItemEventRecord> {
 
     @Override
     public List<ForeignKey<TrackableItemEventRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<TrackableItemEventRecord, ?>>asList(Keys.TRACKABLE_ITEM_EVENT__TRACKABLE_ITEM_EVENT_TRACKABLE_ITEM_ID_FKEY, Keys.TRACKABLE_ITEM_EVENT__TRACKABLE_ITEM_EVENT_USER_ID_FKEY);
+        return Arrays.<ForeignKey<TrackableItemEventRecord, ?>>asList(Keys.TRACKABLE_ITEM_EVENT__TRACKABLE_ITEM_EVENT_TRACKABLE_ITEM_ID_FKEY);
     }
 
     public TrackableItem trackableItem() {
         return new TrackableItem(this, Keys.TRACKABLE_ITEM_EVENT__TRACKABLE_ITEM_EVENT_TRACKABLE_ITEM_ID_FKEY);
-    }
-
-    public Users users() {
-        return new Users(this, Keys.TRACKABLE_ITEM_EVENT__TRACKABLE_ITEM_EVENT_USER_ID_FKEY);
     }
 
     @Override
@@ -176,11 +157,11 @@ public class TrackableItemEvent extends TableImpl<TrackableItemEventRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row7 type methods
+    // Row4 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<Integer, String, Integer, Integer, LocalDateTime, LocalDateTime, Integer> fieldsRow() {
-        return (Row7) super.fieldsRow();
+    public Row4<Integer, String, Integer, LocalDateTime> fieldsRow() {
+        return (Row4) super.fieldsRow();
     }
 }

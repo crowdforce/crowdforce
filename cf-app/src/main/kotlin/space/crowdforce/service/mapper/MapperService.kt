@@ -18,6 +18,7 @@ class MapperService {
     )
 
     fun map(eventPrototype: TrackableItemEventPrototype): TrackableItemEventPrototypeUI = TrackableItemEventPrototypeUI(
+        eventPrototype.id,
         eventPrototype.message,
         eventPrototype.startDate,
         eventPrototype.recurring

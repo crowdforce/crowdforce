@@ -35,6 +35,11 @@ public class Sequences {
     public static final Sequence<Integer> TRACKABLE_ITEM_EVENT_ID_SEQ = Internal.createSequence("trackable_item_event_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.INTEGER.nullable(false), null, null, null, null, false, null);
 
     /**
+     * The sequence <code>public.trackable_item_event_participants_id_seq</code>
+     */
+    public static final Sequence<Integer> TRACKABLE_ITEM_EVENT_PARTICIPANTS_ID_SEQ = Internal.createSequence("trackable_item_event_participants_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.INTEGER.nullable(false), null, null, null, null, false, null);
+
+    /**
      * The sequence <code>public.trackable_item_event_prototype_id_seq</code>
      */
     public static final Sequence<Integer> TRACKABLE_ITEM_EVENT_PROTOTYPE_ID_SEQ = Internal.createSequence("trackable_item_event_prototype_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.INTEGER.nullable(false), null, null, null, null, false, null);
