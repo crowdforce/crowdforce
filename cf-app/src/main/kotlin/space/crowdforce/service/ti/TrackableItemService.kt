@@ -102,6 +102,7 @@ class TrackableItemService(
 
     // TODO add test for it
     @Scheduled(fixedRate = 5 * 60 * 1000)
+    @Transactional
     fun createEventsByPrototypes() {
         val currentTime = LocalDateTime.now(clock)
 
