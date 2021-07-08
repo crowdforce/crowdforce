@@ -1,5 +1,6 @@
 package space.crowdforce.service.ti
 
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import space.crowdforce.domain.item.ConfirmationStatus
@@ -94,6 +95,32 @@ class TrackableItemService(
            }
        }*/
 
+    // TODO add test for it
+    @Scheduled(fixedRate = 5 * 60 * 1000)
+    fun createEventsByPrototypes() {
+        val currentTime = LocalDateTime.now(clock)
+
+        // We find the last event related with a prototype or an empty result. This knowledge uses to  calculation of
+        // next date.
+        // TODO add end time of action to this search
+        val prototypes = trackableItemEventPrototypeRepository.findAllEventsForCreationByPrototype()
+        for (prototype in prototypes) {
+
+            if (Period.NON_RECURRING == prototype.recurring && prototype.lastEventDate != null)
+                continue
+
+            val previousEventDate = prototype.lastEventDate ?: prototype.startDate
+            val nextEventDate = previousEventDate.plusDays(prototype.recurring.days)
+
+            trackableItemEventRepository.insert(
+                prototype.trackableItemId,
+                prototype.message,
+                nextEventDate,
+                prototype.id
+            )
+        }
+    }
+
     fun findCandidatesForWork() {
         val currentTime = LocalDateTime.now(clock)
 
@@ -118,7 +145,7 @@ class TrackableItemService(
                             ConfirmationStatus.APPROVE_REJECTED,
                             currentTime
                         )
-                        //TODO reject telegram request
+                        // TODO reject telegram request
                     } else
                         continue
                 }
@@ -139,14 +166,12 @@ class TrackableItemService(
                     ConfirmationStatus.WAIT_APPROVE
                 )
 
-                //TODO notify tg
-
+                // TODO notify tg
             } else {
-             /*   // TODO find from other members of same activity
+                /*   // TODO find from other members of same activity
 
-                activityService.findParticipents(activeEvent.)*/
+                   activityService.findParticipents(activeEvent.)*/
             }
-
         }
     }
 

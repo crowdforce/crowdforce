@@ -74,6 +74,7 @@ CREATE TABLE trackable_item_event (
  id                       SERIAL PRIMARY KEY,
  message                  VARCHAR(255) NOT NULL,
  trackable_item_id        INT REFERENCES trackable_item (id) ON DELETE CASCADE NOT NULL,
+ trackable_item_event_prototype_id        INT REFERENCES trackable_item_event_prototype (id) ON DELETE CASCADE NOT NULL,
  event_time               TIMESTAMP  NOT NULL
 );
 

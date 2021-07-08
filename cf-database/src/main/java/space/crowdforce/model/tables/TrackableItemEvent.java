@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row4;
+import org.jooq.Row5;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -33,7 +33,7 @@ import space.crowdforce.model.tables.records.TrackableItemEventRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TrackableItemEvent extends TableImpl<TrackableItemEventRecord> {
 
-    private static final long serialVersionUID = -1397834417;
+    private static final long serialVersionUID = 1532849217;
 
     /**
      * The reference instance of <code>public.trackable_item_event</code>
@@ -62,6 +62,11 @@ public class TrackableItemEvent extends TableImpl<TrackableItemEventRecord> {
      * The column <code>public.trackable_item_event.trackable_item_id</code>.
      */
     public final TableField<TrackableItemEventRecord, Integer> TRACKABLE_ITEM_ID = createField(DSL.name("trackable_item_id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>public.trackable_item_event.trackable_item_event_prototype_id</code>.
+     */
+    public final TableField<TrackableItemEventRecord, Integer> TRACKABLE_ITEM_EVENT_PROTOTYPE_ID = createField(DSL.name("trackable_item_event_prototype_id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>public.trackable_item_event.event_time</code>.
@@ -123,11 +128,15 @@ public class TrackableItemEvent extends TableImpl<TrackableItemEventRecord> {
 
     @Override
     public List<ForeignKey<TrackableItemEventRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<TrackableItemEventRecord, ?>>asList(Keys.TRACKABLE_ITEM_EVENT__TRACKABLE_ITEM_EVENT_TRACKABLE_ITEM_ID_FKEY);
+        return Arrays.<ForeignKey<TrackableItemEventRecord, ?>>asList(Keys.TRACKABLE_ITEM_EVENT__TRACKABLE_ITEM_EVENT_TRACKABLE_ITEM_ID_FKEY, Keys.TRACKABLE_ITEM_EVENT__TRACKABLE_ITEM_EVENT_TRACKABLE_ITEM_EVENT_PROTOTYPE_ID_FKEY);
     }
 
     public TrackableItem trackableItem() {
         return new TrackableItem(this, Keys.TRACKABLE_ITEM_EVENT__TRACKABLE_ITEM_EVENT_TRACKABLE_ITEM_ID_FKEY);
+    }
+
+    public TrackableItemEventPrototype trackableItemEventPrototype() {
+        return new TrackableItemEventPrototype(this, Keys.TRACKABLE_ITEM_EVENT__TRACKABLE_ITEM_EVENT_TRACKABLE_ITEM_EVENT_PROTOTYPE_ID_FKEY);
     }
 
     @Override
@@ -157,11 +166,11 @@ public class TrackableItemEvent extends TableImpl<TrackableItemEventRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row4 type methods
+    // Row5 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<Integer, String, Integer, LocalDateTime> fieldsRow() {
-        return (Row4) super.fieldsRow();
+    public Row5<Integer, String, Integer, Integer, LocalDateTime> fieldsRow() {
+        return (Row5) super.fieldsRow();
     }
 }

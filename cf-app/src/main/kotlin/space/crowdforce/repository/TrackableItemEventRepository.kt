@@ -25,10 +25,10 @@ class TrackableItemEventRepository(
         }
     }
 
-    fun insert(trackableItemId: Int, message: String, currentTime: LocalDateTime) = TRACKABLE_ITEM_EVENT_MAPPER
+    fun insert(trackableItemId: Int, message: String, currentTime: LocalDateTime, trackablePrototypeId: Int) = TRACKABLE_ITEM_EVENT_MAPPER
         .invoke(dslContext.insertInto(Tables.TRACKABLE_ITEM_EVENT)
-            .columns(Tables.TRACKABLE_ITEM_EVENT.MESSAGE, Tables.TRACKABLE_ITEM_EVENT.TRACKABLE_ITEM_ID, Tables.TRACKABLE_ITEM_EVENT.EVENT_TIME)
-            .values(message, trackableItemId, currentTime)
+            .columns(Tables.TRACKABLE_ITEM_EVENT.MESSAGE, Tables.TRACKABLE_ITEM_EVENT.TRACKABLE_ITEM_ID, Tables.TRACKABLE_ITEM_EVENT.EVENT_TIME, Tables.TRACKABLE_ITEM_EVENT.TRACKABLE_ITEM_EVENT_PROTOTYPE_ID)
+            .values(message, trackableItemId, currentTime, trackablePrototypeId)
             .returning()
             .fetchOne()
         )

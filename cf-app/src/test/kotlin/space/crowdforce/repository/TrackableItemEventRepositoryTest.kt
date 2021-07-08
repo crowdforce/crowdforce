@@ -26,7 +26,6 @@ internal class TrackableItemEventRepositoryTest : AbstractIT() {
     @Inject
     lateinit var dslContext: DSLContext
 
-
     @BeforeEach
     fun cleanUp() {
         dslContext.truncate(Tables.USERS).cascade().execute()
@@ -38,7 +37,7 @@ internal class TrackableItemEventRepositoryTest : AbstractIT() {
         val currentTime = LocalDateTime.now()
         val user = userRepository.insert(TEST_TELEGRAM_USER_ID.toInt(), TEST_TELEGRAM_USER_ID, currentTime)
 
-        //TODO create DSL
+        // TODO create DSL
         val project = projectRepository.insert(
             user.id,
             ProjectRepositoryIT.TEST_PROJECT_NAME,
@@ -55,11 +54,5 @@ internal class TrackableItemEventRepositoryTest : AbstractIT() {
             currentTime,
             currentTime.plusDays(1)
         )
-
-       /* trackableItemEventRepository.insert(
-
-        )
-
-        trackableItemEventRepository.findAllActiveAtTime()*/
     }
 }

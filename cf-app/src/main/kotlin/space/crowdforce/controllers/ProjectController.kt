@@ -149,7 +149,7 @@ class ProjectController(
     @GetMapping("/{projectId}/activities/{activityId}")
     suspend fun getActivity(
         @PathVariable("projectId") projectId: Int,
-        @PathVariable("activityId") activityId: Int,
+        @PathVariable("activityId") activityId: Int
     ): ResponseEntity<ActivityUI> =
         activityService.findActivity(activityId)?.let { ResponseEntity.ok().body(map(it)) }
             ?: ResponseEntity.notFound().build()
