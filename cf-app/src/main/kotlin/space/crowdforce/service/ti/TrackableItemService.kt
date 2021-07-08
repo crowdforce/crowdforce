@@ -1,5 +1,6 @@
 package space.crowdforce.service.ti
 
+import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -31,6 +32,10 @@ class TrackableItemService(
     private val activityService: ActivityService,
     private val clock: Clock
 ) {
+
+    companion object {
+        private val log = LoggerFactory.getLogger(TrackableItemService::class.java)
+    }
 
     @Transactional
     fun createTrackableItem(userId: Int, projectId: Int, activityId: Int, name: String): TrackableItem {
@@ -112,12 +117,13 @@ class TrackableItemService(
             val previousEventDate = prototype.lastEventDate ?: prototype.startDate
             val nextEventDate = previousEventDate.plusDays(prototype.recurring.days)
 
-            trackableItemEventRepository.insert(
-                prototype.trackableItemId,
-                prototype.message,
-                nextEventDate,
-                prototype.id
-            )
+            if (previousEventDate.isBefore(currentTime) || previousEventDate == currentTime)
+                trackableItemEventRepository.insert(
+                    prototype.trackableItemId,
+                    prototype.message,
+                    nextEventDate,
+                    prototype.id
+                )
         }
     }
 
