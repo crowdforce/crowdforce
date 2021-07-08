@@ -118,7 +118,7 @@ class TrackableItemService(
             val previousEventDate = prototype.lastEventDate ?: prototype.startDate
             val nextEventDate = previousEventDate.plusDays(prototype.recurring.days)
 
-            if (previousEventDate.isBefore(currentTime) || previousEventDate == currentTime)
+            if (prototype.lastEventDate == null || previousEventDate.isBefore(currentTime) || previousEventDate == currentTime)
                 trackableItemEventRepository.insert(
                     prototype.trackableItemId,
                     prototype.message,
