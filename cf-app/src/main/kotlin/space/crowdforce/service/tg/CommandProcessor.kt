@@ -135,7 +135,7 @@ class CommandProcessor(
             viewName to "/${linkCommand.name()} $argumentsFromContext $argumentsFromCommand"
         }.toList()
 
-        return Response(text = answer.text, actions = actions)
+        return Response(text = answer.text, actions = actions, replace = answer.replace)
     }
 
     private fun parseParams(arguments: List<String>): MutableMap<String, String> {

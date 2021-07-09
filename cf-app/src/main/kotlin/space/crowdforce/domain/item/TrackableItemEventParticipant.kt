@@ -8,7 +8,8 @@ data class TrackableItemEventParticipant(
     val userId: Int,
     val creationTime: LocalDateTime,
     val lastUpdateTime: LocalDateTime,
-    val confirmed: ConfirmationStatus
+    val confirmed: ConfirmationStatus,
+    val tgMessageId: Int
 )
 
 enum class ConfirmationStatus(

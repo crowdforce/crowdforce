@@ -24,7 +24,8 @@ class TrackableItemEventParticipantRepository(
                 record.userId,
                 record.creationTime,
                 record.lastUpdateTime,
-                ConfirmationStatus.value(record.confirmed)
+                ConfirmationStatus.value(record.confirmed),
+                record.tgMessageId
             )
         }
     }
@@ -43,27 +44,30 @@ class TrackableItemEventParticipantRepository(
             .set(TRACKABLE_ITEM_EVENT_PARTICIPANTS.CONFIRMED, confirmationStatus.code)
             .set(TRACKABLE_ITEM_EVENT_PARTICIPANTS.LAST_UPDATE_TIME, currentTime)
             .where(TRACKABLE_ITEM_EVENT_PARTICIPANTS.ID.eq(id))
+            .execute()
     }
 
-    fun updateStatus(id: Int, userId: Int, confirmationStatus: ConfirmationStatus, currentTime: LocalDateTime) {
+    fun updateStatus(eventId: Int, userId: Int, confirmationStatus: ConfirmationStatus, currentTime: LocalDateTime) {
         dslContext.update(TRACKABLE_ITEM_EVENT_PARTICIPANTS)
             .set(TRACKABLE_ITEM_EVENT_PARTICIPANTS.CONFIRMED, confirmationStatus.code)
             .set(TRACKABLE_ITEM_EVENT_PARTICIPANTS.LAST_UPDATE_TIME, currentTime)
-            .where(TRACKABLE_ITEM_EVENT_PARTICIPANTS.USER_ID.eq(userId).and(TRACKABLE_ITEM_EVENT_PARTICIPANTS.ID.eq(id)))
+            .where(TRACKABLE_ITEM_EVENT_PARTICIPANTS.USER_ID.eq(userId).and(TRACKABLE_ITEM_EVENT_PARTICIPANTS.TRACKABLE_ITEM_EVENT_ID.eq(eventId)))
+            .execute()
     }
 
     fun insert(
         trackableItemEventId: Int,
         userId: Int,
         creationTime: LocalDateTime,
-        confirmed: ConfirmationStatus
+        confirmed: ConfirmationStatus,
+        tgMessageId: Int
     ): TrackableItemEventParticipant {
         return TRACKABLE_ITEM_EVENT_PARTICIPANT_MAPPER.invoke(
             dslContext.insertInto(TRACKABLE_ITEM_EVENT_PARTICIPANTS)
                 .columns(TRACKABLE_ITEM_EVENT_PARTICIPANTS.CONFIRMED, TRACKABLE_ITEM_EVENT_PARTICIPANTS.TRACKABLE_ITEM_EVENT_ID,
                     TRACKABLE_ITEM_EVENT_PARTICIPANTS.CREATION_TIME, TRACKABLE_ITEM_EVENT_PARTICIPANTS.LAST_UPDATE_TIME,
-                    TRACKABLE_ITEM_EVENT_PARTICIPANTS.USER_ID
-                ).values(confirmed.code, trackableItemEventId, creationTime, creationTime, userId)
+                    TRACKABLE_ITEM_EVENT_PARTICIPANTS.USER_ID, TRACKABLE_ITEM_EVENT_PARTICIPANTS.TG_MESSAGE_ID
+                ).values(confirmed.code, trackableItemEventId, creationTime, creationTime, userId, tgMessageId)
                 .returning()
                 .fetchOne())
     }

@@ -20,13 +20,15 @@ enum class AnswerStatus {
 data class CommandAnswer(
     val status: AnswerStatus = AnswerStatus.FINISH,
     val text: String,
-    val links: List<Link> = emptyList()
+    val links: List<Link> = emptyList(),
+    val replace: Boolean = false
 ) {
     companion object {
-        fun inProgress(text: String, links: List<Link> = emptyList()) =
-            CommandAnswer(AnswerStatus.IN_PROGRESS, text, links)
+        fun inProgress(text: String, links: List<Link> = emptyList(), replace: Boolean = false) =
+            CommandAnswer(AnswerStatus.IN_PROGRESS, text, links, replace)
 
-        fun finish(text: String, links: List<Link> = emptyList()) = CommandAnswer(AnswerStatus.FINISH, text, links)
+        fun finish(text: String, links: List<Link> = emptyList(), replace: Boolean = false) =
+            CommandAnswer(AnswerStatus.FINISH, text, links, replace)
     }
 }
 
@@ -38,5 +40,6 @@ data class Link(
 
 data class Response(
     val text: String,
-    val actions: List<Pair<String, String>> = emptyList()
+    val actions: List<Pair<String, String>> = emptyList(),
+    val replace: Boolean = false
 )

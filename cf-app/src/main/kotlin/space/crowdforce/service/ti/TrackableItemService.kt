@@ -100,7 +100,8 @@ class TrackableItemService(
     fun findCandidatesForWork() {
         val currentTime = LocalDateTime.now(clock)
 
-        val activeEvents = trackableItemEventRepository.findAllActiveAtTime(currentTime)
+        // TODO Find not active event for ConfirmationStatus.WAIT_COMPLETING logic
+        val activeEvents = trackableItemEventRepository.findAllActiveAtTime(currentTime.minusDays(5))
 
         for (activeEvent in activeEvents) {
             // In the current implementation, we can only have one wait approval request at the same time.
@@ -112,53 +113,59 @@ class TrackableItemService(
                     it.confirmed == ConfirmationStatus.WAIT_APPROVE
             }.toList()
 
-            val waitRequest = waitRequests.first()
+            if (waitRequests.isNotEmpty()) {
+                val waitRequest = waitRequests.first()
 
-            if (waitRequest.confirmed == ConfirmationStatus.WAIT_APPROVE &&
-                waitRequest.creationTime.plusHours(3).isBefore(currentTime)) { // We waited more then 3 hours.
-                trackableItemEventParticipantRepository.updateStatus(waitRequest.id, ConfirmationStatus.APPROVE_AUTO_REJECTED, currentTime)
-                // TODO Send to tg reject session of accept.
-            } else
-                continue // Will wait additional time
+                val user = userService.getUserById(waitRequest.userId)
 
-            val user = userService.getUserById(waitRequest.userId)
+                if (user == null) {
+                    // TODO Redesign this logic
+                    log.error("User not found [userId${waitRequest.userId}].")
 
-            if (user == null) {
-                // TODO Redesign this logic
-                log.error("User not found [userId${waitRequest.userId}].")
-
-                trackableItemEventParticipantRepository.updateStatus(
-                    activeEvent.id,
-                    waitRequest.userId,
-                    ConfirmationStatus.APPROVE_AUTO_REJECTED,
-                    currentTime
-                )
-
-                continue
-            }
-
-            // Send message about work completion
-            if (waitRequest.confirmed == ConfirmationStatus.WAIT_COMPLETING &&
-                waitRequest.lastUpdateTime.isBefore(activeEvent.eventTime) &&
-                currentTime.isAfter(activeEvent.eventTime)
-            ) {
-                trackableItemEventParticipantRepository.updateStatus(
-                    activeEvent.trackableItemId,
-                    waitRequest.userId,
-                    ConfirmationStatus.WAIT_COMPLETING,
-                    currentTime // TODO extend statuses for this case
-                )
-
-                telegramBot.sendMsg(
-                    user.telegramId.toString(),
-                    "Подтвердите выполнение: " + activeEvent.message + " дата: " + activeEvent.eventTime,
-                    listOf(
-                        "Принять" to "/${CompleteTrackableItemCommand.NAME} ${Argument.TRACKABLE_ITEM_EVENT_ID}=${activeEvent.id}",
-                        "Отказаться" to "/${FailureTrackableItemCommand.NAME} ${Argument.TRACKABLE_ITEM_EVENT_ID}=${activeEvent.id}"
+                    trackableItemEventParticipantRepository.updateStatus(
+                        activeEvent.id,
+                        waitRequest.userId,
+                        ConfirmationStatus.APPROVE_AUTO_REJECTED,
+                        currentTime
                     )
-                )
-            } else if (waitRequest.confirmed == ConfirmationStatus.WAIT_COMPLETING)
-                continue // TODO Add auto reject policy
+
+                    continue
+                }
+
+                if (waitRequest.confirmed == ConfirmationStatus.WAIT_APPROVE &&
+                    waitRequest.creationTime.plusHours(3).isBefore(currentTime)) { // We waited more then 3 hours.
+                    trackableItemEventParticipantRepository.updateStatus(waitRequest.id, ConfirmationStatus.APPROVE_AUTO_REJECTED, currentTime)
+
+                    telegramBot.replaceMsg(user.telegramId.toString(), waitRequest.tgMessageId, "Время подтвреждения вышло." +
+                        activeEvent.message + " " + activeEvent.eventTime)
+                } else if (waitRequest.confirmed == ConfirmationStatus.WAIT_APPROVE)
+                    continue // Will wait additional time
+
+                // Send message about work completion
+                if (waitRequest.confirmed == ConfirmationStatus.WAIT_COMPLETING &&
+                    waitRequest.lastUpdateTime.isBefore(activeEvent.eventTime) &&
+                    currentTime.isAfter(activeEvent.eventTime)
+                ) {
+                    trackableItemEventParticipantRepository.updateStatus(
+                        activeEvent.id,
+                        waitRequest.userId,
+                        ConfirmationStatus.WAIT_COMPLETING,
+                        currentTime // TODO extend statuses for this case
+                    )
+
+                    telegramBot.sendMsg(
+                        user.telegramId.toString(),
+                        "Подтвердите выполнение: " + activeEvent.message + " дата: " + activeEvent.eventTime,
+                        listOf(
+                            "Принять" to "/${CompleteTrackableItemCommand.NAME} ${Argument.TRACKABLE_ITEM_EVENT_ID.argName}=${activeEvent.id}",
+                            "Отказаться" to "/${FailureTrackableItemCommand.NAME} ${Argument.TRACKABLE_ITEM_EVENT_ID.argName}=${activeEvent.id}"
+                        )
+                    )
+
+                    continue
+                } else if (waitRequest.confirmed == ConfirmationStatus.WAIT_COMPLETING)
+                    continue // TODO Add auto reject policy
+            }
 
             // Find new potential participants
             val rejectedUserIds = participants.stream().map { it.userId }.collect(Collectors.toSet())
@@ -177,7 +184,7 @@ class TrackableItemService(
 
                     trackableItemEventParticipantRepository.updateStatus(
                         activeEvent.id,
-                        waitRequest.userId,
+                        newParticipant.userId,
                         ConfirmationStatus.APPROVE_AUTO_REJECTED,
                         currentTime
                     )
@@ -185,21 +192,22 @@ class TrackableItemService(
                     continue
                 }
 
-                trackableItemEventParticipantRepository.insert(
-                    activeEvent.trackableItemId,
-                    newParticipant.userId,
-                    currentTime,
-                    ConfirmationStatus.WAIT_APPROVE
-                )
-
                 // TODO Extract it to utility class
-                telegramBot.sendMsg(
+                val msg = telegramBot.sendMsg(
                     user.telegramId.toString(),
                     "Примите участие в: " + activeEvent.message + " дата: " + activeEvent.eventTime,
                     listOf(
-                        "Принять" to "/${ApproveTrackableItemCommand.NAME} ${Argument.TRACKABLE_ITEM_EVENT_ID}=${activeEvent.id}",
-                        "Отказаться" to "/${RejectTrackableItemCommand.NAME} ${Argument.TRACKABLE_ITEM_EVENT_ID}=${activeEvent.id}"
+                        "Принять" to "/${ApproveTrackableItemCommand.NAME} ${Argument.TRACKABLE_ITEM_EVENT_ID.argName}=${activeEvent.id}",
+                        "Отказаться" to "/${RejectTrackableItemCommand.NAME} ${Argument.TRACKABLE_ITEM_EVENT_ID.argName}=${activeEvent.id}"
                     )
+                )
+
+                trackableItemEventParticipantRepository.insert(
+                    activeEvent.id,
+                    newParticipant.userId,
+                    currentTime,
+                    ConfirmationStatus.WAIT_APPROVE,
+                    msg!!.messageId
                 )
             } else {
                 // TODO Find participants in the activity or project level.
@@ -273,8 +281,4 @@ class TrackableItemService(
     fun deleteParticipant(userId: Int, projectId: Int, activityId: Int, trackableItemId: Int) {
         trackableItemParticipantRepository.delete(trackableItemId, userId)
     }
-
-    @Transactional
-    fun changeParticipantEventStatus(userId: Int, eventId: Int, status: ConfirmationStatus) =
-        trackableItemEventParticipantRepository.updateStatus(eventId, userId, status, LocalDateTime.now(clock))
 }

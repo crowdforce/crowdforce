@@ -25,11 +25,12 @@ class CompleteTrackableItemCommand(
     override fun execute(user: User, context: UserContext): CommandAnswer {
         val eventId = context.value(Argument.TRACKABLE_ITEM_EVENT_ID)!!.toInt()
 
-        trackableItemEventParticipantRepository.updateStatus(user.id, eventId, ConfirmationStatus.COMPLETED, LocalDateTime.now(clock))
+        trackableItemEventParticipantRepository.updateStatus(eventId, user.id, ConfirmationStatus.COMPLETED, LocalDateTime.now(clock))
 
         // TODO remove previous message after approve
         return CommandAnswer.finish(
-            text = "Спасибо. Задача готова."
+            text = "Спасибо. Задача готова.",
+            replace = true
         )
     }
 

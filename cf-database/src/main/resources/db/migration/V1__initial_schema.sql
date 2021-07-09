@@ -88,5 +88,6 @@ CREATE TABLE trackable_item_event_participants (
  creation_time            TIMESTAMP  NOT NULL,
  last_update_time         TIMESTAMP  NOT NULL,
  confirmed                INT DEFAULT 0 NOT NULL,
+ tg_message_id            INT NOT NULL,
  UNIQUE (trackable_item_event_id, user_id)
 );

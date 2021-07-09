@@ -16,6 +16,7 @@ import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 
@@ -30,7 +31,7 @@ import space.crowdforce.model.tables.records.TrackableItemParticipantsRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TrackableItemParticipants extends TableImpl<TrackableItemParticipantsRecord> {
 
-    private static final long serialVersionUID = -1794198295;
+    private static final long serialVersionUID = 265835784;
 
     /**
      * The reference instance of <code>public.trackable_item_participants</code>
@@ -91,6 +92,11 @@ public class TrackableItemParticipants extends TableImpl<TrackableItemParticipan
     @Override
     public Schema getSchema() {
         return Public.PUBLIC;
+    }
+
+    @Override
+    public List<UniqueKey<TrackableItemParticipantsRecord>> getKeys() {
+        return Arrays.<UniqueKey<TrackableItemParticipantsRecord>>asList(Keys.TRACKABLE_ITEM_PARTICIPANTS_TRACKABLE_ITEM_ID_USER_ID_KEY);
     }
 
     @Override

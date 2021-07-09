@@ -7,10 +7,12 @@ import org.telegram.telegrambots.bots.DefaultBotOptions
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
+import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
+import java.io.Serializable
 
 @Component
 class CustomTelegramBot(
@@ -30,7 +32,7 @@ class CustomTelegramBot(
         return customBotToken
     }
 
-    fun sendMsg(targetId: String, msg: String, actions: List<Pair<String, String>> = emptyList()) {
+    fun sendMsg(targetId: String, msg: String, actions: List<Pair<String, String>> = emptyList()): Message? {
 
         val message = SendMessage() // Create a SendMessage object with mandatory fields
             .setChatId(targetId)
@@ -38,23 +40,27 @@ class CustomTelegramBot(
             .setText(msg)
 
         try {
-            execute(message) // Call method to send the message
+            return execute(message) // Call method to send the message
         } catch (e: TelegramApiException) {
             log.error("Replacing message failed : chatId=$targetId, message=$msg, actions=$actions", e)
+
+            return null
         }
     }
 
-    fun replaceMsg(targetId: String, messageId: Int, msg: String, actions: List<Pair<String, String>> = emptyList()) {
+    fun replaceMsg(targetId: String, messageId: Int, msg: String, actions: List<Pair<String, String>> = emptyList()): Serializable? {
         val message = EditMessageText().setChatId(targetId)
             .setMessageId(messageId)
             .setText(msg)
             .setReplyMarkup(inlineKeyboardMarkup(actions))
         try {
-            execute(message) // Call method to send the message
+            return execute(message) // Call method to send the message
         } catch (e: TelegramApiException) {
             log.error(
                 "Replacing message failed : chatId=$targetId, messageId=$messageId, message=$msg, actions=$actions", e
             )
+
+            return null
         }
     }
 
@@ -95,8 +101,10 @@ class CustomTelegramBot(
                 update.callbackQuery.data
             )
 
-            sendMsg(message.chatId.toString(), answer.text, answer.actions)
-//                replaceMsg(message.chatId.toString(), message.messageId, answer.text, answer.actions)
+            if(answer.replace)
+                replaceMsg(message.chatId.toString(), message.messageId, answer.text, answer.actions)
+            else
+                sendMsg(message.chatId.toString(), answer.text, answer.actions)
         }
     }
 }

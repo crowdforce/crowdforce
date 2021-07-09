@@ -71,7 +71,9 @@ public class Keys {
     public static final UniqueKey<TrackableItemRecord> TRACKABLE_ITEM_PKEY = UniqueKeys0.TRACKABLE_ITEM_PKEY;
     public static final UniqueKey<TrackableItemEventRecord> TRACKABLE_ITEM_EVENT_PKEY = UniqueKeys0.TRACKABLE_ITEM_EVENT_PKEY;
     public static final UniqueKey<TrackableItemEventParticipantsRecord> TRACKABLE_ITEM_EVENT_PARTICIPANTS_PKEY = UniqueKeys0.TRACKABLE_ITEM_EVENT_PARTICIPANTS_PKEY;
+    public static final UniqueKey<TrackableItemEventParticipantsRecord> TRACKABLE_ITEM_EVENT_PARTICIP_TRACKABLE_ITEM_EVENT_ID_USER__KEY = UniqueKeys0.TRACKABLE_ITEM_EVENT_PARTICIP_TRACKABLE_ITEM_EVENT_ID_USER__KEY;
     public static final UniqueKey<TrackableItemEventPrototypeRecord> TRACKABLE_ITEM_EVENT_PROTOTYPE_PKEY = UniqueKeys0.TRACKABLE_ITEM_EVENT_PROTOTYPE_PKEY;
+    public static final UniqueKey<TrackableItemParticipantsRecord> TRACKABLE_ITEM_PARTICIPANTS_TRACKABLE_ITEM_ID_USER_ID_KEY = UniqueKeys0.TRACKABLE_ITEM_PARTICIPANTS_TRACKABLE_ITEM_ID_USER_ID_KEY;
     public static final UniqueKey<UsersRecord> USERS_PKEY = UniqueKeys0.USERS_PKEY;
     public static final UniqueKey<UsersRecord> USERS_TG_ID_KEY = UniqueKeys0.USERS_TG_ID_KEY;
 
@@ -122,7 +124,9 @@ public class Keys {
         public static final UniqueKey<TrackableItemRecord> TRACKABLE_ITEM_PKEY = Internal.createUniqueKey(TrackableItem.TRACKABLE_ITEM, "trackable_item_pkey", new TableField[] { TrackableItem.TRACKABLE_ITEM.ID }, true);
         public static final UniqueKey<TrackableItemEventRecord> TRACKABLE_ITEM_EVENT_PKEY = Internal.createUniqueKey(TrackableItemEvent.TRACKABLE_ITEM_EVENT, "trackable_item_event_pkey", new TableField[] { TrackableItemEvent.TRACKABLE_ITEM_EVENT.ID }, true);
         public static final UniqueKey<TrackableItemEventParticipantsRecord> TRACKABLE_ITEM_EVENT_PARTICIPANTS_PKEY = Internal.createUniqueKey(TrackableItemEventParticipants.TRACKABLE_ITEM_EVENT_PARTICIPANTS, "trackable_item_event_participants_pkey", new TableField[] { TrackableItemEventParticipants.TRACKABLE_ITEM_EVENT_PARTICIPANTS.ID }, true);
+        public static final UniqueKey<TrackableItemEventParticipantsRecord> TRACKABLE_ITEM_EVENT_PARTICIP_TRACKABLE_ITEM_EVENT_ID_USER__KEY = Internal.createUniqueKey(TrackableItemEventParticipants.TRACKABLE_ITEM_EVENT_PARTICIPANTS, "trackable_item_event_particip_trackable_item_event_id_user__key", new TableField[] { TrackableItemEventParticipants.TRACKABLE_ITEM_EVENT_PARTICIPANTS.TRACKABLE_ITEM_EVENT_ID, TrackableItemEventParticipants.TRACKABLE_ITEM_EVENT_PARTICIPANTS.USER_ID }, true);
         public static final UniqueKey<TrackableItemEventPrototypeRecord> TRACKABLE_ITEM_EVENT_PROTOTYPE_PKEY = Internal.createUniqueKey(TrackableItemEventPrototype.TRACKABLE_ITEM_EVENT_PROTOTYPE, "trackable_item_event_prototype_pkey", new TableField[] { TrackableItemEventPrototype.TRACKABLE_ITEM_EVENT_PROTOTYPE.ID }, true);
+        public static final UniqueKey<TrackableItemParticipantsRecord> TRACKABLE_ITEM_PARTICIPANTS_TRACKABLE_ITEM_ID_USER_ID_KEY = Internal.createUniqueKey(TrackableItemParticipants.TRACKABLE_ITEM_PARTICIPANTS, "trackable_item_participants_trackable_item_id_user_id_key", new TableField[] { TrackableItemParticipants.TRACKABLE_ITEM_PARTICIPANTS.TRACKABLE_ITEM_ID, TrackableItemParticipants.TRACKABLE_ITEM_PARTICIPANTS.USER_ID }, true);
         public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, "users_pkey", new TableField[] { Users.USERS.ID }, true);
         public static final UniqueKey<UsersRecord> USERS_TG_ID_KEY = Internal.createUniqueKey(Users.USERS, "users_tg_id_key", new TableField[] { Users.USERS.TG_ID }, true);
     }

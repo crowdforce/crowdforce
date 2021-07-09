@@ -8,6 +8,7 @@ import space.crowdforce.domain.item.TrackableItemEvent
 import space.crowdforce.model.Tables
 import space.crowdforce.model.tables.records.TrackableItemEventRecord
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Repository
 @Transactional(propagation = Propagation.MANDATORY)
@@ -38,6 +39,10 @@ class TrackableItemEventRepository(
         )
 
     fun findAllActiveAtTime(currentTime: LocalDateTime): List<TrackableItemEvent> = dslContext.selectFrom(Tables.TRACKABLE_ITEM_EVENT)
-        .where(Tables.TRACKABLE_ITEM_EVENT.EVENT_TIME.ge(currentTime))
+        .where(Tables.TRACKABLE_ITEM_EVENT.EVENT_TIME.ge(LocalDateTime.of(currentTime.toLocalDate(), LocalTime.MIDNIGHT)))
         .fetch(TRACKABLE_ITEM_EVENT_MAPPER)
+
+    fun findById(eventId: Int): TrackableItemEvent? = dslContext.selectFrom(Tables.TRACKABLE_ITEM_EVENT)
+        .where(Tables.TRACKABLE_ITEM_EVENT.ID.eq(eventId))
+        .fetchOne(TRACKABLE_ITEM_EVENT_MAPPER)
 }

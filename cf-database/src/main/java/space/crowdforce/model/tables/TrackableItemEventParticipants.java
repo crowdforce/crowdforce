@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row6;
+import org.jooq.Row7;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -33,7 +33,7 @@ import space.crowdforce.model.tables.records.TrackableItemEventParticipantsRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TrackableItemEventParticipants extends TableImpl<TrackableItemEventParticipantsRecord> {
 
-    private static final long serialVersionUID = 1036360978;
+    private static final long serialVersionUID = 1166935478;
 
     /**
      * The reference instance of <code>public.trackable_item_event_participants</code>
@@ -77,6 +77,11 @@ public class TrackableItemEventParticipants extends TableImpl<TrackableItemEvent
      * The column <code>public.trackable_item_event_participants.confirmed</code>.
      */
     public final TableField<TrackableItemEventParticipantsRecord, Integer> CONFIRMED = createField(DSL.name("confirmed"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>public.trackable_item_event_participants.tg_message_id</code>.
+     */
+    public final TableField<TrackableItemEventParticipantsRecord, Integer> TG_MESSAGE_ID = createField(DSL.name("tg_message_id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>public.trackable_item_event_participants</code> table reference
@@ -128,7 +133,7 @@ public class TrackableItemEventParticipants extends TableImpl<TrackableItemEvent
 
     @Override
     public List<UniqueKey<TrackableItemEventParticipantsRecord>> getKeys() {
-        return Arrays.<UniqueKey<TrackableItemEventParticipantsRecord>>asList(Keys.TRACKABLE_ITEM_EVENT_PARTICIPANTS_PKEY);
+        return Arrays.<UniqueKey<TrackableItemEventParticipantsRecord>>asList(Keys.TRACKABLE_ITEM_EVENT_PARTICIPANTS_PKEY, Keys.TRACKABLE_ITEM_EVENT_PARTICIP_TRACKABLE_ITEM_EVENT_ID_USER__KEY);
     }
 
     @Override
@@ -171,11 +176,11 @@ public class TrackableItemEventParticipants extends TableImpl<TrackableItemEvent
     }
 
     // -------------------------------------------------------------------------
-    // Row6 type methods
+    // Row7 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Integer, Integer, Integer, LocalDateTime, LocalDateTime, Integer> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row7<Integer, Integer, Integer, LocalDateTime, LocalDateTime, Integer, Integer> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 }
