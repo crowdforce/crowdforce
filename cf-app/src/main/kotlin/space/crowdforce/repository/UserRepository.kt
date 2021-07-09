@@ -35,4 +35,9 @@ class UserRepository(
         .from(Tables.USERS)
         .where(Tables.USERS.TG_ID.eq(telegramId))
         .fetchOne(USER_MAPPER)
+
+    fun findById(userId: Int): User? = dslContext.select(Tables.USERS.ID, Tables.USERS.NAME, Tables.USERS.TG_ID, Tables.USERS.REG_DATE)
+        .from(Tables.USERS)
+        .where(Tables.USERS.ID.eq(userId))
+        .fetchOne(USER_MAPPER)
 }

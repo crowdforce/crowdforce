@@ -21,4 +21,7 @@ class UserService(
 
     @Transactional
     fun getUserByTelegramId(telegramId: Int): User? = userRepository.findByTelegramId(telegramId)
+
+    @Transactional
+    fun getUserById(userId: Int): User? = userRepository.findById(userId)
 }

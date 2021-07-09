@@ -26,7 +26,8 @@ class TrackableItemEventPrototypeRepository(
                 record.message,
                 record.startTime,
                 Period.valueOf(record.recurring),
-                record.trackableItemId
+                record.trackableItemId,
+                record.participantsNumber
             )
         }
 
@@ -45,9 +46,10 @@ class TrackableItemEventPrototypeRepository(
     fun insert(trackableItemId: Int, message: String, startDate: LocalDateTime, recurring: Period): TrackableItemEventPrototype =
         TI_EVENT_PROTOTYPE_MAPPER.invoke(dslContext.insertInto(TRACKABLE_ITEM_EVENT_PROTOTYPE)
             .columns(TRACKABLE_ITEM_EVENT_PROTOTYPE.TRACKABLE_ITEM_ID, TRACKABLE_ITEM_EVENT_PROTOTYPE.MESSAGE,
-                TRACKABLE_ITEM_EVENT_PROTOTYPE.START_TIME, TRACKABLE_ITEM_EVENT_PROTOTYPE.RECURRING
+                TRACKABLE_ITEM_EVENT_PROTOTYPE.START_TIME, TRACKABLE_ITEM_EVENT_PROTOTYPE.RECURRING,
+                TRACKABLE_ITEM_EVENT_PROTOTYPE.PARTICIPANTS_NUMBER
             )
-            .values(trackableItemId, message, startDate, recurring.name)
+            .values(trackableItemId, message, startDate, recurring.name, 1)
             .returning()
             .fetchOne())
 

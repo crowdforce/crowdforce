@@ -32,6 +32,9 @@ class TrackableItemEventParticipantRepository(
     fun findAllByEventId(eventId: Int): List<TrackableItemEventParticipant> {
         return dslContext.selectFrom(TRACKABLE_ITEM_EVENT_PARTICIPANTS)
             .where(TRACKABLE_ITEM_EVENT_PARTICIPANTS.TRACKABLE_ITEM_EVENT_ID.eq(eventId))
+            .and(TRACKABLE_ITEM_EVENT_PARTICIPANTS.CONFIRMED.notEqual(ConfirmationStatus.COMPLETED.code)
+                .or(TRACKABLE_ITEM_EVENT_PARTICIPANTS.CONFIRMED.notEqual(ConfirmationStatus.COMPLETING_REJECTED.code))
+            )
             .fetch(TRACKABLE_ITEM_EVENT_PARTICIPANT_MAPPER)
     }
 
@@ -40,6 +43,13 @@ class TrackableItemEventParticipantRepository(
             .set(TRACKABLE_ITEM_EVENT_PARTICIPANTS.CONFIRMED, confirmationStatus.code)
             .set(TRACKABLE_ITEM_EVENT_PARTICIPANTS.LAST_UPDATE_TIME, currentTime)
             .where(TRACKABLE_ITEM_EVENT_PARTICIPANTS.ID.eq(id))
+    }
+
+    fun updateStatus(id: Int, userId: Int, confirmationStatus: ConfirmationStatus, currentTime: LocalDateTime) {
+        dslContext.update(TRACKABLE_ITEM_EVENT_PARTICIPANTS)
+            .set(TRACKABLE_ITEM_EVENT_PARTICIPANTS.CONFIRMED, confirmationStatus.code)
+            .set(TRACKABLE_ITEM_EVENT_PARTICIPANTS.LAST_UPDATE_TIME, currentTime)
+            .where(TRACKABLE_ITEM_EVENT_PARTICIPANTS.USER_ID.eq(userId).and(TRACKABLE_ITEM_EVENT_PARTICIPANTS.ID.eq(id)))
     }
 
     fun insert(

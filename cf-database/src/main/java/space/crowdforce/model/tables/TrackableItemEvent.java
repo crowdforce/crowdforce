@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row5;
+import org.jooq.Row6;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -33,7 +33,7 @@ import space.crowdforce.model.tables.records.TrackableItemEventRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TrackableItemEvent extends TableImpl<TrackableItemEventRecord> {
 
-    private static final long serialVersionUID = 1532849217;
+    private static final long serialVersionUID = -836486718;
 
     /**
      * The reference instance of <code>public.trackable_item_event</code>
@@ -72,6 +72,11 @@ public class TrackableItemEvent extends TableImpl<TrackableItemEventRecord> {
      * The column <code>public.trackable_item_event.event_time</code>.
      */
     public final TableField<TrackableItemEventRecord, LocalDateTime> EVENT_TIME = createField(DSL.name("event_time"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "");
+
+    /**
+     * The column <code>public.trackable_item_event.participants_number</code>.
+     */
+    public final TableField<TrackableItemEventRecord, Integer> PARTICIPANTS_NUMBER = createField(DSL.name("participants_number"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>public.trackable_item_event</code> table reference
@@ -166,11 +171,11 @@ public class TrackableItemEvent extends TableImpl<TrackableItemEventRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row5 type methods
+    // Row6 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Integer, String, Integer, Integer, LocalDateTime> fieldsRow() {
-        return (Row5) super.fieldsRow();
+    public Row6<Integer, String, Integer, Integer, LocalDateTime, Integer> fieldsRow() {
+        return (Row6) super.fieldsRow();
     }
 }

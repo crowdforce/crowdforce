@@ -14,11 +14,12 @@ data class TrackableItemEventParticipant(
 enum class ConfirmationStatus(
     val code: Int
 ) {
-    WAIT_APPROVE(0),
-    APPROVE_REJECTED(1),
-    WAIT_COMPLETING(2),
-    COMPLETING_REJECTED(3),
-    COMPLETED(4);
+    WAIT_APPROVE(10),
+    APPROVE_REJECTED(11),
+    APPROVE_AUTO_REJECTED(12),
+    WAIT_COMPLETING(20),
+    COMPLETING_REJECTED(21),
+    COMPLETED(22);
 
     companion object {
         fun value(code: Int): ConfirmationStatus {

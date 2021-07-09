@@ -67,7 +67,8 @@ CREATE TABLE trackable_item_event_prototype (
  message                  VARCHAR(255) NOT NULL,
  start_time               TIMESTAMP  NOT NULL,
  recurring                VARCHAR(255) NOT NULL,
- trackable_item_id        INT REFERENCES trackable_item (id) ON DELETE CASCADE NOT NULL
+ trackable_item_id        INT REFERENCES trackable_item (id) ON DELETE CASCADE NOT NULL,
+ participants_number        INT NOT NULL
 );
 
 CREATE TABLE trackable_item_event (
@@ -75,7 +76,8 @@ CREATE TABLE trackable_item_event (
  message                  VARCHAR(255) NOT NULL,
  trackable_item_id        INT REFERENCES trackable_item (id) ON DELETE CASCADE NOT NULL,
  trackable_item_event_prototype_id        INT REFERENCES trackable_item_event_prototype (id) ON DELETE CASCADE NOT NULL,
- event_time               TIMESTAMP  NOT NULL
+ event_time               TIMESTAMP  NOT NULL,
+ participants_number        INT NOT NULL
 );
 
 CREATE TABLE trackable_item_event_participants (

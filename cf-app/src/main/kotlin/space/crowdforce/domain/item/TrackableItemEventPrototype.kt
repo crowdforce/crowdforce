@@ -7,5 +7,6 @@ data class TrackableItemEventPrototype(
     val message: String,
     val startDate: LocalDateTime,
     val recurring: Period,
-    val trackableItemId: Int
+    val trackableItemId: Int,
+    val participantsNumber: Int
 )

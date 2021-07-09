@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row5;
+import org.jooq.Row6;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -33,7 +33,7 @@ import space.crowdforce.model.tables.records.TrackableItemEventPrototypeRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TrackableItemEventPrototype extends TableImpl<TrackableItemEventPrototypeRecord> {
 
-    private static final long serialVersionUID = 321569067;
+    private static final long serialVersionUID = 668313245;
 
     /**
      * The reference instance of <code>public.trackable_item_event_prototype</code>
@@ -72,6 +72,11 @@ public class TrackableItemEventPrototype extends TableImpl<TrackableItemEventPro
      * The column <code>public.trackable_item_event_prototype.trackable_item_id</code>.
      */
     public final TableField<TrackableItemEventPrototypeRecord, Integer> TRACKABLE_ITEM_ID = createField(DSL.name("trackable_item_id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>public.trackable_item_event_prototype.participants_number</code>.
+     */
+    public final TableField<TrackableItemEventPrototypeRecord, Integer> PARTICIPANTS_NUMBER = createField(DSL.name("participants_number"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>public.trackable_item_event_prototype</code> table reference
@@ -162,11 +167,11 @@ public class TrackableItemEventPrototype extends TableImpl<TrackableItemEventPro
     }
 
     // -------------------------------------------------------------------------
-    // Row5 type methods
+    // Row6 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Integer, String, LocalDateTime, String, Integer> fieldsRow() {
-        return (Row5) super.fieldsRow();
+    public Row6<Integer, String, LocalDateTime, String, Integer, Integer> fieldsRow() {
+        return (Row6) super.fieldsRow();
     }
 }

@@ -17,9 +17,17 @@ import space.crowdforce.repository.TrackableItemParticipantRepository
 import space.crowdforce.repository.TrackableItemRepository
 import space.crowdforce.service.activity.ActivityService
 import space.crowdforce.service.project.ProjectService
+import space.crowdforce.service.tg.Argument
+import space.crowdforce.service.tg.CustomTelegramBot
+import space.crowdforce.service.tg.command.ti.ApproveTrackableItemCommand
+import space.crowdforce.service.tg.command.ti.CompleteTrackableItemCommand
+import space.crowdforce.service.tg.command.ti.FailureTrackableItemCommand
+import space.crowdforce.service.tg.command.ti.RejectTrackableItemCommand
+import space.crowdforce.service.user.UserService
 import java.time.Clock
 import java.time.LocalDateTime
 import java.util.stream.Collectors
+import kotlin.streams.toList
 
 @Service
 class TrackableItemService(
@@ -30,7 +38,9 @@ class TrackableItemService(
     private val trackableItemEventParticipantRepository: TrackableItemEventParticipantRepository,
     private val projectService: ProjectService,
     private val activityService: ActivityService,
-    private val clock: Clock
+    private val clock: Clock,
+    private val telegramBot: CustomTelegramBot,
+    private val userService: UserService
 ) {
 
     companion object {
@@ -55,50 +65,6 @@ class TrackableItemService(
     fun getTrackableItems(projectId: Int, activityId: Int): List<TrackableItem> {
         return trackableItemRepository.findAllByActivityId(activityId)
     }
-
-    /*   @Scheduled(fixedRate = 5 * 60 * 1000)
-       fun findCandidatesForWork() {
-           //TODO make batching
-           val prototypes = trackableItemEventPrototypeRepository.findAll()
-
-
-           val currentTime = LocalDateTime.now()
-
-           for (prototype in prototypes) {
-               if (!(prototype.recurring == Period.TWO_WEEK || prototype.recurring == Period.WEEKLY))
-                   continue
-
-               // start date -> current date before 3 days -> date of next notification
-               if (prototype.startDate.isBefore(currentTime)) {
-                   var nextNotifyTime = prototype.startDate;
-
-                   do {
-                       nextNotifyTime = nextNotifyTime.plusDays(prototype.recurring.days)
-                   } while (nextNotifyTime.isBefore(currentTime))
-
-                   val firstNotificationDate = nextNotifyTime.minusDays(3).toLocalDate()
-
-                   if (currentTime.toLocalDate().isEqual(firstNotificationDate)) {
-                       val unacaptablePrototypes = trackableItemEventPrototypeRepository.findAllUnacaptableEvents()
-
-                       for (unacaptablePrototype in unacaptablePrototypes) {
-
-                           trackableItemEventRepository.insert();
-
-                       }
-
-                       //TODO smart select logic
-
-                   }
-               } else {
-                   val firstNotificationDate = prototype.startDate.minusDays(3).toLocalDate()
-
-                   if (currentTime.toLocalDate().isEqual(firstNotificationDate)) {
-
-                   }
-               }
-           }
-       }*/
 
     // TODO add test for it
     @Scheduled(fixedRate = 5 * 60 * 1000)
@@ -128,36 +94,73 @@ class TrackableItemService(
         }
     }
 
+    // TODO add test for it
+    @Scheduled(fixedRate = 5 * 60 * 1000)
+    @Transactional
     fun findCandidatesForWork() {
         val currentTime = LocalDateTime.now(clock)
 
         val activeEvents = trackableItemEventRepository.findAllActiveAtTime(currentTime)
 
         for (activeEvent in activeEvents) {
+            // In the current implementation, we can only have one wait approval request at the same time.
             val participants = trackableItemEventParticipantRepository.findAllByEventId(activeEvent.id)
 
-            if (participants.isNotEmpty()) {
-                if (participants.stream().allMatch { it.confirmed == ConfirmationStatus.WAIT_COMPLETING })
-                    continue
+            // Checks expiration of wait requests
+            val waitRequests = participants.stream().filter {
+                it.confirmed == ConfirmationStatus.WAIT_COMPLETING ||
+                    it.confirmed == ConfirmationStatus.WAIT_APPROVE
+            }.toList()
 
-                // In the current implementation, we can only have one wait approval request at the same time.
-                val waitApproveOpt = participants.stream()
-                    .filter { it.confirmed == ConfirmationStatus.WAIT_APPROVE }
-                    .findAny()
+            val waitRequest = waitRequests.first()
 
-                if (waitApproveOpt.isPresent) {
-                    if (waitApproveOpt.get().creationTime.plusDays(1).isBefore(currentTime)) {
-                        trackableItemEventParticipantRepository.updateStatus(
-                            waitApproveOpt.get().id,
-                            ConfirmationStatus.APPROVE_REJECTED,
-                            currentTime
-                        )
-                        // TODO reject telegram request
-                    } else
-                        continue
-                }
+            if (waitRequest.confirmed == ConfirmationStatus.WAIT_APPROVE &&
+                waitRequest.creationTime.plusHours(3).isBefore(currentTime)) { // We waited more then 3 hours.
+                trackableItemEventParticipantRepository.updateStatus(waitRequest.id, ConfirmationStatus.APPROVE_AUTO_REJECTED, currentTime)
+                // TODO Send to tg reject session of accept.
+            } else
+                continue // Will wait additional time
+
+            val user = userService.getUserById(waitRequest.userId)
+
+            if (user == null) {
+                // TODO Redesign this logic
+                log.error("User not found [userId${waitRequest.userId}].")
+
+                trackableItemEventParticipantRepository.updateStatus(
+                    activeEvent.id,
+                    waitRequest.userId,
+                    ConfirmationStatus.APPROVE_AUTO_REJECTED,
+                    currentTime
+                )
+
+                continue
             }
 
+            // Send message about work completion
+            if (waitRequest.confirmed == ConfirmationStatus.WAIT_COMPLETING &&
+                waitRequest.lastUpdateTime.isBefore(activeEvent.eventTime) &&
+                currentTime.isAfter(activeEvent.eventTime)
+            ) {
+                trackableItemEventParticipantRepository.updateStatus(
+                    activeEvent.trackableItemId,
+                    waitRequest.userId,
+                    ConfirmationStatus.WAIT_COMPLETING,
+                    currentTime // TODO extend statuses for this case
+                )
+
+                telegramBot.sendMsg(
+                    user.telegramId.toString(),
+                    "Подтвердите выполнение: " + activeEvent.message + " дата: " + activeEvent.eventTime,
+                    listOf(
+                        "Принять" to "/${CompleteTrackableItemCommand.NAME} ${Argument.TRACKABLE_ITEM_EVENT_ID}=${activeEvent.id}",
+                        "Отказаться" to "/${FailureTrackableItemCommand.NAME} ${Argument.TRACKABLE_ITEM_EVENT_ID}=${activeEvent.id}"
+                    )
+                )
+            } else if (waitRequest.confirmed == ConfirmationStatus.WAIT_COMPLETING)
+                continue // TODO Add auto reject policy
+
+            // Find new potential participants
             val rejectedUserIds = participants.stream().map { it.userId }.collect(Collectors.toSet())
 
             val availableMembers = trackableItemParticipantRepository.findAllByTrackableItemId(activeEvent.trackableItemId).stream()
@@ -166,6 +169,22 @@ class TrackableItemService(
             if (availableMembers.isNotEmpty()) {
                 val newParticipant = availableMembers.first()
 
+                val user = userService.getUserById(newParticipant.userId)
+
+                if (user == null) {
+                    // TODO Redesign this logic
+                    log.error("User not found [userId${newParticipant.userId}].")
+
+                    trackableItemEventParticipantRepository.updateStatus(
+                        activeEvent.id,
+                        waitRequest.userId,
+                        ConfirmationStatus.APPROVE_AUTO_REJECTED,
+                        currentTime
+                    )
+
+                    continue
+                }
+
                 trackableItemEventParticipantRepository.insert(
                     activeEvent.trackableItemId,
                     newParticipant.userId,
@@ -173,11 +192,18 @@ class TrackableItemService(
                     ConfirmationStatus.WAIT_APPROVE
                 )
 
-                // TODO notify tg
+                // TODO Extract it to utility class
+                telegramBot.sendMsg(
+                    user.telegramId.toString(),
+                    "Примите участие в: " + activeEvent.message + " дата: " + activeEvent.eventTime,
+                    listOf(
+                        "Принять" to "/${ApproveTrackableItemCommand.NAME} ${Argument.TRACKABLE_ITEM_EVENT_ID}=${activeEvent.id}",
+                        "Отказаться" to "/${RejectTrackableItemCommand.NAME} ${Argument.TRACKABLE_ITEM_EVENT_ID}=${activeEvent.id}"
+                    )
+                )
             } else {
-                /*   // TODO find from other members of same activity
-
-                   activityService.findParticipents(activeEvent.)*/
+                // TODO Find participants in the activity or project level.
+                log.error("Participants couldn't be found [trackableItemId=${activeEvent.trackableItemId}].")
             }
         }
     }
@@ -247,4 +273,8 @@ class TrackableItemService(
     fun deleteParticipant(userId: Int, projectId: Int, activityId: Int, trackableItemId: Int) {
         trackableItemParticipantRepository.delete(trackableItemId, userId)
     }
+
+    @Transactional
+    fun changeParticipantEventStatus(userId: Int, eventId: Int, status: ConfirmationStatus) =
+        trackableItemEventParticipantRepository.updateStatus(eventId, userId, status, LocalDateTime.now(clock))
 }
