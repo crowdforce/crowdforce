@@ -59,7 +59,8 @@ CREATE TABLE trackable_item (
 
 CREATE TABLE trackable_item_participants (
    trackable_item_id          INT REFERENCES trackable_item (id) ON DELETE CASCADE NOT NULL,
-   user_id                 INT REFERENCES users (id) ON DELETE CASCADE NOT NULL
+   user_id                 INT REFERENCES users (id) ON DELETE CASCADE NOT NULL,
+   UNIQUE (trackable_item_id, user_id)
 );
 
 CREATE TABLE trackable_item_event_prototype (
@@ -86,5 +87,6 @@ CREATE TABLE trackable_item_event_participants (
  user_id                  INT REFERENCES users (id) ON DELETE CASCADE NOT NULL,
  creation_time            TIMESTAMP  NOT NULL,
  last_update_time         TIMESTAMP  NOT NULL,
- confirmed                INT DEFAULT 0 NOT NULL
+ confirmed                INT DEFAULT 0 NOT NULL,
+ UNIQUE (trackable_item_event_id, user_id)
 );
