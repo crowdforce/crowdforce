@@ -27,7 +27,7 @@
 
     <properties>
         <swagger.version>3.0.0</swagger.version>
-        <postgres.version>42.2.14</postgres.version>
+        <postgres.version>42.2.25</postgres.version>
     </properties>
 
     <dependencies>
