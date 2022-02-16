@@ -16,7 +16,7 @@
         <postgres.user>crowdforce</postgres.user>
         <postgres.password>crowdforce</postgres.password>
         <postgres.database>crowdforce</postgres.database>
-        <postgres.version>42.2.14</postgres.version>
+        <postgres.version>42.3.3</postgres.version>
         <postgres.port>2132</postgres.port>
     </properties>
 
